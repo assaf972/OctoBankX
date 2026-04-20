@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" dir="<%= locale_dir %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OctoBankX</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">OctoBankX</span>
+    <a href="/"         class="<%= request.path == '/'          ? 'active' : '' %>"><%= t('nav.home')     %></a>
+    <a href="/jobs"     class="<%= request.path == '/jobs'      ? 'active' : '' %>"><%= t('nav.jobs')     %></a>
+    <a href="/log"      class="<%= request.path == '/log'       ? 'active' : '' %>"><%= t('nav.log')      %></a>
+    <a href="/banks"     class="<%= request.path == '/banks'      ? 'active' : '' %>"><%= t('nav.banks')     %></a>
+    <a href="/api-calls" class="<%= request.path == '/api-calls' ? 'active' : '' %>"><%= t('nav.api_calls') %></a>
+    <a href="/settings"  class="<%= request.path == '/settings'  ? 'active' : '' %>"><%= t('nav.settings')  %></a>
+
+    <span class="lang-switcher">
+      <a href="/locale?lang=en" class="<%= I18n.locale == :en ? 'active' : '' %>"><%= t('lang.en') %></a>
+      <a href="/locale?lang=he" class="<%= I18n.locale == :he ? 'active' : '' %>"><%= t('lang.he') %></a>
+    </span>
+  </nav>
+
+  <main>
+    <% if @flash %>
+      <div class="flash flash-<%= @flash[:type] %>"><%= @flash[:message] %></div>
+    <% end %>
+    <%= yield %>
+  </main>
+
+  <footer>OctoBankX &copy; <%= Time.now.year %></footer>
+</body>
+</html>

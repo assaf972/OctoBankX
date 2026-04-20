@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1><%= t('jobs.title') %></h1>
+  <form action="/jobs/run" method="post" style="display:inline">
+    <button type="submit" class="btn btn-primary"><%= t('common.run_now') %></button>
+  </form>
+</div>
+
+<div class="filter-bar">
+  <form method="get" action="/jobs">
+    <label><%= t('common.status') %>
+      <select name="status" onchange="this.form.submit()">
+        <option value=""><%= t('status.all') %></option>
+        <% %w[pending running success failed].each do |s| %>
+          <option value="<%= s %>" <%= params[:status] == s ? 'selected' : '' %>><%= t("status.#{s}") %></option>
+        <% end %>
+      </select>
+    </label>
+    <label><%= t('common.date') %>
+      <input type="date" name="date" value="<%= @filter_date %>" onchange="this.form.submit()">
+    </label>
+  </form>
+</div>
+
+<section class="card">
+  <h2><%= t('jobs.jobs_count', count: @downloads.size) %></h2>
+  <% if @downloads.empty? %>
+    <p class="empty"><%= t('jobs.no_jobs') %></p>
+  <% else %>
+    <table>
+      <thead>
+        <tr>
+          <th><%= t('common.id')       %></th>
+          <th><%= t('common.date')     %></th>
+          <th><%= t('common.account')  %></th>
+          <th><%= t('common.bank')     %></th>
+          <th><%= t('common.status')   %></th>
+          <th><%= t('common.duration') %></th>
+          <th><%= t('common.error')    %></th>
+          <th><%= t('common.file')     %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @downloads.each do |dl| %>
+          <tr>
+            <td><%= dl.id %></td>
+            <td><%= dl.date %></td>
+            <td><%= dl.account&.name %></td>
+            <td><%= dl.bank&.name %></td>
+            <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
+            <td><%= dl.duration ? "#{dl.duration.round(1)}s" : '—' %></td>
+            <td class="error-msg"><%= dl.error_message %></td>
+            <td><%= dl.file_path ? File.basename(dl.file_path) : '—' %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

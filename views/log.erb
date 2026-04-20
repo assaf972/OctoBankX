@@ -1,0 +1,73 @@
+<div class="page-header">
+  <h1><%= t('log.title') %></h1>
+</div>
+
+<div class="filter-bar">
+  <form method="get" action="/log">
+    <label><%= t('common.account') %>
+      <select name="account_id" onchange="this.form.submit()">
+        <option value=""><%= t('log.all_accounts') %></option>
+        <% @accounts.each do |a| %>
+          <option value="<%= a.id %>" <%= @filter_account_id == a.id.to_s ? 'selected' : '' %>>
+            <%= a.name %> (<%= a.account_no %>)
+          </option>
+        <% end %>
+      </select>
+    </label>
+    <label><%= t('common.status') %>
+      <select name="status" onchange="this.form.submit()">
+        <option value=""><%= t('status.all') %></option>
+        <% %w[pending running success failed].each do |s| %>
+          <option value="<%= s %>" <%= @filter_status == s ? 'selected' : '' %>><%= t("status.#{s}") %></option>
+        <% end %>
+      </select>
+    </label>
+    <label><%= t('log.from') %>
+      <input type="date" name="from" value="<%= @filter_from %>">
+    </label>
+    <label><%= t('log.to') %>
+      <input type="date" name="to" value="<%= @filter_to %>">
+    </label>
+    <button type="submit" class="btn btn-secondary"><%= t('common.filter') %></button>
+  </form>
+</div>
+
+<section class="card">
+  <p class="summary"><%= t('log.showing', count: @downloads.size) %></p>
+  <% if @downloads.empty? %>
+    <p class="empty"><%= t('log.no_records') %></p>
+  <% else %>
+    <table>
+      <thead>
+        <tr>
+          <th><%= t('common.id')        %></th>
+          <th><%= t('common.date')      %></th>
+          <th><%= t('common.created')   %></th>
+          <th><%= t('common.account')   %></th>
+          <th><%= t('common.bank')      %></th>
+          <th><%= t('common.status')    %></th>
+          <th><%= t('common.started')   %></th>
+          <th><%= t('common.completed') %></th>
+          <th><%= t('common.duration')  %></th>
+          <th><%= t('common.error')     %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @downloads.each do |dl| %>
+          <tr>
+            <td><%= dl.id %></td>
+            <td><%= dl.date %></td>
+            <td><%= dl.created_at&.strftime('%Y-%m-%d %H:%M') %></td>
+            <td><%= dl.account&.name %></td>
+            <td><%= dl.bank&.name %></td>
+            <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
+            <td><%= dl.started_at&.strftime('%H:%M:%S') %></td>
+            <td><%= dl.completed_at&.strftime('%H:%M:%S') %></td>
+            <td><%= dl.duration ? "#{dl.duration.round(1)}s" : '—' %></td>
+            <td class="error-msg"><%= dl.error_message %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

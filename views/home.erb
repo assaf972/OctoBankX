@@ -1,0 +1,114 @@
+<div class="page-header">
+  <h1><%= t('home.title') %></h1>
+  <form action="/jobs/run" method="post" style="display:inline">
+    <button type="submit" class="btn btn-primary"><%= t('home.run_downloads') %></button>
+  </form>
+</div>
+
+<div class="grid-2">
+  <!-- Recent Downloads -->
+  <section class="card">
+    <h2><%= t('home.last_downloads') %></h2>
+    <% if @recent_downloads.empty? %>
+      <p class="empty"><%= t('home.no_downloads') %></p>
+    <% else %>
+      <table>
+        <thead>
+          <tr>
+            <th><%= t('common.date')    %></th>
+            <th><%= t('common.account') %></th>
+            <th><%= t('common.bank')    %></th>
+            <th><%= t('common.status')  %></th>
+            <th><%= t('common.error')   %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_downloads.each do |dl| %>
+            <tr>
+              <td><%= dl.date %></td>
+              <td><%= dl.account&.name %> (<%= dl.account&.account_no %>)</td>
+              <td><%= dl.bank&.name %></td>
+              <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
+              <td class="error-msg"><%= dl.error_message %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+
+  <!-- New Account Form -->
+  <section class="card">
+    <h2><%= t('home.new_account') %></h2>
+    <form action="/accounts" method="post" class="form">
+      <label><%= t('common.name') %>
+        <input type="text" name="name" required>
+      </label>
+      <label><%= t('common.account_no') %>
+        <input type="text" name="account_no" required>
+      </label>
+      <label><%= t('common.bank') %>
+        <select name="bank_id" required>
+          <option value=""><%= t('home.select_bank') %></option>
+          <% @banks.each do |b| %>
+            <option value="<%= b.id %>"><%= b.name %></option>
+          <% end %>
+        </select>
+      </label>
+      <label><%= t('common.branch') %>
+        <input type="text" name="branch">
+      </label>
+      <label><%= t('common.currency') %>
+        <input type="text" name="currency" value="USD" maxlength="3">
+      </label>
+      <label><%= t('common.balance') %>
+        <input type="number" name="balance" value="0" step="0.01">
+      </label>
+      <label><%= t('common.balance_date') %>
+        <input type="date" name="balance_date">
+      </label>
+      <label><%= t('home.sftp_username') %>
+        <input type="text" name="sftp_username">
+      </label>
+      <label><%= t('home.sftp_password') %>
+        <input type="password" name="sftp_password">
+      </label>
+      <button type="submit" class="btn btn-primary"><%= t('home.create_account') %></button>
+    </form>
+  </section>
+</div>
+
+<!-- Accounts Table -->
+<section class="card">
+  <h2><%= t('home.accounts_title', count: @accounts.size) %></h2>
+  <% if @accounts.empty? %>
+    <p class="empty"><%= t('home.no_accounts') %></p>
+  <% else %>
+    <table>
+      <thead>
+        <tr>
+          <th><%= t('common.name')         %></th>
+          <th><%= t('common.account_no')   %></th>
+          <th><%= t('common.bank')         %></th>
+          <th><%= t('common.branch')       %></th>
+          <th><%= t('common.currency')     %></th>
+          <th><%= t('common.balance')      %></th>
+          <th><%= t('common.balance_date') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @accounts.each do |a| %>
+          <tr>
+            <td><%= a.name %></td>
+            <td><%= a.account_no %></td>
+            <td><%= a.bank&.name %></td>
+            <td><%= a.branch %></td>
+            <td><%= a.currency %></td>
+            <td><%= a.balance %></td>
+            <td><%= a.balance_date %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

@@ -1,0 +1,18 @@
+<div class="page-header">
+  <h1><%= t('settings.title') %></h1>
+</div>
+
+<section class="card">
+  <form action="/settings" method="post" class="form">
+    <% @settings.each do |s| %>
+      <label>
+        <span class="setting-key"><%= s.key %></span>
+        <% if s.description %>
+          <small class="setting-desc"><%= s.description %></small>
+        <% end %>
+        <input type="text" name="settings[<%= s.key %>]" value="<%= s.value %>">
+      </label>
+    <% end %>
+    <button type="submit" class="btn btn-primary"><%= t('settings.save') %></button>
+  </form>
+</section>

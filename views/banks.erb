@@ -1,0 +1,54 @@
+<div class="page-header">
+  <h1><%= t('banks.title') %></h1>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <h2><%= t('banks.new_bank') %></h2>
+    <form action="/banks" method="post" class="form">
+      <label><%= t('common.name') %>
+        <input type="text" name="name" required>
+      </label>
+      <label><%= t('banks.sftp_host') %>
+        <input type="text" name="sftp_host" placeholder="sftp.mybank.com" required>
+      </label>
+      <label><%= t('banks.sftp_port') %>
+        <input type="number" name="sftp_port" value="22" min="1" max="65535" required>
+      </label>
+      <label><%= t('common.remote_path') %>
+        <input type="text" name="sftp_remote_path" value="/statements">
+      </label>
+      <button type="submit" class="btn btn-primary"><%= t('banks.add_bank') %></button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2><%= t('banks.registered', count: @banks.size) %></h2>
+    <% if @banks.empty? %>
+      <p class="empty"><%= t('banks.no_banks') %></p>
+    <% else %>
+      <table>
+        <thead>
+          <tr>
+            <th><%= t('common.name')        %></th>
+            <th><%= t('banks.sftp_host')    %></th>
+            <th><%= t('common.port')        %></th>
+            <th><%= t('common.remote_path') %></th>
+            <th><%= t('common.accounts')    %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @banks.each do |b| %>
+            <tr>
+              <td><%= b.name %></td>
+              <td><%= b.sftp_host %></td>
+              <td><%= b.sftp_port %></td>
+              <td><%= b.sftp_remote_path %></td>
+              <td><%= b.accounts_dataset.count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+</div>

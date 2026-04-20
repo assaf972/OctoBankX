@@ -1,0 +1,103 @@
+en:
+  nav:
+    home: "Home"
+    jobs: "Jobs"
+    log: "Log"
+    banks: "Banks"
+    api_calls: "API Calls"
+    settings: "Settings"
+
+  lang:
+    label: "Language"
+    en: "English"
+    he: "עברית"
+
+  common:
+    id: "ID"
+    date: "Date"
+    account: "Account"
+    account_no: "Account No"
+    bank: "Bank"
+    branch: "Branch"
+    currency: "Currency"
+    balance: "Balance"
+    balance_date: "Balance Date"
+    status: "Status"
+    error: "Error"
+    file: "File"
+    duration: "Duration"
+    created: "Created"
+    started: "Started"
+    completed: "Completed"
+    name: "Name"
+    run_now: "Run Now"
+    filter: "Filter"
+    all: "All"
+    accounts: "Accounts"
+    port: "Port"
+    remote_path: "Remote Path"
+
+  status:
+    pending: "Pending"
+    running: "Running"
+    success: "Success"
+    failed: "Failed"
+    all: "All Statuses"
+
+  home:
+    title: "Dashboard"
+    run_downloads: "Run Downloads Now"
+    last_downloads: "Last 10 Downloads"
+    no_downloads: "No downloads yet."
+    new_account: "New Account"
+    select_bank: "— select bank —"
+    sftp_username: "SFTP Username"
+    sftp_password: "SFTP Password"
+    create_account: "Create Account"
+    accounts_title: "Accounts (%{count})"
+    no_accounts: "No accounts yet. Add one above."
+
+  jobs:
+    title: "Download Jobs"
+    jobs_count: "Jobs (%{count})"
+    no_jobs: "No jobs match the filter."
+
+  log:
+    title: "Download History"
+    all_accounts: "All accounts"
+    from: "From"
+    to: "To"
+    showing: "Showing %{count} record(s)"
+    no_records: "No history records match the filter."
+
+  banks:
+    title: "Banks"
+    new_bank: "New Bank"
+    sftp_host: "SFTP Host"
+    sftp_port: "SFTP Port"
+    add_bank: "Add Bank"
+    registered: "Registered Banks (%{count})"
+    no_banks: "No banks registered yet."
+
+  settings:
+    title: "Settings"
+    save: "Save Settings"
+
+  api_calls:
+    title: "API Calls"
+    method: "Method"
+    endpoint: "Endpoint"
+    host: "Host"
+    http: "HTTP"
+    duration_ms: "Duration (ms)"
+    all_endpoints: "All Endpoints"
+    showing: "Showing %{count} call(s)"
+    no_records: "No API calls recorded yet."
+
+  flash:
+    account_created: "Account '%{name}' created."
+    account_error: "Failed to create account: %{errors}"
+    bank_added: "Bank '%{name}' added."
+    bank_error: "Failed to add bank: %{errors}"
+    job_triggered: "Download job triggered. Check the Jobs page for status updates."
+    settings_saved: "Settings saved."

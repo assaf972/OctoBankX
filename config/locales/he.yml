@@ -1,0 +1,103 @@
+he:
+  nav:
+    home: "בית"
+    jobs: "משימות"
+    log: "יומן"
+    banks: "בנקים"
+    api_calls: "קריאות API"
+    settings: "הגדרות"
+
+  lang:
+    label: "שפה"
+    en: "English"
+    he: "עברית"
+
+  common:
+    id: "מזהה"
+    date: "תאריך"
+    account: "חשבון"
+    account_no: "מספר חשבון"
+    bank: "בנק"
+    branch: "סניף"
+    currency: "מטבע"
+    balance: "יתרה"
+    balance_date: "תאריך יתרה"
+    status: "סטטוס"
+    error: "שגיאה"
+    file: "קובץ"
+    duration: "משך"
+    created: "נוצר"
+    started: "התחלה"
+    completed: "סיום"
+    name: "שם"
+    run_now: "הרץ עכשיו"
+    filter: "סנן"
+    all: "הכל"
+    accounts: "חשבונות"
+    port: "פורט"
+    remote_path: "נתיב מרוחק"
+
+  status:
+    pending: "ממתין"
+    running: "פעיל"
+    success: "הצלחה"
+    failed: "נכשל"
+    all: "כל הסטטוסים"
+
+  home:
+    title: "לוח בקרה"
+    run_downloads: "הרץ הורדות עכשיו"
+    last_downloads: "10 ההורדות האחרונות"
+    no_downloads: "אין הורדות עדיין."
+    new_account: "חשבון חדש"
+    select_bank: "— בחר בנק —"
+    sftp_username: "שם משתמש SFTP"
+    sftp_password: "סיסמת SFTP"
+    create_account: "צור חשבון"
+    accounts_title: "חשבונות (%{count})"
+    no_accounts: "אין חשבונות עדיין. הוסף אחד למעלה."
+
+  jobs:
+    title: "משימות הורדה"
+    jobs_count: "משימות (%{count})"
+    no_jobs: "לא נמצאו משימות התואמות את הסינון."
+
+  log:
+    title: "היסטוריית הורדות"
+    all_accounts: "כל החשבונות"
+    from: "מתאריך"
+    to: "עד תאריך"
+    showing: "מציג %{count} רשומות"
+    no_records: "לא נמצאו רשומות התואמות את הסינון."
+
+  banks:
+    title: "בנקים"
+    new_bank: "בנק חדש"
+    sftp_host: "שרת SFTP"
+    sftp_port: "פורט SFTP"
+    add_bank: "הוסף בנק"
+    registered: "בנקים רשומים (%{count})"
+    no_banks: "אין בנקים רשומים עדיין."
+
+  settings:
+    title: "הגדרות"
+    save: "שמור הגדרות"
+
+  api_calls:
+    title: "קריאות API"
+    method: "פעולה"
+    endpoint: "נקודת קצה"
+    host: "מארח"
+    http: "HTTP"
+    duration_ms: "משך (ms)"
+    all_endpoints: "כל נקודות הקצה"
+    showing: "מציג %{count} קריאות"
+    no_records: "לא נרשמו קריאות API עדיין."
+
+  flash:
+    account_created: "חשבון '%{name}' נוצר בהצלחה."
+    account_error: "יצירת חשבון נכשלה: %{errors}"
+    bank_added: "בנק '%{name}' נוסף בהצלחה."
+    bank_error: "הוספת בנק נכשלה: %{errors}"
+    job_triggered: "משימת ההורדה הופעלה. בדוק את עמוד המשימות לעדכוני סטטוס."
+    settings_saved: "ההגדרות נשמרו בהצלחה."

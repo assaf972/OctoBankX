@@ -1,0 +1,85 @@
+<div class="page-header">
+  <h1><%= t('api_calls.title') %></h1>
+</div>
+
+<div class="filter-bar">
+  <form method="get" action="/api-calls">
+    <label><%= t('common.status') %>
+      <select name="status" onchange="this.form.submit()">
+        <option value=""><%= t('common.all') %></option>
+        <option value="success" <%= @filter_status == 'success' ? 'selected' : '' %>><%= t('status.success') %></option>
+        <option value="failed"  <%= @filter_status == 'failed'  ? 'selected' : '' %>><%= t('status.failed')  %></option>
+      </select>
+    </label>
+    <label><%= t('api_calls.method') %>
+      <select name="method" onchange="this.form.submit()">
+        <option value=""><%= t('common.all') %></option>
+        <% %w[GET POST PATCH].each do |m| %>
+          <option value="<%= m %>" <%= @filter_method == m ? 'selected' : '' %>><%= m %></option>
+        <% end %>
+      </select>
+    </label>
+    <label><%= t('api_calls.endpoint') %>
+      <select name="endpoint" onchange="this.form.submit()">
+        <option value=""><%= t('api_calls.all_endpoints') %></option>
+        <% @endpoints.each do |ep| %>
+          <option value="<%= ep %>" <%= @filter_endpoint == ep ? 'selected' : '' %>><%= ep %></option>
+        <% end %>
+      </select>
+    </label>
+    <label><%= t('log.from') %>
+      <input type="date" name="from" value="<%= @filter_from %>">
+    </label>
+    <label><%= t('log.to') %>
+      <input type="date" name="to" value="<%= @filter_to %>">
+    </label>
+    <button type="submit" class="btn btn-secondary"><%= t('common.filter') %></button>
+  </form>
+</div>
+
+<section class="card">
+  <p class="summary"><%= t('api_calls.showing', count: @api_calls.size) %></p>
+  <% if @api_calls.empty? %>
+    <p class="empty"><%= t('api_calls.no_records') %></p>
+  <% else %>
+    <table>
+      <thead>
+        <tr>
+          <th><%= t('common.id')           %></th>
+          <th><%= t('common.created')      %></th>
+          <th><%= t('api_calls.method')    %></th>
+          <th><%= t('api_calls.endpoint')  %></th>
+          <th><%= t('api_calls.host')      %></th>
+          <th><%= t('common.account')      %></th>
+          <th><%= t('api_calls.http')      %></th>
+          <th><%= t('api_calls.duration_ms') %></th>
+          <th><%= t('common.status')       %></th>
+          <th><%= t('common.error')        %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @api_calls.each do |c| %>
+          <tr>
+            <td><%= c.id %></td>
+            <td><%= c.created_at&.strftime('%Y-%m-%d %H:%M:%S') %></td>
+            <td><span class="badge badge-method-<%= c.http_method.downcase %>"><%= c.http_method %></span></td>
+            <td class="endpoint-cell"><%= c.endpoint %></td>
+            <td><%= c.host %></td>
+            <td>
+              <% if c.account_id %>
+                <% acct = Account.first(id: c.account_id) %>
+                <%= acct ? "#{acct.name} (#{acct.account_no})" : "##{c.account_id}" %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+            <td><span class="http-status http-<%= (c.http_status.to_i / 100) %>xx"><%= c.http_status %></span></td>
+            <td><%= c.duration_ms ? "#{c.duration_ms} ms" : '—' %></td>
+            <td><span class="badge badge-<%= c.status %>"><%= t("status.#{c.status}") %></span></td>
+            <td class="error-msg"><%= c.error_message %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>

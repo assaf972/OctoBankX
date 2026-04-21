@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="<%= I18n.locale %>" dir="<%= locale_dir %>">
+  <head>
+    <meta charset="UTF-8">
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    >
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    >
+
+    <meta name="theme-color" content="#1a2a4a">
+
+    <title>OctoBankX</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+    >
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      crossorigin="anonymous"
+    >
+
+    <link rel="stylesheet" href="/mobile.css">
+  </head>
+
+  <body>
+    <!-- Top navbar -->
+    <header class="m-nav">
+      <span class="brand">OctoBankX</span>
+
+      <a
+        href="/locale?lang=en"
+        class="lang-btn <%= I18n.locale == :en ? 'is-active' : '' %>"
+      >
+        EN
+      </a>
+
+      <a
+        href="/locale?lang=he"
+        class="lang-btn <%= I18n.locale == :he ? 'is-active' : '' %>"
+      >
+        עב
+      </a>
+    </header>
+
+    <!-- Page content -->
+    <div class="m-body">
+      <% if @flash %>
+        <div class="m-flash <%= @flash[:type] %>"><%= @flash[:message] %></div>
+      <% end %>
+
+      <%= yield %>
+    </div>
+
+    <!-- Bottom tab bar -->
+    <nav class="m-tabs">
+      <a
+        href="/mobile/"
+        class="<%= request.path == '/mobile/' ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-home"></i>
+        <span><%= t('nav.home') %></span>
+      </a>
+
+      <a
+        href="/mobile/jobs"
+        class="<%= request.path.start_with?('/mobile/jobs') ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-download"></i>
+        <span><%= t('nav.jobs') %></span>
+      </a>
+
+      <a
+        href="/mobile/log"
+        class="<%= request.path.start_with?('/mobile/log') ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-list-ul"></i>
+        <span><%= t('nav.log') %></span>
+      </a>
+
+      <a
+        href="/mobile/banks"
+        class="<%= request.path.start_with?('/mobile/banks') ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-university"></i>
+        <span><%= t('nav.banks') %></span>
+      </a>
+
+      <a
+        href="/mobile/api-calls"
+        class="<%= request.path.start_with?('/mobile/api-calls') ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-code"></i>
+        <span><%= t('nav.api_calls') %></span>
+      </a>
+
+      <a
+        href="/mobile/settings"
+        class="<%= request.path.start_with?('/mobile/settings') ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-cog"></i>
+        <span><%= t('nav.settings') %></span>
+      </a>
+    </nav>
+  </body>
+</html>

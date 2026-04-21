@@ -94,6 +94,10 @@ he:
     showing: "מציג %{count} קריאות"
     no_records: "לא נרשמו קריאות API עדיין."
 
+  mobile:
+    today:   "היום"
+    desktop: "עבור לגרסת מחשב"
+
   flash:
     account_created: "חשבון '%{name}' נוצר בהצלחה."
     account_error: "יצירת חשבון נכשלה: %{errors}"

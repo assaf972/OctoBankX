@@ -1,0 +1,86 @@
+<!-- Header -->
+<div class="m-sh" style="margin-top:0">
+  <h2><%= t('log.title') %></h2>
+</div>
+
+<!-- Filters (collapsible) -->
+<details class="m-form" style="margin-bottom:.875rem">
+  <summary>
+    <span><i class="fas fa-filter" style="margin-inline-end:.4rem;font-size:.8rem;opacity:.6"></i><%= t('common.filter') %></span>
+    <span class="chev"><i class="fas fa-chevron-down"></i></span>
+  </summary>
+  <form method="get" action="/mobile/log">
+    <div class="field">
+      <label class="label"><%= t('common.account') %></label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="account_id">
+            <option value=""><%= t('log.all_accounts') %></option>
+            <% @accounts.each do |a| %>
+              <option value="<%= a.id %>" <%= @filter_account_id == a.id.to_s ? 'selected' : '' %>><%= a.name %></option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('common.status') %></label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="status">
+            <option value=""><%= t('status.all') %></option>
+            <% %w[pending running success failed].each do |s| %>
+              <option value="<%= s %>" <%= @filter_status == s ? 'selected' : '' %>><%= t("status.#{s}") %></option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-mobile" style="gap:.5rem;margin-bottom:0">
+      <div class="column">
+        <div class="field">
+          <label class="label"><%= t('log.from') %></label>
+          <div class="control"><input class="input" type="date" name="from" value="<%= @filter_from %>"></div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label"><%= t('log.to') %></label>
+          <div class="control"><input class="input" type="date" name="to" value="<%= @filter_to %>"></div>
+        </div>
+      </div>
+    </div>
+    <div class="control">
+      <button type="submit" class="button is-link is-fullwidth"><%= t('common.filter') %></button>
+    </div>
+  </form>
+</details>
+
+<p style="font-size:.75rem;color:var(--mob-muted);margin-bottom:.625rem"><%= t('log.showing', count: @downloads.size) %></p>
+
+<% if @downloads.empty? %>
+  <div class="m-empty">
+    <i class="fas fa-history fa-2x" style="opacity:.25;display:block;margin-bottom:.5rem"></i>
+    <%= t('log.no_records') %>
+  </div>
+<% else %>
+  <% @downloads.each do |dl| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0">
+          <div class="title"><%= dl.account&.name || "##{dl.account_id}" %></div>
+          <div class="sub"><%= dl.bank&.name %> &middot; <%= dl.date %></div>
+        </div>
+        <span class="m-tag <%= dl.status %>"><%= t("status.#{dl.status}") %></span>
+      </div>
+      <div class="detail">
+        <% if dl.started_at   %><span><i class="fas fa-play"  style="opacity:.4"></i> <%= dl.started_at.strftime('%H:%M') %></span><% end %>
+        <% if dl.completed_at %><span><i class="fas fa-stop"  style="opacity:.4"></i> <%= dl.completed_at.strftime('%H:%M') %></span><% end %>
+        <% if dl.duration     %><span><i class="fas fa-clock" style="opacity:.4"></i> <%= dl.duration.round(1) %>s</span><% end %>
+      </div>
+      <% if dl.error_message %>
+        <div class="err"><%= dl.error_message %></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

@@ -1,0 +1,161 @@
+<!-- Stats -->
+<div class="m-stats">
+  <div class="m-stat accounts">
+    <div class="val"><%= @accounts.size %></div>
+    <div class="lbl"><%= t('common.accounts') %></div>
+  </div>
+  <div class="m-stat success">
+    <div class="val"><%= @today_success %></div>
+    <div class="lbl"><%= t('status.success') %> <%= t('mobile.today') %></div>
+  </div>
+  <div class="m-stat failed">
+    <div class="val"><%= @today_failed %></div>
+    <div class="lbl"><%= t('status.failed') %> <%= t('mobile.today') %></div>
+  </div>
+  <div class="m-stat running">
+    <div class="val"><%= @today_running %></div>
+    <div class="lbl"><%= t('status.running') %></div>
+  </div>
+</div>
+
+<!-- Recent downloads -->
+<div class="m-sh">
+  <h2><%= t('home.last_downloads') %></h2>
+  <form action="/mobile/jobs/run" method="post" style="margin:0">
+    <button class="button is-primary is-small" type="submit">
+      <span class="icon is-small"><i class="fas fa-play"></i></span>
+      <span><%= t('common.run_now') %></span>
+    </button>
+  </form>
+</div>
+
+<% if @recent_downloads.empty? %>
+  <div class="m-empty"><i class="fas fa-inbox fa-2x" style="opacity:.3;display:block;margin-bottom:.5rem"></i><%= t('home.no_downloads') %></div>
+<% else %>
+  <% @recent_downloads.each do |dl| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0">
+          <div class="title"><%= dl.account&.name || "##{dl.account_id}" %></div>
+          <div class="sub"><%= dl.bank&.name %> &middot; <%= dl.date %></div>
+        </div>
+        <span class="m-tag <%= dl.status %>"><%= t("status.#{dl.status}") %></span>
+      </div>
+      <% if dl.error_message %>
+        <div class="err"><%= dl.error_message %></div>
+      <% end %>
+      <% if dl.duration %>
+        <div class="detail"><span><%= dl.duration.round(1) %>s</span></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<!-- Accounts list -->
+<div class="m-sh">
+  <h2><%= t('home.accounts_title', count: @accounts.size) %></h2>
+</div>
+
+<% if @accounts.empty? %>
+  <div class="m-empty"><%= t('home.no_accounts') %></div>
+<% else %>
+  <% @accounts.each do |a| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0">
+          <div class="title"><%= a.name %></div>
+          <div class="sub"><%= a.account_no %> &middot; <%= a.bank&.name %></div>
+        </div>
+        <span class="m-tag get"><%= a.currency %></span>
+      </div>
+      <% if a.balance %>
+        <div class="detail">
+          <span><%= t('common.balance') %>: <%= a.balance %></span>
+          <% if a.balance_date %><span><%= a.balance_date %></span><% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<!-- Add Account (collapsible) -->
+<div class="m-sh">
+  <h2>&nbsp;</h2>
+</div>
+
+<details class="m-form">
+  <summary>
+    <span><i class="fas fa-plus" style="margin-inline-end:.4rem;font-size:.8rem;opacity:.6"></i><%= t('home.new_account') %></span>
+    <span class="chev"><i class="fas fa-chevron-down"></i></span>
+  </summary>
+  <form action="/mobile/accounts" method="post">
+    <div class="field">
+      <label class="label"><%= t('common.name') %></label>
+      <div class="control"><input class="input" type="text" name="name" required></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('common.account_no') %></label>
+      <div class="control"><input class="input" type="text" name="account_no" required></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('common.bank') %></label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="bank_id" required>
+            <option value=""><%= t('home.select_bank') %></option>
+            <% @banks.each do |b| %>
+              <option value="<%= b.id %>"><%= b.name %></option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-mobile is-gapless" style="gap:.5rem">
+      <div class="column">
+        <div class="field">
+          <label class="label"><%= t('common.branch') %></label>
+          <div class="control"><input class="input" type="text" name="branch"></div>
+        </div>
+      </div>
+      <div class="column is-narrow" style="min-width:90px">
+        <div class="field">
+          <label class="label"><%= t('common.currency') %></label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="currency">
+                <option value="ILS">ILS</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-mobile is-gapless" style="gap:.5rem">
+      <div class="column">
+        <div class="field">
+          <label class="label"><%= t('common.balance') %></label>
+          <div class="control"><input class="input" type="number" step="0.01" name="balance" value="0"></div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label"><%= t('common.balance_date') %></label>
+          <div class="control"><input class="input" type="date" name="balance_date"></div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('home.sftp_username') %></label>
+      <div class="control"><input class="input" type="text" name="sftp_username" autocomplete="off"></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('home.sftp_password') %></label>
+      <div class="control"><input class="input" type="password" name="sftp_password" autocomplete="new-password"></div>
+    </div>
+    <div class="control">
+      <button type="submit" class="button is-primary is-fullwidth"><%= t('home.create_account') %></button>
+    </div>
+  </form>
+</details>

@@ -207,6 +207,125 @@ class OctoBankXApp < Sinatra::Base
   end
 
   # ==================================================================
+  # Mobile  — /mobile
+  # ==================================================================
+  get '/mobile' do
+    redirect '/mobile/'
+  end
+
+  get '/mobile/' do
+    today             = Date.today
+    @recent_downloads = Download.recent(10).eager(:account, :bank).all
+    @accounts         = Account.eager(:bank).all
+    @banks            = Bank.all
+    @today_success    = Download.where(status: 'success', date: today).count
+    @today_failed     = Download.where(status: 'failed',  date: today).count
+    @today_running    = Download.where(status: 'running', date: today).count
+    erb :'mobile/home', layout: :'mobile/layout'
+  end
+
+  post '/mobile/accounts' do
+    account = Account.new(
+      name:           params[:name],
+      account_no:     params[:account_no],
+      bank_id:        params[:bank_id].to_i,
+      branch:         params[:branch],
+      currency:       params[:currency] || 'USD',
+      balance:        params[:balance].to_f,
+      balance_date:   params[:balance_date].to_s.empty? ? nil : Date.parse(params[:balance_date]),
+      sftp_username:  params[:sftp_username],
+      sftp_password:  params[:sftp_password],
+      created_at:     Time.now,
+      updated_at:     Time.now
+    )
+    if account.valid? && account.save
+      flash :success, t('flash.account_created', name: account.name)
+    else
+      flash :error, t('flash.account_error', errors: account.errors.full_messages.join(', '))
+    end
+    redirect '/mobile/'
+  end
+
+  get '/mobile/jobs' do
+    scope = Download.eager(:account, :bank)
+    scope = scope.where(status: params[:status]) unless params[:status].to_s.empty?
+    scope = scope.where(date: Date.parse(params[:date])) unless params[:date].to_s.empty?
+    @filter_date   = params[:date] || Date.today.to_s
+    @filter_status = params[:status]
+    @downloads     = scope.order(Sequel.desc(:created_at)).all
+    erb :'mobile/jobs', layout: :'mobile/layout'
+  end
+
+  post '/mobile/jobs/run' do
+    Thread.new { DownloadJob.run(date: Date.today) }
+    flash :success, t('flash.job_triggered')
+    redirect '/mobile/jobs'
+  end
+
+  get '/mobile/log' do
+    scope = Download.eager(:account, :bank)
+    scope = scope.where(account_id: params[:account_id].to_i) unless params[:account_id].to_s.empty?
+    scope = scope.where(status: params[:status])              unless params[:status].to_s.empty?
+    scope = scope.where { date >= Date.parse(params[:from]) } unless params[:from].to_s.empty?
+    scope = scope.where { date <= Date.parse(params[:to]) }   unless params[:to].to_s.empty?
+    @filter_account_id = params[:account_id]
+    @filter_status     = params[:status]
+    @filter_from       = params[:from]
+    @filter_to         = params[:to]
+    @accounts          = Account.all
+    @downloads         = scope.order(Sequel.desc(:created_at)).limit(200).all
+    erb :'mobile/log', layout: :'mobile/layout'
+  end
+
+  get '/mobile/banks' do
+    @banks = Bank.all
+    erb :'mobile/banks', layout: :'mobile/layout'
+  end
+
+  post '/mobile/banks' do
+    bank = Bank.new(
+      name:             params[:name],
+      sftp_host:        params[:sftp_host],
+      sftp_port:        params[:sftp_port].to_i,
+      sftp_remote_path: params[:sftp_remote_path] || '/',
+      created_at:       Time.now,
+      updated_at:       Time.now
+    )
+    if bank.valid? && bank.save
+      flash :success, t('flash.bank_added', name: bank.name)
+    else
+      flash :error, t('flash.bank_error', errors: bank.errors.full_messages.join(', '))
+    end
+    redirect '/mobile/banks'
+  end
+
+  get '/mobile/api-calls' do
+    scope = ApiCall.order(Sequel.desc(:created_at))
+    scope = scope.where(status:      params[:status])   unless params[:status].to_s.empty?
+    scope = scope.where(http_method: params[:method])   unless params[:method].to_s.empty?
+    scope = scope.where(endpoint:    params[:endpoint]) unless params[:endpoint].to_s.empty?
+    @filter_status   = params[:status]
+    @filter_method   = params[:method]
+    @filter_endpoint = params[:endpoint]
+    @endpoints       = ApiCall.distinct_endpoints
+    @api_calls       = scope.limit(200).all
+    erb :'mobile/api_calls', layout: :'mobile/layout'
+  end
+
+  get '/mobile/settings' do
+    @settings = Setting.order(:key).all
+    erb :'mobile/settings', layout: :'mobile/layout'
+  end
+
+  post '/mobile/settings' do
+    (params[:settings] || {}).each do |key, value|
+      Setting.set(key, value)
+    end
+    flash :success, t('flash.settings_saved')
+    redirect '/mobile/settings'
+  end
+
+  # ==================================================================
   # JSON API  — /api/v1
   # ==================================================================
   before '/api/*' do

@@ -1,0 +1,30 @@
+<!-- Header -->
+<div class="m-sh" style="margin-top:0">
+  <h2><%= t('settings.title') %></h2>
+</div>
+
+<div class="m-form">
+  <form action="/mobile/settings" method="post">
+    <% @settings.each do |s| %>
+      <div class="field">
+        <label class="label" style="font-family:monospace"><%= s.key %></label>
+        <% if s.description %>
+          <p style="font-size:.75rem;color:var(--mob-muted);margin-bottom:4px"><%= s.description %></p>
+        <% end %>
+        <div class="control">
+          <input class="input" type="text" name="settings[<%= s.key %>]" value="<%= s.value %>">
+        </div>
+      </div>
+    <% end %>
+    <div class="control" style="margin-top:1rem">
+      <button type="submit" class="button is-primary is-fullwidth">
+        <span class="icon"><i class="fas fa-save"></i></span>
+        <span><%= t('settings.save') %></span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<a href="/" class="m-desktop-link">
+  <i class="fas fa-desktop" style="margin-inline-end:.35rem;opacity:.6"></i><%= t('mobile.desktop') %>
+</a>

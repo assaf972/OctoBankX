@@ -1,0 +1,64 @@
+<!-- Header -->
+<div class="m-sh" style="margin-top:0">
+  <h2><%= t('api_calls.title') %></h2>
+</div>
+
+<!-- Filters -->
+<form method="get" action="/mobile/api-calls" class="m-filters">
+  <div class="select">
+    <select name="status" onchange="this.form.submit()">
+      <option value=""><%= t('status.all') %></option>
+      <option value="success" <%= @filter_status == 'success' ? 'selected' : '' %>><%= t('status.success') %></option>
+      <option value="failed"  <%= @filter_status == 'failed'  ? 'selected' : '' %>><%= t('status.failed')  %></option>
+    </select>
+  </div>
+  <div class="select">
+    <select name="method" onchange="this.form.submit()">
+      <option value=""><%= t('api_calls.method') %>: <%= t('common.all') %></option>
+      <% %w[GET POST PATCH].each do |m| %>
+        <option value="<%= m %>" <%= @filter_method == m ? 'selected' : '' %>><%= m %></option>
+      <% end %>
+    </select>
+  </div>
+  <div class="select" style="flex:2;min-width:160px">
+    <select name="endpoint" onchange="this.form.submit()">
+      <option value=""><%= t('api_calls.all_endpoints') %></option>
+      <% @endpoints.each do |ep| %>
+        <option value="<%= ep %>" <%= @filter_endpoint == ep ? 'selected' : '' %>><%= ep %></option>
+      <% end %>
+    </select>
+  </div>
+</form>
+
+<p style="font-size:.75rem;color:var(--mob-muted);margin-bottom:.625rem"><%= t('api_calls.showing', count: @api_calls.size) %></p>
+
+<% if @api_calls.empty? %>
+  <div class="m-empty">
+    <i class="fas fa-code fa-2x" style="opacity:.25;display:block;margin-bottom:.5rem"></i>
+    <%= t('api_calls.no_records') %>
+  </div>
+<% else %>
+  <% @api_calls.each do |c| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0;flex:1">
+          <div class="title" style="font-family:monospace;font-size:.82rem"><%= c.endpoint %></div>
+          <div class="sub"><%= c.created_at&.strftime('%Y-%m-%d %H:%M:%S') %></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+          <span class="m-tag <%= c.http_method.downcase %>"><%= c.http_method %></span>
+          <span class="m-tag <%= c.status %>"><%= t("status.#{c.status}") %></span>
+        </div>
+      </div>
+      <div class="detail">
+        <span class="m-tag http-<%= c.http_status.to_i / 100 %>" style="border-radius:6px;padding:2px 6px"><%= c.http_status %></span>
+        <% if c.host    %><span><i class="fas fa-server" style="opacity:.4"></i> <%= c.host %></span><% end %>
+        <% if c.duration_ms %><span><i class="fas fa-clock" style="opacity:.4"></i> <%= c.duration_ms %>ms</span><% end %>
+        <% if c.account_id %><span><i class="fas fa-user" style="opacity:.4"></i> #<%= c.account_id %></span><% end %>
+      </div>
+      <% if c.error_message %>
+        <div class="err"><%= c.error_message %></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

@@ -94,6 +94,10 @@ en:
     showing: "Showing %{count} call(s)"
     no_records: "No API calls recorded yet."
 
+  mobile:
+    today:   "Today"
+    desktop: "Switch to Desktop Version"
+
   flash:
     account_created: "Account '%{name}' created."
     account_error: "Failed to create account: %{errors}"

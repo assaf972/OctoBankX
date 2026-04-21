@@ -1,0 +1,52 @@
+<!-- Header + Run Now -->
+<div class="m-sh" style="margin-top:0">
+  <h2><%= t('jobs.title') %></h2>
+  <form action="/mobile/jobs/run" method="post" style="margin:0">
+    <button class="button is-primary is-small" type="submit">
+      <span class="icon is-small"><i class="fas fa-play"></i></span>
+      <span><%= t('common.run_now') %></span>
+    </button>
+  </form>
+</div>
+
+<!-- Filters -->
+<form method="get" action="/mobile/jobs" class="m-filters">
+  <div class="select">
+    <select name="status" onchange="this.form.submit()">
+      <option value=""><%= t('status.all') %></option>
+      <% %w[pending running success failed].each do |s| %>
+        <option value="<%= s %>" <%= @filter_status == s ? 'selected' : '' %>><%= t("status.#{s}") %></option>
+      <% end %>
+    </select>
+  </div>
+  <input class="input" type="date" name="date" value="<%= @filter_date %>" onchange="this.form.submit()">
+</form>
+
+<!-- Jobs list -->
+<p style="font-size:.75rem;color:var(--mob-muted);margin-bottom:.625rem"><%= t('jobs.jobs_count', count: @downloads.size) %></p>
+
+<% if @downloads.empty? %>
+  <div class="m-empty">
+    <i class="fas fa-check-circle fa-2x" style="opacity:.25;display:block;margin-bottom:.5rem"></i>
+    <%= t('jobs.no_jobs') %>
+  </div>
+<% else %>
+  <% @downloads.each do |dl| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0">
+          <div class="title"><%= dl.account&.name || "##{dl.account_id}" %></div>
+          <div class="sub"><%= dl.bank&.name %> &middot; <%= dl.date %></div>
+        </div>
+        <span class="m-tag <%= dl.status %>"><%= t("status.#{dl.status}") %></span>
+      </div>
+      <div class="detail">
+        <% if dl.duration %><span><i class="fas fa-clock" style="opacity:.5"></i> <%= dl.duration.round(1) %>s</span><% end %>
+        <% if dl.file_path %><span style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:180px"><i class="fas fa-file" style="opacity:.5"></i> <%= File.basename(dl.file_path) %></span><% end %>
+      </div>
+      <% if dl.error_message %>
+        <div class="err"><%= dl.error_message %></div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

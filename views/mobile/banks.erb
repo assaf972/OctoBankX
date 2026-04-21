@@ -1,0 +1,64 @@
+<!-- Header -->
+<div class="m-sh" style="margin-top:0">
+  <h2><%= t('banks.title') %></h2>
+</div>
+
+<!-- Banks list -->
+<% if @banks.empty? %>
+  <div class="m-empty">
+    <i class="fas fa-university fa-2x" style="opacity:.25;display:block;margin-bottom:.5rem"></i>
+    <%= t('banks.no_banks') %>
+  </div>
+<% else %>
+  <% @banks.each do |b| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0">
+          <div class="title"><%= b.name %></div>
+          <div class="sub"><%= b.sftp_host %>:<%= b.sftp_port %></div>
+        </div>
+        <span class="m-tag get"><%= b.accounts_dataset.count %> <%= t('common.accounts') %></span>
+      </div>
+      <div class="detail">
+        <span><i class="fas fa-folder" style="opacity:.4"></i> <%= b.sftp_remote_path %></span>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<!-- Add Bank (collapsible) -->
+<div class="m-sh"><h2>&nbsp;</h2></div>
+
+<details class="m-form">
+  <summary>
+    <span><i class="fas fa-plus" style="margin-inline-end:.4rem;font-size:.8rem;opacity:.6"></i><%= t('banks.new_bank') %></span>
+    <span class="chev"><i class="fas fa-chevron-down"></i></span>
+  </summary>
+  <form action="/mobile/banks" method="post">
+    <div class="field">
+      <label class="label"><%= t('common.name') %></label>
+      <div class="control"><input class="input" type="text" name="name" required></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('banks.sftp_host') %></label>
+      <div class="control"><input class="input" type="text" name="sftp_host" placeholder="sftp.mybank.com" required></div>
+    </div>
+    <div class="columns is-mobile" style="gap:.5rem">
+      <div class="column is-narrow" style="min-width:110px">
+        <div class="field">
+          <label class="label"><%= t('banks.sftp_port') %></label>
+          <div class="control"><input class="input" type="number" name="sftp_port" value="22" min="1" max="65535" required></div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label class="label"><%= t('common.remote_path') %></label>
+          <div class="control"><input class="input" type="text" name="sftp_remote_path" value="/statements"></div>
+        </div>
+      </div>
+    </div>
+    <div class="control">
+      <button type="submit" class="button is-primary is-fullwidth"><%= t('banks.add_bank') %></button>
+    </div>
+  </form>
+</details>

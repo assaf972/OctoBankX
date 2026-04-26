@@ -9,6 +9,11 @@ require_relative 'models/download'
 require_relative 'models/setting'
 require_relative 'models/api_call'
 require_relative 'jobs/download_job'
+require_relative 'parsers/base_parser'
+require_relative 'parsers/leumi_parser'
+require_relative 'parsers/poalim_parser'
+require_relative 'parsers/discount_parser'
+require_relative 'parsers/fibi_parser'
 
 class OctoBankXApp < Sinatra::Base
   configure :development do
@@ -77,6 +82,30 @@ class OctoBankXApp < Sinatra::Base
     @recent_downloads = Download.recent(10).eager(:account, :bank).all
     @accounts         = Account.eager(:bank).all
     @banks            = Bank.all
+
+    # Dashboard stats
+    today = Date.today
+    @total_accounts  = @accounts.size
+    @total_banks     = @banks.size
+    @today_success   = Download.where(status: 'success', date: today).count
+    @today_failed    = Download.where(status: 'failed',  date: today).count
+    @today_pending   = Download.where(status: 'pending', date: today).count
+    @today_running   = Download.where(status: 'running', date: today).count
+    @total_downloads = Download.count
+
+    # Last 7 days download counts for bar chart
+    @chart_dates    = (6.downto(0)).map { |i| today - i }
+    @chart_success  = @chart_dates.map { |d| Download.where(status: 'success', date: d).count }
+    @chart_failed   = @chart_dates.map { |d| Download.where(status: 'failed',  date: d).count }
+
+    # Status distribution for doughnut chart
+    @status_counts = {
+      success: Download.where(status: 'success').count,
+      failed:  Download.where(status: 'failed').count,
+      pending: Download.where(status: 'pending').count,
+      running: Download.where(status: 'running').count
+    }
+
     erb :home
   end
 
@@ -120,6 +149,8 @@ class OctoBankXApp < Sinatra::Base
       sftp_host:        params[:sftp_host],
       sftp_port:        params[:sftp_port].to_i,
       sftp_remote_path: params[:sftp_remote_path] || '/',
+      ruler:            params[:ruler],
+      parser:           params[:parser],
       created_at:       Time.now,
       updated_at:       Time.now
     )
@@ -288,6 +319,8 @@ class OctoBankXApp < Sinatra::Base
       sftp_host:        params[:sftp_host],
       sftp_port:        params[:sftp_port].to_i,
       sftp_remote_path: params[:sftp_remote_path] || '/',
+      ruler:            params[:ruler],
+      parser:           params[:parser],
       created_at:       Time.now,
       updated_at:       Time.now
     )

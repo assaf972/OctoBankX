@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OctoBankX</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <nav>
     <span class="brand">OctoBankX</span>
-    <a href="/"         class="<%= request.path == '/'          ? 'active' : '' %>"><%= t('nav.home')     %></a>
-    <a href="/jobs"     class="<%= request.path == '/jobs'      ? 'active' : '' %>"><%= t('nav.jobs')     %></a>
-    <a href="/log"      class="<%= request.path == '/log'       ? 'active' : '' %>"><%= t('nav.log')      %></a>
-    <a href="/banks"     class="<%= request.path == '/banks'      ? 'active' : '' %>"><%= t('nav.banks')     %></a>
+    <a href="/"         class="<%= request.path == '/'          ? 'active' : '' %>"><%= t('nav.home') %></a>
+    <a href="/jobs"     class="<%= request.path == '/jobs'      ? 'active' : '' %>"><%= t('nav.jobs') %></a>
+    <a href="/log"      class="<%= request.path == '/log'       ? 'active' : '' %>"><%= t('nav.log') %></a>
+    <a href="/banks"     class="<%= request.path == '/banks'      ? 'active' : '' %>"><%= t('nav.banks') %></a>
     <a href="/api-calls" class="<%= request.path == '/api-calls' ? 'active' : '' %>"><%= t('nav.api_calls') %></a>
-    <a href="/settings"  class="<%= request.path == '/settings'  ? 'active' : '' %>"><%= t('nav.settings')  %></a>
+    <a href="/settings"  class="<%= request.path == '/settings'  ? 'active' : '' %>"><%= t('nav.settings') %></a>
 
     <span class="lang-switcher">
       <a href="/locale?lang=en" class="<%= I18n.locale == :en ? 'active' : '' %>"><%= t('lang.en') %></a>

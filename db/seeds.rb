@@ -43,11 +43,11 @@ def business_day?(d) = ![0, 6].include?(d.wday)   # skip Sat/Sun
 puts "\n→ Banks"
 
 banks = [
-  { name: 'Bank Leumi',               sftp_host: 'sftp.leumi.co.il',            sftp_port: 22,   sftp_remote_path: '/statements' },
-  { name: 'Bank Hapoalim',            sftp_host: 'sftp.bankhapoalim.co.il',      sftp_port: 22,   sftp_remote_path: '/outgoing/statements' },
-  { name: 'Mizrahi Tefahot Bank',     sftp_host: 'sftp.mizrahi-tefahot.co.il',   sftp_port: 2222, sftp_remote_path: '/daily' },
-  { name: 'Discount Bank',            sftp_host: 'sftp.discountbank.co.il',      sftp_port: 22,   sftp_remote_path: '/exports' },
-  { name: 'First International Bank', sftp_host: 'sftp.fibi.co.il',             sftp_port: 22,   sftp_remote_path: '/statements/daily' },
+  { name: 'בנק לאומי',               sftp_host: 'sftp.leumi.co.il',            sftp_port: 22,   sftp_remote_path: '/statements',          parser: 'LeumiParser',    ruler: "date:0\ndescription:1\nreference:2\ndebit:3\ncredit:4\nbalance:5\ncurrency:6\nvalue_date:7" },
+  { name: 'בנק הפועלים',            sftp_host: 'sftp.bankhapoalim.co.il',      sftp_port: 22,   sftp_remote_path: '/outgoing/statements', parser: 'PoalimParser',   ruler: "date:0:10\nvalue_date:10:10\nreference:20:12\ndescription:32:30\ndebit:62:15\ncredit:77:15\nbalance:92:15\ncurrency:107:3" },
+  { name: 'בנק מזרחי טפחות',     sftp_host: 'sftp.mizrahi-tefahot.co.il',   sftp_port: 2222, sftp_remote_path: '/daily' },
+  { name: 'בנק דיסקונט',            sftp_host: 'sftp.discountbank.co.il',      sftp_port: 22,   sftp_remote_path: '/exports',             parser: 'DiscountParser', ruler: "date:0\nvalue_date:1\nreference:2\ndescription:3\namount:4\nbalance:5\ncurrency:6" },
+  { name: 'הבנק הבינלאומי הראשון', sftp_host: 'sftp.fibi.co.il',             sftp_port: 22,   sftp_remote_path: '/statements/daily',    parser: 'FibiParser',     ruler: "date:0\nvalue_date:1\ndescription:2\nreference:3\ndebit:4\ncredit:5\nbalance:6\ncurrency:7" },
 ].map { |attrs| find_or_create_bank(attrs) }
 
 leumi, hapoalim, mizrahi, discount, fibi = banks
@@ -59,59 +59,59 @@ puts "   #{banks.size} banks ready"
 puts "\n→ Accounts"
 
 accounts = [
-  # Bank Leumi accounts
+  # בנק לאומי
   {
-    name: 'Eldan Car Rental Operations',   account_no: 'IL-LM-0012345', bank: leumi,
-    branch: 'Tel Aviv — Dizengoff',        currency: 'ILS', balance: 428_500.00,  balance_date: Date.today - 1,
+    name: 'אלדן השכרת רכב — תפעול',       account_no: 'IL-LM-0012345', bank: leumi,
+    branch: 'תל אביב — דיזנגוף',           currency: 'ש"ח', balance: 428_500.00,  balance_date: Date.today - 1,
     sftp_username: 'eldan_leumi',          sftp_password: 'p@ssw0rd!'
   },
   {
-    name: 'Strauss Group Treasury',        account_no: 'IL-LM-0098712', bank: leumi,
-    branch: 'Petah Tikva — HaAtzmaut',    currency: 'USD', balance: 1_250_000.00, balance_date: Date.today - 1,
+    name: 'קבוצת שטראוס — קופה',           account_no: 'IL-LM-0098712', bank: leumi,
+    branch: 'פתח תקווה — העצמאות',         currency: 'דולר', balance: 1_250_000.00, balance_date: Date.today - 1,
     sftp_username: 'strauss_leumi',        sftp_password: 'str@uss#24'
   },
-  # Bank Hapoalim accounts
+  # בנק הפועלים
   {
-    name: 'Osem Investments Payroll',      account_no: 'IL-HP-0055678', bank: hapoalim,
-    branch: 'Rehovot — Herzl',            currency: 'ILS', balance: 87_300.50,   balance_date: Date.today - 1,
+    name: 'אוסם השקעות — שכר',             account_no: 'IL-HP-0055678', bank: hapoalim,
+    branch: 'רחובות — הרצל',               currency: 'ש"ח', balance: 87_300.50,   balance_date: Date.today - 1,
     sftp_username: 'osem_hap',             sftp_password: '0s3m$ftp'
   },
   {
-    name: 'Check Point Software EUR',      account_no: 'IL-HP-0200034', bank: hapoalim,
-    branch: 'Tel Aviv — Azrieli',         currency: 'EUR', balance: 3_780_000.00, balance_date: Date.today - 2,
+    name: 'צ\'ק פוינט תוכנה — אירו',       account_no: 'IL-HP-0200034', bank: hapoalim,
+    branch: 'תל אביב — עזריאלי',           currency: 'אירו', balance: 3_780_000.00, balance_date: Date.today - 2,
     sftp_username: 'chkpt_eur',            sftp_password: 'chkp01!'
   },
-  # Mizrahi Tefahot accounts
+  # בנק מזרחי טפחות
   {
-    name: 'Tnuva Dairy Main Account',      account_no: 'IL-MZ-0031199', bank: mizrahi,
-    branch: 'Rehovot — Industrial Zone',  currency: 'ILS', balance: 560_200.00,  balance_date: Date.today - 1,
+    name: 'תנובה חלב — חשבון ראשי',        account_no: 'IL-MZ-0031199', bank: mizrahi,
+    branch: 'רחובות — אזור תעשייה',        currency: 'ש"ח', balance: 560_200.00,  balance_date: Date.today - 1,
     sftp_username: 'tnuva_mz',             sftp_password: 'tn!uva99'
   },
   {
-    name: 'Tower Semiconductor USD',       account_no: 'IL-MZ-0041002', bank: mizrahi,
-    branch: 'Migdal HaEmek',              currency: 'USD', balance: 9_100_000.00, balance_date: Date.today - 1,
+    name: 'טאואר סמיקונדקטור — דולר',      account_no: 'IL-MZ-0041002', bank: mizrahi,
+    branch: 'מגדל העמק',                   currency: 'דולר', balance: 9_100_000.00, balance_date: Date.today - 1,
     sftp_username: 'tower_usd',            sftp_password: 't0wer#sc'
   },
-  # Discount Bank accounts
+  # בנק דיסקונט
   {
-    name: 'El Al Airlines Operations',    account_no: 'IL-DC-0072345', bank: discount,
-    branch: 'Ben Gurion Airport',         currency: 'ILS', balance: 2_340_000.00, balance_date: Date.today - 1,
+    name: 'אל על תעופה — תפעול',           account_no: 'IL-DC-0072345', bank: discount,
+    branch: 'נתב"ג',                       currency: 'ש"ח', balance: 2_340_000.00, balance_date: Date.today - 1,
     sftp_username: 'elal_dc',              sftp_password: 'elal!2024'
   },
   {
-    name: 'Rafael Defense Systems',       account_no: 'IL-DC-0089001', bank: discount,
-    branch: 'Haifa — Neve Sha\'anan',     currency: 'USD', balance: 15_600_000.00, balance_date: Date.today - 2,
+    name: 'רפאל מערכות ביטחוניות',         account_no: 'IL-DC-0089001', bank: discount,
+    branch: 'חיפה — נווה שאנן',            currency: 'דולר', balance: 15_600_000.00, balance_date: Date.today - 2,
     sftp_username: 'rafael_dc',            sftp_password: 'r@f@el$ec'
   },
-  # First International Bank accounts
+  # הבנק הבינלאומי הראשון
   {
-    name: 'Amdocs Technology ILS',        account_no: 'IL-FI-0110456', bank: fibi,
-    branch: 'Ra\'anana — HaGana',         currency: 'ILS', balance: 345_800.00,  balance_date: Date.today - 1,
+    name: 'אמדוקס טכנולוגיה — ש"ח',       account_no: 'IL-FI-0110456', bank: fibi,
+    branch: 'רעננה — ההגנה',               currency: 'ש"ח', balance: 345_800.00,  balance_date: Date.today - 1,
     sftp_username: 'amdocs_ils',           sftp_password: 'amd0cs!'
   },
   {
-    name: 'ICL Group EUR Treasury',       account_no: 'IL-FI-0122789', bank: fibi,
-    branch: 'Tel Aviv — Kirya',           currency: 'EUR', balance: 6_450_000.00, balance_date: Date.today - 1,
+    name: 'קבוצת כי"ל — קופת אירו',       account_no: 'IL-FI-0122789', bank: fibi,
+    branch: 'תל אביב — הקריה',            currency: 'אירו', balance: 6_450_000.00, balance_date: Date.today - 1,
     sftp_username: 'icl_eur',              sftp_password: 'icl3ur#g'
   },
 ].map do |attrs|

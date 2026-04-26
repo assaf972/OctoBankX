@@ -22,6 +22,16 @@
       <div class="detail">
         <span><i class="fas fa-folder" style="opacity:.4"></i> <%= b.sftp_remote_path %></span>
       </div>
+      <% if b.ruler && !b.ruler.empty? %>
+        <div class="detail" style="margin-top:4px">
+          <span><i class="fas fa-ruler" style="opacity:.4"></i> <%= b.ruler %></span>
+        </div>
+      <% end %>
+      <% if b.parser && !b.parser.empty? %>
+        <div class="detail" style="margin-top:4px">
+          <span><i class="fas fa-cog" style="opacity:.4"></i> <%= b.parser %></span>
+        </div>
+      <% end %>
     </div>
   <% end %>
 <% end %>
@@ -54,6 +64,24 @@
         <div class="field">
           <label class="label"><%= t('common.remote_path') %></label>
           <div class="control"><input class="input" type="text" name="sftp_remote_path" value="/statements"></div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('banks.ruler') %></label>
+      <div class="control"><textarea class="textarea" name="ruler" rows="4"></textarea></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('banks.parser') %></label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="parser">
+            <option value="">-- <%= t('banks.select_parser') %> --</option>
+            <option value="LeumiParser">LeumiParser</option>
+            <option value="PoalimParser">PoalimParser</option>
+            <option value="DiscountParser">DiscountParser</option>
+            <option value="FibiParser">FibiParser</option>
+          </select>
         </div>
       </div>
     </div>

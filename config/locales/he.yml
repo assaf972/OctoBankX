@@ -57,6 +57,13 @@ he:
     accounts_title: "חשבונות (%{count})"
     no_accounts: "אין חשבונות עדיין. הוסף אחד למעלה."
 
+  dashboard:
+    total_downloads: "סה״כ הורדות"
+    today_success: "הצלחות היום"
+    today_failed: "כשלונות היום"
+    weekly_activity: "פעילות שבועית"
+    status_breakdown: "התפלגות סטטוסים"
+
   jobs:
     title: "משימות הורדה"
     jobs_count: "משימות (%{count})"
@@ -76,6 +83,9 @@ he:
     sftp_host: "שרת SFTP"
     sftp_port: "פורט SFTP"
     add_bank: "הוסף בנק"
+    ruler: "רולר"
+    parser: "מפענח"
+    select_parser: "בחר מפענח"
     registered: "בנקים רשומים (%{count})"
     no_banks: "אין בנקים רשומים עדיין."
 
@@ -95,7 +105,7 @@ he:
     no_records: "לא נרשמו קריאות API עדיין."
 
   mobile:
-    today:   "היום"
+    today: "היום"
     desktop: "עבור לגרסת מחשב"
 
   flash:

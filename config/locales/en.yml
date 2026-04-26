@@ -57,6 +57,13 @@ en:
     accounts_title: "Accounts (%{count})"
     no_accounts: "No accounts yet. Add one above."
 
+  dashboard:
+    total_downloads: "Total Downloads"
+    today_success: "Success Today"
+    today_failed: "Failed Today"
+    weekly_activity: "Weekly Activity"
+    status_breakdown: "Status Breakdown"
+
   jobs:
     title: "Download Jobs"
     jobs_count: "Jobs (%{count})"
@@ -76,6 +83,9 @@ en:
     sftp_host: "SFTP Host"
     sftp_port: "SFTP Port"
     add_bank: "Add Bank"
+    ruler: "Ruler"
+    parser: "Parser"
+    select_parser: "Select Parser"
     registered: "Registered Banks (%{count})"
     no_banks: "No banks registered yet."
 
@@ -95,7 +105,7 @@ en:
     no_records: "No API calls recorded yet."
 
   mobile:
-    today:   "Today"
+    today: "Today"
     desktop: "Switch to Desktop Version"
 
   flash:

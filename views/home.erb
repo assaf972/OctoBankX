@@ -5,6 +5,54 @@
   </form>
 </div>
 
+<!-- KPI Stat Cards -->
+<div class="grid-4">
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:#dbeafe;color:var(--primary)"><i class="fas fa-download"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-value"><%= @total_downloads %></div>
+      <div class="stat-card-label"><%= t('dashboard.total_downloads') %></div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:#dcfce7;color:var(--success)"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-value"><%= @today_success %></div>
+      <div class="stat-card-label"><%= t('dashboard.today_success') %></div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:#fee2e2;color:var(--failed)"><i class="fas fa-times-circle"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-value"><%= @today_failed %></div>
+      <div class="stat-card-label"><%= t('dashboard.today_failed') %></div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:#e0e7ff;color:#4f46e5"><i class="fas fa-university"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-value"><%= @total_accounts %></div>
+      <div class="stat-card-label"><%= t('common.accounts') %></div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2">
+  <section class="card">
+    <h2><%= t('dashboard.weekly_activity') %></h2>
+    <canvas id="weeklyChart" height="220"></canvas>
+  </section>
+
+  <section class="card">
+    <h2><%= t('dashboard.status_breakdown') %></h2>
+    <div style="max-width:260px;margin:0 auto">
+      <canvas id="statusChart" height="260"></canvas>
+    </div>
+  </section>
+</div>
+
+<!-- Recent Downloads + New Account -->
 <div class="grid-2">
   <!-- Recent Downloads -->
   <section class="card">
@@ -15,11 +63,11 @@
       <table>
         <thead>
           <tr>
-            <th><%= t('common.date')    %></th>
+            <th><%= t('common.date') %></th>
             <th><%= t('common.account') %></th>
-            <th><%= t('common.bank')    %></th>
-            <th><%= t('common.status')  %></th>
-            <th><%= t('common.error')   %></th>
+            <th><%= t('common.bank') %></th>
+            <th><%= t('common.status') %></th>
+            <th><%= t('common.error') %></th>
           </tr>
         </thead>
         <tbody>
@@ -87,12 +135,12 @@
     <table>
       <thead>
         <tr>
-          <th><%= t('common.name')         %></th>
-          <th><%= t('common.account_no')   %></th>
-          <th><%= t('common.bank')         %></th>
-          <th><%= t('common.branch')       %></th>
-          <th><%= t('common.currency')     %></th>
-          <th><%= t('common.balance')      %></th>
+          <th><%= t('common.name') %></th>
+          <th><%= t('common.account_no') %></th>
+          <th><%= t('common.bank') %></th>
+          <th><%= t('common.branch') %></th>
+          <th><%= t('common.currency') %></th>
+          <th><%= t('common.balance') %></th>
           <th><%= t('common.balance_date') %></th>
         </tr>
       </thead>
@@ -112,3 +160,57 @@
     </table>
   <% end %>
 </section>
+
+<script>
+  // Weekly Activity Bar Chart
+  new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+      labels: <%= @chart_dates.map { |d| d.strftime('%b %d') }.to_json %>,
+      datasets: [
+        {
+          label: '<%= t("status.success") %>',
+          data: <%= @chart_success.to_json %>,
+          backgroundColor: '#16a34a',
+          borderRadius: 4
+        },
+        {
+          label: '<%= t("status.failed") %>',
+          data: <%= @chart_failed.to_json %>,
+          backgroundColor: '#dc2626',
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+
+  // Status Distribution Doughnut Chart
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: [
+        '<%= t("status.success") %>',
+        '<%= t("status.failed") %>',
+        '<%= t("status.pending") %>',
+        '<%= t("status.running") %>'
+      ],
+      datasets: [{
+        data: [<%= @status_counts[:success] %>, <%= @status_counts[:failed] %>, <%= @status_counts[:pending] %>, <%= @status_counts[:running] %>],
+        backgroundColor: ['#16a34a', '#dc2626', '#d97706', '#2563eb'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '60%',
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+</script>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OctoBankX — מדריך למשתמש</title>
+  <style>
+    :root { --bg: #fff; --text: #222; --heading: #1a1a2e; --accent: #2563eb; --border: #e5e7eb; --code-bg: #f3f4f6; --card-bg: #f9fafb; --table-header: #f0f4ff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: var(--text); background: var(--bg); max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; color: var(--heading); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.5rem; color: var(--heading); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { font-size: 1.2rem; color: var(--heading); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    p { margin-bottom: 1rem; }
+    img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+    th { background: var(--table-header); text-align: right; padding: 0.6rem 0.8rem; border: 1px solid var(--border); font-weight: 600; }
+    td { padding: 0.5rem 0.8rem; border: 1px solid var(--border); }
+    tr:nth-child(even) { background: var(--card-bg); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    blockquote { border-right: 4px solid var(--accent); border-left: none; padding: 0.5rem 1rem; margin: 1rem 0; background: var(--card-bg); border-radius: 8px 0 0 8px; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; color: #999; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<h1 id="octobankx-מדריך-למשתמש">OctoBankX — מדריך למשתמש</h1>
+<p><strong>כספת</strong> — מערכת אוטומטית להורדת דפי חשבון בנקאיים</p>
+<p>OctoBankX מתחברת לבנקים שלך באמצעות SFTP, מורידה אוטומטית דפי חשבון
+יומיים עבור כל הבנקים המוגדרים, ומספקת מעקב מלא אחר כל ניסיון הורדה.
+כלול ממשק ווב לשולחן עבודה וממשק מותאם לנייד, עם תמיכה מלאה בעברית (RTL)
+ובאנגלית.</p>
+<hr />
+<h2 id="תוכן-עניינים">תוכן עניינים</h2>
+<ol type="1">
+<li><a href="#1-לוח-הבקרה-בית">לוח הבקרה (בית)</a></li>
+<li><a href="#2-בנקים">בנקים</a></li>
+<li><a href="#3-הורדות-משימות">הורדות (משימות)</a></li>
+<li><a href="#4-לוג-יומן">לוג (יומן)</a></li>
+<li><a href="#5-הגדרות">הגדרות</a></li>
+<li><a href="#6-שולחי-דואל">שולחי דוא״ל</a></li>
+<li><a href="#7-ממשק-נייד">ממשק נייד</a></li>
+<li><a href="#8-החלפת-שפה">החלפת שפה</a></li>
+<li><a href="#9-מדריך-הגדרות">מדריך הגדרות</a></li>
+</ol>
+<hr />
+<h2 id="לוח-הבקרה-בית">1. לוח הבקרה (בית)</h2>
+<p>לוח הבקרה הוא דף הבית של OctoBankX. הוא מספק סקירה כללית של הפעילות
+האחרונה, מדדים עיקריים ובריאות המערכת.</p>
+<figure>
+<img src="../screenshots/he/home.png" alt="לוח הבקרה — עברית" />
+<figcaption aria-hidden="true">לוח הבקרה — עברית</figcaption>
+</figure>
+<h3 id="כרטיסי-סיכום">כרטיסי סיכום</h3>
+<p>בראש לוח הבקרה, כרטיסי סיכום מציגים את המדדים העיקריים להיום:</p>
+<table>
+<thead>
+<tr>
+<th>כרטיס</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>סה״כ הורדות</strong></td>
+<td>סך כל רשומות ההורדה במערכת</td>
+</tr>
+<tr>
+<td><strong>הצלחות היום</strong></td>
+<td>כמה הורדות הושלמו בהצלחה היום</td>
+</tr>
+<tr>
+<td><strong>כשלונות היום</strong></td>
+<td>כמה הורדות נכשלו היום</td>
+</tr>
+</tbody>
+</table>
+<h3 id="תרשימים">תרשימים</h3>
+<ul>
+<li><strong>פעילות שבועית</strong> — תרשים עמודות המציג ספירת הצלחות
+(ירוק) וכשלונות (אדום) יומיות ל-7 הימים האחרונים</li>
+<li><strong>התפלגות סטטוסים</strong> — תרשים סופגנייה המציג את ההתפלגות
+הכוללת של סטטוסי ההורדה (הצלחה, כישלון, ממתין, פעיל)</li>
+</ul>
+<h3 id="ההורדות-האחרונות">10 ההורדות האחרונות</h3>
+<p>מתחת לתרשימים, טבלה מציגה את 10 ניסיונות ההורדה האחרונים בכל
+הבנקים:</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>תאריך</strong></td>
+<td>תאריך דף החשבון</td>
+</tr>
+<tr>
+<td><strong>בנק</strong></td>
+<td>הבנק אליו שייכת ההורדה</td>
+</tr>
+<tr>
+<td><strong>סטטוס</strong></td>
+<td><code>הצלחה</code>, <code>נכשל</code>, <code>פעיל</code>, או
+<code>ממתין</code></td>
+</tr>
+<tr>
+<td><strong>שגיאה</strong></td>
+<td>הודעת שגיאה אם ההורדה נכשלה</td>
+</tr>
+<tr>
+<td><strong>קובץ</strong></td>
+<td>נתיב לקובץ שהורד בהצלחה</td>
+</tr>
+<tr>
+<td><strong>התחלה</strong></td>
+<td>מתי החל העברת ה-SFTP</td>
+</tr>
+<tr>
+<td><strong>סיום</strong></td>
+<td>מתי הסתיימה ההעברה</td>
+</tr>
+</tbody>
+</table>
+<p>תגי הסטטוס מקודדים בצבע: <strong>ירוק</strong> להצלחה,
+<strong>אדום</strong> לכישלון, <strong>כחול</strong> לפעיל,
+ו<strong>אפור</strong> לממתין.</p>
+<h3 id="הפעלת-הורדות-עכשיו">הפעלת הורדות עכשיו</h3>
+<p>הכפתור <strong>הרץ הורדות עכשיו</strong> מפעיל משימת הורדה מיידית לכל
+הבנקים עבור היום, מבלי להמתין להרצה המתוזמנת.</p>
+<hr />
+<h2 id="בנקים">2. בנקים</h2>
+<p>דף הבנקים מנהל את פרטי חיבור ה-SFTP ותצורת פענוח הקבצים לכל בנק.</p>
+<figure>
+<img src="../screenshots/he/banks.png" alt="בנקים — עברית" />
+<figcaption aria-hidden="true">בנקים — עברית</figcaption>
+</figure>
+<h3 id="בנקים-רשומים">בנקים רשומים</h3>
+<p>הפאנל הראשי מפרט את כל הבנקים המוגדרים ומציג:</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>שם</strong></td>
+<td>שם הבנק לתצוגה</td>
+</tr>
+<tr>
+<td><strong>שרת SFTP</strong></td>
+<td>שם המארח של שרת ה-SFTP של הבנק</td>
+</tr>
+<tr>
+<td><strong>פורט</strong></td>
+<td>פורט SFTP (בדרך כלל <code>22</code>)</td>
+</tr>
+<tr>
+<td><strong>נתיב מרוחק</strong></td>
+<td>התיקייה בשרת ה-SFTP שבה מופקדים דפי החשבון</td>
+</tr>
+<tr>
+<td><strong>רולר</strong></td>
+<td>כללי מיפוי עמודות לפענוח קבצי דפי חשבון</td>
+</tr>
+<tr>
+<td><strong>מפענח</strong></td>
+<td>כיתת המפענח המוקצית לעיבוד קבצי בנק זה</td>
+</tr>
+<tr>
+<td><strong>תיקיית יעד</strong></td>
+<td>תיקייה מקומית שבה נשמרים הקבצים שהורדו</td>
+</tr>
+</tbody>
+</table>
+<h3 id="הוספת-בנק-חדש">הוספת בנק חדש</h3>
+<p>מלא את טופס <strong>בנק חדש</strong>:</p>
+<ol type="1">
+<li><strong>שם</strong> — תווית מזהה לבנק (למשל
+<code>בנק לאומי</code>)</li>
+<li><strong>שרת SFTP</strong> — שם המארח של השרת (למשל
+<code>sftp.leumi.co.il</code>)</li>
+<li><strong>פורט SFTP</strong> — ברירת מחדל <code>22</code>; שנה אם הבנק
+משתמש בפורט לא סטנדרטי</li>
+<li><strong>נתיב מרוחק</strong> — נתיב התיקייה בשרת ה-SFTP (למשל
+<code>/statements</code>)</li>
+<li><strong>רולר</strong> — הגדרת מיפוי עמודות לפענוח דפי חשבון</li>
+<li><strong>מפענח</strong> — בחר את המפענח המתאים (LeumiParser,
+PoalimParser, DiscountParser, FibiParser)</li>
+<li><strong>תיקיית יעד</strong> — נתיב תיקיית יעד מקומית</li>
+</ol>
+<p>לחץ על <strong>הוסף בנק</strong> לשמירה. הבנק החדש יופיע מיד ברשימת
+הבנקים הרשומים.</p>
+<hr />
+<h2 id="הורדות-משימות">3. הורדות (משימות)</h2>
+<p>דף ההורדות מציג כל משימת הורדה שבוצעה או נמצאת בתור, עם אפשרויות
+סינון.</p>
+<figure>
+<img src="../screenshots/he/jobs.png" alt="הורדות — עברית" />
+<figcaption aria-hidden="true">הורדות — עברית</figcaption>
+</figure>
+<h3 id="מסננים">מסננים</h3>
+<p>בראש הדף ניתן לסנן את רשימת המשימות לפי:</p>
+<ul>
+<li><strong>סטטוס</strong> — כל הסטטוסים, הצלחה, נכשל, פעיל, ממתין</li>
+<li><strong>תאריך</strong> — צמצם תוצאות לתאריך ספציפי</li>
+</ul>
+<p>לחץ על <strong>סנן</strong> להחלה.</p>
+<h3 id="רשימת-הורדות">רשימת הורדות</h3>
+<p>כל שורה מייצגת ניסיון הורדה יחיד עבור בנק אחד בתאריך אחד:</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>תאריך</strong></td>
+<td>תאריך דף החשבון</td>
+</tr>
+<tr>
+<td><strong>בנק</strong></td>
+<td>שם הבנק</td>
+</tr>
+<tr>
+<td><strong>סטטוס</strong></td>
+<td>תוצאת הניסיון</td>
+</tr>
+<tr>
+<td><strong>שגיאה</strong></td>
+<td>פרטי שגיאה אם המשימה נכשלה</td>
+</tr>
+<tr>
+<td><strong>קובץ</strong></td>
+<td>נתיב הקובץ שהורד בהצלחה</td>
+</tr>
+<tr>
+<td><strong>התחלה</strong></td>
+<td>מתי החל העברת ה-SFTP</td>
+</tr>
+<tr>
+<td><strong>סיום</strong></td>
+<td>מתי הסתיימה ההעברה</td>
+</tr>
+</tbody>
+</table>
+<h3 id="הפעלת-משימה-ידנית">הפעלת משימה ידנית</h3>
+<p>השתמש בכפתור <strong>הרץ עכשיו</strong> כדי להפעיל הורדה מיידית לכל
+הבנקים עבור תאריך היום.</p>
+<hr />
+<h2 id="לוג-יומן">4. לוג (יומן)</h2>
+<p>דף הלוג הוא היסטוריית ההורדות המלאה — מסלול ביקורת שלם של כל הורדת דף
+חשבון שנוסתה אי פעם.</p>
+<figure>
+<img src="../screenshots/he/log.png" alt="לוג — עברית" />
+<figcaption aria-hidden="true">לוג — עברית</figcaption>
+</figure>
+<h3 id="מסננים-1">מסננים</h3>
+<p>היומן תומך במספר מסננים שניתן לשלב:</p>
+<ul>
+<li><strong>בנק</strong> — סנן לפי בנק ספציפי (או “כל הבנקים”)</li>
+<li><strong>סטטוס</strong> — כל הסטטוסים, הצלחה, נכשל, פעיל, ממתין</li>
+<li><strong>מתאריך / עד תאריך</strong> — בורר טווח תאריכים</li>
+</ul>
+<p>לחץ על <strong>סנן</strong> להחלה.</p>
+<h3 id="רשומות-יומן">רשומות יומן</h3>
+<p>כל רשומה מציגה את אותם שדות כמו בדף ההורדות. היומן מסודר מהחדש לישן
+ושומר רשומות בהתאם להגדרת <code>retention_days</code> (ברירת מחדל: 90
+יום).</p>
+<blockquote>
+<p><strong>טיפ:</strong> השתמש בדף הלוג לצרכי ביקורת ופתרון בעיות — דף
+ההורדות מתמקד בפעילות היום, בעוד שהלוג מכסה את ההיסטוריה המלאה.</p>
+</blockquote>
+<hr />
+<h2 id="הגדרות">5. הגדרות</h2>
+<p>דף ההגדרות שולט בהתנהגות המערכת הכללית של OctoBankX.</p>
+<figure>
+<img src="../screenshots/he/settings.png" alt="הגדרות — עברית" />
+<figcaption aria-hidden="true">הגדרות — עברית</figcaption>
+</figure>
+<h3 id="שדות-תצורה">שדות תצורה</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 29%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr>
+<th>הגדרה</th>
+<th>תיאור</th>
+<th>ברירת מחדל</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>alert_email</strong></td>
+<td>כתובת מייל שמקבלת התראות כישלון</td>
+<td><code>ops@octobankx.local</code></td>
+</tr>
+<tr>
+<td><strong>download_dir</strong></td>
+<td>תיקייה מקומית שבה נשמרים דפי החשבון שהורדו</td>
+<td><code>/tmp/octobankx/downloads</code></td>
+</tr>
+<tr>
+<td><strong>job_schedule</strong></td>
+<td>ביטוי cron למשימת ההורדה היומית האוטומטית</td>
+<td><code>0 6 * * *</code> (6:00 בבוקר)</td>
+</tr>
+<tr>
+<td><strong>max_retries</strong></td>
+<td>מספר מקסימלי של ניסיונות חוזרים ל-SFTP לבנק ליום</td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td><strong>notify_on_fail</strong></td>
+<td>שליחת מייל התראה כאשר הורדה נכשלת
+(<code>true</code>/<code>false</code>)</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><strong>retention_days</strong></td>
+<td>מספר הימים לשמירת היסטוריית הורדות במסד הנתונים</td>
+<td><code>90</code></td>
+</tr>
+<tr>
+<td><strong>sftp_timeout</strong></td>
+<td>זמן קצוב לחיבור SFTP בשניות</td>
+<td><code>30</code></td>
+</tr>
+</tbody>
+</table>
+<p>לחץ על <strong>שמור הגדרות</strong> להחלת השינויים. שינויים
+ב-<code>job_schedule</code> ייכנסו לתוקף בהרצה המתוזמנת הבאה.</p>
+<blockquote>
+<p><strong>שים לב:</strong> <code>download_dir</code> חייב להיות ניתן
+לכתיבה על ידי תהליך האפליקציה. ודא שהתיקייה קיימת לפני השמירה.</p>
+</blockquote>
+<hr />
+<h2 id="שולחי-דואל">6. שולחי דוא״ל</h2>
+<p>חלק מהבנקים וחברי הבורסה שולחים קבצי דפי חשבון באמצעות דוא״ל במקום
+SFTP. כספת כוללת מאזין דוא״ל מובנה שעוקב אחר תיבת דואר ייעודית (למשל
+<code>kassefet-server@gmail.com</code>) באמצעות IMAP או POP3, ומוריד
+אוטומטית קבצים מצורפים משולחים מאושרים.</p>
+<figure>
+<img src="../screenshots/he/email_senders.png"
+alt="שולחי דוא״ל — עברית" />
+<figcaption aria-hidden="true">שולחי דוא״ל — עברית</figcaption>
+</figure>
+<h3 id="שולחים-מאושרים">שולחים מאושרים</h3>
+<p>דף שולחי הדוא״ל מציג את כל כתובות הדוא״ל המאושרות בטבלה:</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>שם השולח</strong></td>
+<td>תווית תיאורית (למשל “בנק לאומי – דפי חשבון”)</td>
+</tr>
+<tr>
+<td><strong>כתובת דוא״ל</strong></td>
+<td>כתובת הדוא״ל שהמערכת מקבלת ממנה קבצים</td>
+</tr>
+<tr>
+<td><strong>בנק</strong></td>
+<td>הבנק אליו משויך השולח — קבצים מצורפים מתויקים תחת בנק זה</td>
+</tr>
+<tr>
+<td><strong>סטטוס</strong></td>
+<td><code>פעיל</code> (ירוק) או <code>לא פעיל</code> (אפור)</td>
+</tr>
+</tbody>
+</table>
+<p>רק מיילים משולחים מאושרים <strong>פעילים</strong> מעובדים. כל שאר
+המיילים מתעלמים.</p>
+<h3 id="הוספת-שולח-חדש">הוספת שולח חדש</h3>
+<p>מלא את טופס <strong>שולח מאושר חדש</strong>:</p>
+<ol type="1">
+<li><strong>שם השולח</strong> — תווית תיאורית לשולח זה</li>
+<li><strong>כתובת דוא״ל</strong> — כתובת הדוא״ל המדויקת שהבנק משתמש בה
+לשליחת קבצים</li>
+<li><strong>בנק משויך</strong> — בחר לאיזה בנק שייך שולח זה</li>
+</ol>
+<p>לחץ על <strong>הוסף שולח</strong> לשמירה.</p>
+<h3 id="ניהול-שולחים">ניהול שולחים</h3>
+<ul>
+<li><strong>השבתה / הפעלה</strong> — הפעלה וכיבוי של שולח מבלי למחוק
+אותו</li>
+<li><strong>מחיקה</strong> — הסרה לצמיתות של שולח מרשימת המאושרים</li>
+</ul>
+<h3 id="הגדרת-דואל">הגדרת דוא״ל</h3>
+<p>הגדרות חיבור הדוא״ל מנוהלות בדף <strong>הגדרות</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>הגדרה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>email_protocol</code></td>
+<td><code>imap</code> או <code>pop</code></td>
+</tr>
+<tr>
+<td><code>email_host</code></td>
+<td>שם מארח שרת הדואר (למשל <code>imap.gmail.com</code>)</td>
+</tr>
+<tr>
+<td><code>email_port</code></td>
+<td>פורט השרת (למשל <code>993</code> ל-IMAP SSL)</td>
+</tr>
+<tr>
+<td><code>email_username</code></td>
+<td>שם משתמש חשבון הדוא״ל</td>
+</tr>
+<tr>
+<td><code>email_password</code></td>
+<td>סיסמת חשבון דוא״ל או סיסמה ייעודית לאפליקציה</td>
+</tr>
+<tr>
+<td><code>email_ssl</code></td>
+<td>שימוש ב-SSL/TLS (<code>true</code> / <code>false</code>)</td>
+</tr>
+<tr>
+<td><code>email_check_interval</code></td>
+<td>תדירות בדיקת מיילים חדשים (בדקות)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="איך-זה-עובד">איך זה עובד</h3>
+<ol type="1">
+<li>משימת מאזין הדוא״ל רצה בתדירות המוגדרת</li>
+<li>מתחברת לתיבת הדואר באמצעות הגדרות IMAP או POP3</li>
+<li>לכל מייל שלא נקרא, בודקת האם השולח נמצא ברשימת המאושרים</li>
+<li>אם מאושר, כל הקבצים המצורפים מסוג CSV/Excel/ZIP נשמרים בתיקיית
+ההורדות של הבנק</li>
+<li>רשומת הורדה נוצרת עם סטטוס <code>הצלחה</code></li>
+<li>המייל מסומן כנקרא (IMAP) או נמחק (POP3)</li>
+</ol>
+<hr />
+<h2 id="ממשק-נייד">7. ממשק נייד</h2>
+<p>OctoBankX כולל ממשק ווב נייד מותאם לחלוטין הנגיש בכתובת
+<code>/mobile/</code>. כל הדפים זמינים דרך סרגל ניווט תחתון.</p>
+<h3 id="לוח-בקרה-נייד">לוח בקרה נייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_home.png"
+alt="לוח בקרה נייד — עברית" />
+<figcaption aria-hidden="true">לוח בקרה נייד — עברית</figcaption>
+</figure>
+<p>לוח הבקרה הנייד מציג מונים מסכמים בראש (הצלחות היום, כשלונות היום,
+פעיל) ולאחר מכן רשימה גלילה של הורדות אחרונות — כל אחת מוצגת ככרטיס עם
+שם הבנק ותג הסטטוס.</p>
+<h3 id="בנקים-בנייד">בנקים בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_banks.png"
+alt="בנקים בנייד — עברית" />
+<figcaption aria-hidden="true">בנקים בנייד — עברית</figcaption>
+</figure>
+<p>הבנקים מוצגים כקלפים, כל אחד מציג את מארח ה-SFTP, הפורט, הנתיב
+המרוחק, הרולר, המפענח ותיקיית היעד. הקש על <strong>בנק חדש</strong> בראש
+להרחבת טופס הרישום.</p>
+<h3 id="הורדות-בנייד">הורדות בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_jobs.png"
+alt="הורדות בנייד — עברית" />
+<figcaption aria-hidden="true">הורדות בנייד — עברית</figcaption>
+</figure>
+<p>רשימת ההורדות מותאמת לנייד עם פריסת קלפים קומפקטית. מסנני תאריך
+וסטטוס מופיעים בראש. כל קלף מציג את הבנק, התאריך, הסטטוס וכל הודעת
+שגיאה.</p>
+<h3 id="לוג-בנייד">לוג בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_log.png" alt="לוג בנייד — עברית" />
+<figcaption aria-hidden="true">לוג בנייד — עברית</figcaption>
+</figure>
+<p>הלוג בנייד משתמש באותה פריסת קלפים כמו ההורדות. פקדי סינון (בנק,
+סטטוס, טווח תאריכים) נגישים בראש.</p>
+<h3 id="הגדרות-בנייד">הגדרות בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_settings.png"
+alt="הגדרות בנייד — עברית" />
+<figcaption aria-hidden="true">הגדרות בנייד — עברית</figcaption>
+</figure>
+<p>שדות ההגדרות מוצגים כטופס מותאם לנייד עם כל אפשרויות התצורה. קישור
+<strong>עבור לגרסת מחשב</strong> בתחתית מנווט לממשק שולחן העבודה
+המלא.</p>
+<h3 id="שולחי-דואל-בנייד">שולחי דוא״ל בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_email_senders.png"
+alt="שולחי דוא״ל בנייד — עברית" />
+<figcaption aria-hidden="true">שולחי דוא״ל בנייד — עברית</figcaption>
+</figure>
+<p>שולחי הדוא״ל מוצגים כקלפים, כל אחד מציג את שם השולח, כתובת הדוא״ל,
+הבנק המשויך ותג סטטוס. הקש על הכפתורים להפעלה/השבתה או מחיקה של שולח.
+טופס להוספת שולחים מאושרים חדשים זמין בתחתית.</p>
+<hr />
+<h2 id="החלפת-שפה">8. החלפת שפה</h2>
+<p>OctoBankX תומכת ב<strong>אנגלית</strong> וב<strong>עברית</strong>.
+מתג השפה מופיע בסרגל הניווט בממשק השולחן עבודה ובממשק הנייד.</p>
+<ul>
+<li>לחץ על <strong>English</strong> או <strong>עברית</strong> בסרגל
+הניווט העליון להחלפת שפה</li>
+<li>ממשק העברית מחיל אוטומטית פריסה מימין לשמאל (RTL)</li>
+<li>העדפת השפה שלך נשמרת בסשן ונשמרת בין ניווטים בין דפים</li>
+</ul>
+<hr />
+<h2 id="מדריך-הגדרות">9. מדריך הגדרות</h2>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 25%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>הגדרה</th>
+<th>סוג</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alert_email</code></td>
+<td>מחרוזת (אימייל)</td>
+<td>נמען לכל מיילי התראות המערכת</td>
+</tr>
+<tr>
+<td><code>download_dir</code></td>
+<td>מחרוזת (נתיב)</td>
+<td>נתיב מוחלט לתיקיית דפי החשבון המקומית</td>
+</tr>
+<tr>
+<td><code>email_check_interval</code></td>
+<td>מספר שלם</td>
+<td>דקות בין בדיקות תיבת דואר</td>
+</tr>
+<tr>
+<td><code>email_host</code></td>
+<td>מחרוזת</td>
+<td>שם מארח שרת IMAP/POP3</td>
+</tr>
+<tr>
+<td><code>email_password</code></td>
+<td>מחרוזת</td>
+<td>סיסמת חשבון דוא״ל או סיסמה ייעודית לאפליקציה</td>
+</tr>
+<tr>
+<td><code>email_port</code></td>
+<td>מספר שלם</td>
+<td>פורט שרת IMAP/POP3</td>
+</tr>
+<tr>
+<td><code>email_protocol</code></td>
+<td>מחרוזת</td>
+<td><code>imap</code> או <code>pop</code></td>
+</tr>
+<tr>
+<td><code>email_ssl</code></td>
+<td>בוליאני</td>
+<td>שימוש ב-SSL/TLS לחיבור דוא״ל</td>
+</tr>
+<tr>
+<td><code>email_username</code></td>
+<td>מחרוזת (אימייל)</td>
+<td>שם משתמש חשבון דוא״ל</td>
+</tr>
+<tr>
+<td><code>job_schedule</code></td>
+<td>מחרוזת (cron)</td>
+<td>ביטוי cron סטנדרטי בן 5 שדות השולט בלוח הזמנים של ההורדה
+האוטומטית</td>
+</tr>
+<tr>
+<td><code>max_retries</code></td>
+<td>מספר שלם</td>
+<td>כמה פעמים המערכת מנסה שוב חיבור SFTP שנכשל לפני שמסמנת את המשימה
+כ-<code>failed</code></td>
+</tr>
+<tr>
+<td><code>notify_on_fail</code></td>
+<td>בוליאני</td>
+<td>כאשר <code>true</code>, נשלח מייל ל-<code>alert_email</code> עבור כל
+הורדה שנכשלה</td>
+</tr>
+<tr>
+<td><code>retention_days</code></td>
+<td>מספר שלם</td>
+<td>רשומות יומן ישנות יותר ממספר זה של ימים נמחקות אוטומטית</td>
+</tr>
+<tr>
+<td><code>sftp_timeout</code></td>
+<td>מספר שלם</td>
+<td>שניות להמתנה לפני ביטול ניסיון חיבור SFTP</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>OctoBankX © 2026</em></p>
+</body>
+</html>

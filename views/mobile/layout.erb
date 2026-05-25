@@ -98,6 +98,14 @@
       </a>
 
       <a
+        href="/mobile/email_senders"
+        class="<%= request.path.start_with?('/mobile/email_senders') ? 'is-active' : '' %>"
+      >
+        <i class="fas fa-envelope"></i>
+        <span><%= t('nav.email_senders') %></span>
+      </a>
+
+      <a
         href="/mobile/settings"
         class="<%= request.path.start_with?('/mobile/settings') ? 'is-active' : '' %>"
       >

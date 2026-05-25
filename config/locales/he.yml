@@ -4,6 +4,7 @@ he:
     jobs: "הורדות"
     log: "לוג"
     banks: "בנקים"
+    email_senders: "דוא״ל"
     settings: "הגדרות"
 
   lang:
@@ -92,3 +93,24 @@ he:
     bank_error: "הוספת בנק נכשלה: %{errors}"
     job_triggered: "ההורדה הופעלה. בדוק את עמוד ההורדות לעדכוני סטטוס."
     settings_saved: "ההגדרות נשמרו בהצלחה."
+    email_sender_added: "שולח '%{name}' נוסף בהצלחה."
+    email_sender_error: "הוספת שולח דוא״ל נכשלה: %{errors}"
+    email_sender_toggled: "סטטוס השולח '%{name}' עודכן."
+    email_sender_deleted: "שולח '%{name}' הוסר."
+
+  email_senders:
+    title: "שולחי דוא״ל"
+    new_sender: "שולח מאושר חדש"
+    sender_name: "שם השולח"
+    sender_name_placeholder: "לדוגמה: דפי חשבון בנק לאומי"
+    sender_email: "כתובת דוא״ל"
+    bank: "בנק משויך"
+    no_bank: "— ללא בנק —"
+    add_sender: "הוסף שולח"
+    approved_senders: "שולחים מאושרים (%{count})"
+    no_senders: "אין שולחי דוא״ל מאושרים עדיין."
+    active: "פעיל"
+    inactive: "לא פעיל"
+    activate: "הפעל"
+    deactivate: "השבת"
+    delete: "מחק"

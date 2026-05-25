@@ -6,7 +6,9 @@ require_relative 'db/database'
 require_relative 'models/bank'
 require_relative 'models/download'
 require_relative 'models/setting'
+require_relative 'models/email_sender'
 require_relative 'jobs/download_job'
+require_relative 'jobs/email_listener_job'
 require_relative 'parsers/base_parser'
 require_relative 'parsers/leumi_parser'
 require_relative 'parsers/poalim_parser'
@@ -186,6 +188,50 @@ class OctoBankXApp < Sinatra::Base
     redirect '/settings'
   end
 
+  # ------------------------------------------------------------------
+  # Email Senders
+  # ------------------------------------------------------------------
+  get '/email_senders' do
+    @email_senders = EmailSender.eager(:bank).order(:sender_name).all
+    @banks         = Bank.all
+    erb :email_senders
+  end
+
+  post '/email_senders' do
+    es = EmailSender.new(
+      sender_name:  params[:sender_name],
+      sender_email: params[:sender_email],
+      bank_id:      params[:bank_id].to_s.empty? ? nil : params[:bank_id].to_i,
+      active:       true,
+      created_at:   Time.now,
+      updated_at:   Time.now
+    )
+    if es.valid? && es.save
+      flash :success, t('flash.email_sender_added', name: es.sender_name)
+    else
+      flash :error, t('flash.email_sender_error', errors: es.errors.full_messages.join(', '))
+    end
+    redirect '/email_senders'
+  end
+
+  post '/email_senders/:id/toggle' do
+    es = EmailSender[params[:id].to_i]
+    if es
+      es.update(active: !es.active, updated_at: Time.now)
+      flash :success, t('flash.email_sender_toggled', name: es.sender_name)
+    end
+    redirect '/email_senders'
+  end
+
+  post '/email_senders/:id/delete' do
+    es = EmailSender[params[:id].to_i]
+    if es
+      es.destroy
+      flash :success, t('flash.email_sender_deleted', name: es.sender_name)
+    end
+    redirect '/email_senders'
+  end
+
   # ==================================================================
   # Mobile  — /mobile
   # ==================================================================
@@ -271,6 +317,47 @@ class OctoBankXApp < Sinatra::Base
     end
     flash :success, t('flash.settings_saved')
     redirect '/mobile/settings'
+  end
+
+  get '/mobile/email_senders' do
+    @email_senders = EmailSender.eager(:bank).order(:sender_name).all
+    @banks         = Bank.all
+    erb :'mobile/email_senders', layout: :'mobile/layout'
+  end
+
+  post '/mobile/email_senders' do
+    es = EmailSender.new(
+      sender_name:  params[:sender_name],
+      sender_email: params[:sender_email],
+      bank_id:      params[:bank_id].to_s.empty? ? nil : params[:bank_id].to_i,
+      active:       true,
+      created_at:   Time.now,
+      updated_at:   Time.now
+    )
+    if es.valid? && es.save
+      flash :success, t('flash.email_sender_added', name: es.sender_name)
+    else
+      flash :error, t('flash.email_sender_error', errors: es.errors.full_messages.join(', '))
+    end
+    redirect '/mobile/email_senders'
+  end
+
+  post '/mobile/email_senders/:id/toggle' do
+    es = EmailSender[params[:id].to_i]
+    if es
+      es.update(active: !es.active, updated_at: Time.now)
+      flash :success, t('flash.email_sender_toggled', name: es.sender_name)
+    end
+    redirect '/mobile/email_senders'
+  end
+
+  post '/mobile/email_senders/:id/delete' do
+    es = EmailSender[params[:id].to_i]
+    if es
+      es.destroy
+      flash :success, t('flash.email_sender_deleted', name: es.sender_name)
+    end
+    redirect '/mobile/email_senders'
   end
 
   # ==================================================================

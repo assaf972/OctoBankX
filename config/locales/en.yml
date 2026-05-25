@@ -4,6 +4,7 @@ en:
     jobs: "Jobs"
     log: "Log"
     banks: "Banks"
+    email_senders: "Email"
     settings: "Settings"
 
   lang:
@@ -92,3 +93,24 @@ en:
     bank_error: "Failed to add bank: %{errors}"
     job_triggered: "Download job triggered. Check the Jobs page for status updates."
     settings_saved: "Settings saved."
+    email_sender_added: "Email sender '%{name}' added."
+    email_sender_error: "Failed to add email sender: %{errors}"
+    email_sender_toggled: "Email sender '%{name}' status updated."
+    email_sender_deleted: "Email sender '%{name}' removed."
+
+  email_senders:
+    title: "Email Senders"
+    new_sender: "New Approved Sender"
+    sender_name: "Sender Name"
+    sender_name_placeholder: "e.g. Bank Leumi Statements"
+    sender_email: "Sender Email"
+    bank: "Associated Bank"
+    no_bank: "— No bank —"
+    add_sender: "Add Sender"
+    approved_senders: "Approved Senders (%{count})"
+    no_senders: "No approved email senders yet."
+    active: "Active"
+    inactive: "Inactive"
+    activate: "Activate"
+    deactivate: "Deactivate"
+    delete: "Delete"

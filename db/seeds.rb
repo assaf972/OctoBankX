@@ -2,6 +2,7 @@ require_relative 'database'
 require_relative '../models/bank'
 require_relative '../models/download'
 require_relative '../models/setting'
+require_relative '../models/email_sender'
 
 OctoBankX.migrate!
 
@@ -190,6 +191,13 @@ puts "\n→ Settings"
   { key: 'alert_email',     value: 'ops@octobankx.local',        description: 'Email address for failure alerts' },
   { key: 'max_retries',     value: '3',                          description: 'Maximum SFTP retry attempts per bank per day' },
   { key: 'notify_on_fail',  value: 'true',                       description: 'Send alert email when a download fails' },
+  { key: 'email_protocol',  value: 'imap',                       description: 'Email protocol for incoming files (imap or pop)' },
+  { key: 'email_host',      value: 'imap.gmail.com',              description: 'IMAP/POP server hostname' },
+  { key: 'email_port',      value: '993',                         description: 'IMAP/POP server port' },
+  { key: 'email_username',  value: 'kassefet-server@gmail.com',   description: 'Email account username' },
+  { key: 'email_password',  value: '',                            description: 'Email account password or app-specific password' },
+  { key: 'email_ssl',       value: 'true',                        description: 'Use SSL/TLS for email connection' },
+  { key: 'email_check_interval', value: '5',                      description: 'Email check interval in minutes' },
 ].each do |s|
   existing = Setting.find(key: s[:key])
   if existing
@@ -202,14 +210,50 @@ end
 puts "   #{Setting.count} settings in place"
 
 # ----------------------------------------------------------------
+# Email Senders — approved email addresses for incoming files
+# ----------------------------------------------------------------
+puts "\n→ Email Senders"
+
+email_senders = [
+  { sender_name: 'פסגות – דפי חשבון',     sender_email: 'statements@psagot.co.il',      bank_name: 'פסגות חבר בורסה' },
+  { sender_name: 'מיטב – דוחות יומיים',   sender_email: 'reports@meitav.co.il',         bank_name: 'מיטב חבר בורסה' },
+  { sender_name: 'אקסלנס – דפי חשבון',    sender_email: 'statements@excellence.co.il',  bank_name: 'אקסלנס חבר בורסה' },
+  { sender_name: 'בנק לאומי – התראות',    sender_email: 'alerts@leumi.co.il',           bank_name: 'בנק לאומי' },
+  { sender_name: 'דיסקונט – דוחות',       sender_email: 'reports@discountbank.co.il',   bank_name: 'בנק דיסקונט' },
+  { sender_name: 'הפועלים – דפי חשבון',   sender_email: 'statements@bankhapoalim.co.il', bank_name: 'בנק הפועלים' },
+  { sender_name: 'FIBI – דוחות',           sender_email: 'reports@fibi.co.il',           bank_name: 'הבנק הבינלאומי הראשון' },
+  { sender_name: 'מזרחי טפחות – דוחות',  sender_email: 'reports@mizrahi-tefahot.co.il', bank_name: 'בנק מזרחי טפחות' },
+]
+
+email_inserted = 0
+email_senders.each do |attrs|
+  bank = Bank.find(name: attrs[:bank_name])
+  next unless bank
+  next if EmailSender.find(sender_email: attrs[:sender_email])
+
+  EmailSender.create(
+    sender_name:  attrs[:sender_name],
+    sender_email: attrs[:sender_email],
+    bank_id:      bank.id,
+    active:       true,
+    created_at:   Time.now,
+    updated_at:   Time.now
+  )
+  email_inserted += 1
+end
+
+puts "   #{email_inserted} email senders added (#{EmailSender.count} total)"
+
+# ----------------------------------------------------------------
 # Summary
 # ----------------------------------------------------------------
 puts "\n── Seed complete ───────────────────────────────────────────────"
-puts "   Banks:     #{Bank.count}"
-puts "   Downloads: #{Download.count} total"
-puts "              #{Download.where(status: 'success').count} success"
-puts "              #{Download.where(status: 'failed').count}  failed"
-puts "              #{Download.where(status: 'running').count}  running"
-puts "              #{Download.where(status: 'pending').count}  pending"
-puts "   Settings:  #{Setting.count}"
+puts "   Banks:          #{Bank.count}"
+puts "   Downloads:      #{Download.count} total"
+puts "                   #{Download.where(status: 'success').count} success"
+puts "                   #{Download.where(status: 'failed').count}  failed"
+puts "                   #{Download.where(status: 'running').count}  running"
+puts "                   #{Download.where(status: 'pending').count}  pending"
+puts "   Settings:       #{Setting.count}"
+puts "   Email Senders:  #{EmailSender.count}"
 puts "────────────────────────────────────────────────────────────────"

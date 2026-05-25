@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OctoBankX — Product Document</title>
+  <style>
+    :root { --bg: #fff; --text: #222; --heading: #1a1a2e; --accent: #2563eb; --border: #e5e7eb; --code-bg: #f3f4f6; --card-bg: #f9fafb; --table-header: #f0f4ff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: var(--text); background: var(--bg); max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; color: var(--heading); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.5rem; color: var(--heading); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { font-size: 1.2rem; color: var(--heading); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    p { margin-bottom: 1rem; }
+    img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+    th { background: var(--table-header); text-align: left; padding: 0.6rem 0.8rem; border: 1px solid var(--border); font-weight: 600; }
+    td { padding: 0.5rem 0.8rem; border: 1px solid var(--border); }
+    tr:nth-child(even) { background: var(--card-bg); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    blockquote { border-left: 4px solid var(--accent); padding: 0.5rem 1rem; margin: 1rem 0; background: var(--card-bg); border-radius: 0 8px 8px 0; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; color: #999; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<h1 id="octobankx-product-document">OctoBankX — Product Document</h1>
+<p><strong>כספת</strong> (Kasefet) — Automated Bank Statement Download
+&amp; Management Platform</p>
+<hr />
+<blockquote>
+<p><strong>Version:</strong> 2.0<br />
+<strong>Date:</strong> May 2026<br />
+<strong>Platform:</strong> Ruby / Sinatra Web Application</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-executive-summary">Executive Summary</a></li>
+<li><a href="#2-problem-statement">Problem Statement</a></li>
+<li><a href="#3-solution-overview">Solution Overview</a></li>
+<li><a href="#4-feature-summary">Feature Summary</a></li>
+<li><a href="#5-technology-stack">Technology Stack</a></li>
+<li><a href="#6-architecture">Architecture</a></li>
+<li><a href="#7-database-schema">Database Schema</a></li>
+<li><a href="#8-user-interface--desktop">User Interface —
+Desktop</a></li>
+<li><a href="#9-user-interface--mobile">User Interface — Mobile</a></li>
+<li><a href="#10-rest-api">REST API</a></li>
+<li><a href="#11-background-jobs--scheduling">Background Jobs &amp;
+Scheduling</a></li>
+<li><a href="#12-internationalization">Internationalization</a></li>
+<li><a href="#13-supported-banks">Supported Banks</a></li>
+<li><a href="#14-configuration">Configuration</a></li>
+</ol>
+<hr />
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>OctoBankX (כספת) is a full-stack web platform that automates the
+daily download of bank statement files from multiple Israeli financial
+institutions via Secure FTP. It replaces error-prone manual processes
+with a reliable, auditable, automated workflow.</p>
+<p><strong>Key capabilities:</strong></p>
+<ul>
+<li>Automated daily SFTP downloads with retry logic</li>
+<li>Real-time monitoring dashboard with charts and metrics</li>
+<li>Full audit trail of every download attempt</li>
+<li>Per-bank file parser and column-mapping configuration</li>
+<li>Responsive mobile web interface</li>
+<li>RESTful JSON API for integration with ERP/BI systems</li>
+<li>Full Hebrew and English bilingual support with RTL layout</li>
+</ul>
+<hr />
+<h2 id="problem-statement">2. Problem Statement</h2>
+<p>Organizations managing multiple bank accounts across several Israeli
+banks face daily operational challenges:</p>
+<table>
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Manual daily downloads</strong></td>
+<td>Finance staff spend 45–90 minutes/day logging into bank SFTP servers
+and downloading files</td>
+</tr>
+<tr>
+<td><strong>Inconsistent file handling</strong></td>
+<td>File naming, folder structure, and saving procedures vary between
+employees</td>
+</tr>
+<tr>
+<td><strong>No audit trail</strong></td>
+<td>No record of what was downloaded, when, or by whom</td>
+</tr>
+<tr>
+<td><strong>Silent failures</strong></td>
+<td>A failed download may not be discovered until the data is missing in
+accounting</td>
+</tr>
+<tr>
+<td><strong>Scalability issues</strong></td>
+<td>Adding a new bank or account requires new procedures and staff
+training</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="solution-overview">3. Solution Overview</h2>
+<p>OctoBankX automates the entire workflow:</p>
+<pre><code>                     ┌─────────────────────────────────┐
+                     │           OctoBankX              │
+   ╔═══════════╗     │  ┌──────────┐  ┌─────────────┐  │     ╔══════════════╗
+   ║  Bank     ║────▶│  │ Download │  │   Status    │  │────▶║  ERP / BI /  ║
+   ║  SFTP     ║     │  │   Job    │  │  Tracking   │  │     ║  Accounting  ║
+   ╚═══════════╝     │  └──────────┘  └─────────────┘  │     ╚══════════════╝
+                     │  ┌──────────────────────────┐   │
+                     │  │   Web UI + Mobile + API  │   │
+                     │  └──────────────────────────┘   │
+                     └─────────────────────────────────┘</code></pre>
+<p><strong>Value delivered:</strong></p>
+<table>
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 42%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Before OctoBankX</th>
+<th>With OctoBankX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Daily download effort</td>
+<td>45–90 min/day</td>
+<td>0 min (fully automated)</td>
+</tr>
+<tr>
+<td>Failure detection time</td>
+<td>Hours to days</td>
+<td>Immediate (email + dashboard)</td>
+</tr>
+<tr>
+<td>Audit coverage</td>
+<td>Partial</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Adding a new bank</td>
+<td>New procedures + training</td>
+<td>Fill a form in the UI</td>
+</tr>
+<tr>
+<td>Data availability for processing</td>
+<td>Hours of delay</td>
+<td>Automatic — ready by 06:00</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="feature-summary">4. Feature Summary</h2>
+<h3 id="core-features">Core Features</h3>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bank Management</strong></td>
+<td>Register banks with SFTP connection details, parser assignment,
+column-mapping ruler, and target folder</td>
+</tr>
+<tr>
+<td><strong>Automated Downloads</strong></td>
+<td>Cron-scheduled daily SFTP download for all registered banks</td>
+</tr>
+<tr>
+<td><strong>Email Listener</strong></td>
+<td>Monitors a dedicated inbox (IMAP/POP3) for incoming statement files
+from approved senders</td>
+</tr>
+<tr>
+<td><strong>Email Sender Management</strong></td>
+<td>Maintain a list of approved email addresses with per-bank
+association and active/inactive status</td>
+</tr>
+<tr>
+<td><strong>Download Lifecycle</strong></td>
+<td>Full status tracking:
+<code>pending → running → success / failed</code></td>
+</tr>
+<tr>
+<td><strong>Retry Logic</strong></td>
+<td>Configurable automatic retry on failure</td>
+</tr>
+<tr>
+<td><strong>File Parsing</strong></td>
+<td>Pluggable parsers (Leumi, Poalim, Discount, FIBI) with configurable
+column rulers</td>
+</tr>
+<tr>
+<td><strong>Error Reporting</strong></td>
+<td>Detailed error capture per download with email alerts</td>
+</tr>
+<tr>
+<td><strong>Audit Trail</strong></td>
+<td>Complete history of every download attempt with 90-day
+retention</td>
+</tr>
+</tbody>
+</table>
+<h3 id="interface-features">Interface Features</h3>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dashboard</strong></td>
+<td>Summary cards, weekly activity chart, status breakdown doughnut,
+recent downloads table</td>
+</tr>
+<tr>
+<td><strong>Jobs Page</strong></td>
+<td>Real-time download status with date and status filters</td>
+</tr>
+<tr>
+<td><strong>Log Page</strong></td>
+<td>Full history with multi-criteria filters (bank, status, date
+range)</td>
+</tr>
+<tr>
+<td><strong>Settings Page</strong></td>
+<td>System-wide configuration editor</td>
+</tr>
+<tr>
+<td><strong>Email Senders Page</strong></td>
+<td>Manage approved email senders with bank association and
+active/inactive toggles</td>
+</tr>
+<tr>
+<td><strong>Mobile Interface</strong></td>
+<td>Fully responsive mobile layout at <code>/mobile/</code></td>
+</tr>
+<tr>
+<td><strong>Bilingual UI</strong></td>
+<td>English and Hebrew with full RTL support</td>
+</tr>
+</tbody>
+</table>
+<h3 id="api-features">API Features</h3>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Downloads API</strong></td>
+<td>List, create, and update download records via JSON</td>
+</tr>
+<tr>
+<td><strong>Status API</strong></td>
+<td>System health snapshot endpoint</td>
+</tr>
+<tr>
+<td><strong>Pagination</strong></td>
+<td>Configurable <code>limit</code> and <code>offset</code> for all list
+endpoints</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="technology-stack">5. Technology Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Language</strong></td>
+<td>Ruby</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td><strong>Web Framework</strong></td>
+<td>Sinatra</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td><strong>HTTP Server</strong></td>
+<td>Puma</td>
+<td>6.x</td>
+</tr>
+<tr>
+<td><strong>ORM</strong></td>
+<td>Sequel</td>
+<td>5.87</td>
+</tr>
+<tr>
+<td><strong>Database</strong></td>
+<td>SQLite3</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td><strong>SFTP</strong></td>
+<td>Net::SFTP + Net::SSH</td>
+<td>4.0 / 7.x</td>
+</tr>
+<tr>
+<td><strong>Email</strong></td>
+<td>Net::IMAP + Net::POP + Mail</td>
+<td>0.5 / 0.1 / 2.8</td>
+</tr>
+<tr>
+<td><strong>Scheduler</strong></td>
+<td>Rufus-Scheduler</td>
+<td>3.9</td>
+</tr>
+<tr>
+<td><strong>Internationalization</strong></td>
+<td>i18n</td>
+<td>1.14</td>
+</tr>
+<tr>
+<td><strong>Testing</strong></td>
+<td>RSpec + Rack::Test + FactoryBot</td>
+<td>3.13</td>
+</tr>
+<tr>
+<td><strong>Charts</strong></td>
+<td>Chart.js</td>
+<td>4.x</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture">6. Architecture</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     Client Layer                                │
+│   ┌──────────────────┐    ┌──────────────────┐                  │
+│   │  Desktop Browser │    │  Mobile Browser  │                  │
+│   └────────┬─────────┘    └────────┬──────────┘                 │
+│            └──────────┬────────────┘                            │
+└───────────────────────┼────────────────────────────────────────┘
+                        │ HTTP
+┌───────────────────────┼────────────────────────────────────────┐
+│              Application Layer (Sinatra + Puma)                │
+│   ┌────────────┐  ┌─────────────┐  ┌─────────────────┐        │
+│   │ Web Routes │  │ API Routes  │  │ Mobile Routes   │        │
+│   │ /          │  │ /api/v1/*   │  │ /mobile/*       │        │
+│   └─────┬──────┘  └──────┬──────┘  └────────┬────────┘        │
+│         └────────────────┼──────────────────┘                  │
+│   ┌──────────────────────▼───────────────────────┐             │
+│   │           Business Logic                      │             │
+│   │  DownloadJob (enqueue + execute)              │             │
+│   │  EmailListenerJob (IMAP/POP3 inbox monitor)    │             │
+│   │  SftpHelper (Net::SFTP wrapper)               │             │
+│   │  Parsers (Leumi, Poalim, Discount, FIBI)      │             │
+│   └──────────────────────┬───────────────────────┘             │
+│   ┌──────────────────────▼───────────────────────┐             │
+│   │        Sequel ORM Models                      │             │
+│   │  Bank · Download · Setting · EmailSender      │             │
+│   └──────────────────────────────────────────────┘             │
+│   ┌──────────────────┐                                         │
+│   │ Rufus Scheduler  │  (cron-based daily job trigger)         │
+│   └──────────────────┘                                         │
+└────────────────────────────────────────────────────────────────┘
+                        │
+┌───────────────────────┼────────────────────────────────────────┐
+│              Data &amp; Infrastructure Layer                       │
+│   ┌────────────────────┐  ┌───────────────────────┐            │
+│   │  SQLite Database   │  │   File System         │            │
+│   │  (octobankx.db)    │  │  /downloads/{bank}/   │            │
+│   └────────────────────┘  └───────────────────────┘            │
+│   ┌─────────────────────────────────────────────────┐          │
+│   │          Bank SFTP Servers                      │          │
+│   │  sftp.leumi.co.il · sftp.bankhapoalim.co.il    │          │
+│   │  sftp.discountbank.co.il · sftp.fibi.co.il     │          │
+│   └─────────────────────────────────────────────────┘          │
+│   ┌─────────────────────────────────────────────────┐          │
+│   │          Email Inbox (IMAP/POP3)                │          │
+│   │  kassefet-server@gmail.com                      │          │
+│   └─────────────────────────────────────────────────┘          │
+└────────────────────────────────────────────────────────────────┘</code></pre>
+<hr />
+<h2 id="database-schema">7. Database Schema</h2>
+<h3 id="banks"><code>banks</code></h3>
+<p>Stores SFTP connection details and parsing configuration for each
+financial institution.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>Unique, required</td>
+</tr>
+<tr>
+<td><code>sftp_host</code></td>
+<td>string</td>
+<td>Required</td>
+</tr>
+<tr>
+<td><code>sftp_port</code></td>
+<td>integer</td>
+<td>Default: 22</td>
+</tr>
+<tr>
+<td><code>sftp_remote_path</code></td>
+<td>string</td>
+<td>Default: <code>/</code></td>
+</tr>
+<tr>
+<td><code>sftp_username</code></td>
+<td>string</td>
+<td>SFTP login</td>
+</tr>
+<tr>
+<td><code>sftp_password</code></td>
+<td>string</td>
+<td>SFTP password</td>
+</tr>
+<tr>
+<td><code>ruler</code></td>
+<td>text</td>
+<td>Column mapping rules for file parsing</td>
+</tr>
+<tr>
+<td><code>parser</code></td>
+<td>string</td>
+<td>Parser class name (e.g. <code>LeumiParser</code>)</td>
+</tr>
+<tr>
+<td><code>target_folder</code></td>
+<td>string</td>
+<td>Local destination folder</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="downloads"><code>downloads</code></h3>
+<p>One record per bank per day; tracks the full lifecycle of each
+statement download.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>bank_id</code></td>
+<td>integer</td>
+<td>Foreign key → <code>banks.id</code>, required</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>date</td>
+<td>Statement date, required</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>string</td>
+<td><code>pending</code> / <code>running</code> / <code>success</code> /
+<code>failed</code></td>
+</tr>
+<tr>
+<td><code>error_message</code></td>
+<td>string</td>
+<td>Populated on failure</td>
+</tr>
+<tr>
+<td><code>file_path</code></td>
+<td>string</td>
+<td>Local path to downloaded file on success</td>
+</tr>
+<tr>
+<td><code>started_at</code></td>
+<td>datetime</td>
+<td>When the SFTP transfer began</td>
+</tr>
+<tr>
+<td><code>completed_at</code></td>
+<td>datetime</td>
+<td>When the transfer finished</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Download lifecycle:</strong></p>
+<pre><code>[created] → pending → running → success
+                              ↘ failed</code></pre>
+<h3 id="settings"><code>settings</code></h3>
+<p>Key-value store for system-wide configuration.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>key</code></td>
+<td>string</td>
+<td>Unique, required</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>Human-readable hint</td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="email_senders"><code>email_senders</code></h3>
+<p>Maintains the list of approved email addresses from which the system
+accepts incoming statement files.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>sender_name</code></td>
+<td>string</td>
+<td>Descriptive label, required</td>
+</tr>
+<tr>
+<td><code>sender_email</code></td>
+<td>string</td>
+<td>Unique email address, required</td>
+</tr>
+<tr>
+<td><code>bank_id</code></td>
+<td>integer</td>
+<td>Foreign key → <code>banks.id</code> (cascade delete)</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>boolean</td>
+<td>Default: <code>true</code></td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="user-interface-desktop">8. User Interface — Desktop</h2>
+<h3 id="dashboard">Dashboard</h3>
+<figure>
+<img src="../screenshots/en/home.png" alt="Dashboard — English" />
+<figcaption aria-hidden="true">Dashboard — English</figcaption>
+</figure>
+<p>The dashboard provides at-a-glance system health: summary metric
+cards, a 7-day activity bar chart, status distribution doughnut chart,
+and a table of the 10 most recent downloads. The <strong>Run Downloads
+Now</strong> button allows manual triggering.</p>
+<h3 id="banks-1">Banks</h3>
+<figure>
+<img src="../screenshots/en/banks.png" alt="Banks — English" />
+<figcaption aria-hidden="true">Banks — English</figcaption>
+</figure>
+<p>The banks page displays all registered banks in a table with SFTP
+details, ruler configuration, parser assignment, and target folder. A
+<strong>New Bank</strong> form allows adding banks with full
+configuration.</p>
+<h3 id="jobs">Jobs</h3>
+<figure>
+<img src="../screenshots/en/jobs.png" alt="Jobs — English" />
+<figcaption aria-hidden="true">Jobs — English</figcaption>
+</figure>
+<p>Real-time view of download jobs with status and date filters. Each
+row shows the bank, date, status badge, error message (if failed), file
+path (if successful), and timing information.</p>
+<h3 id="log">Log</h3>
+<figure>
+<img src="../screenshots/en/log.png" alt="Log — English" />
+<figcaption aria-hidden="true">Log — English</figcaption>
+</figure>
+<p>Full download audit trail with multi-criteria filtering: bank,
+status, and date range. Supports up to 500 records per view, ordered
+most-recent-first.</p>
+<h3 id="settings-1">Settings</h3>
+<figure>
+<img src="../screenshots/en/settings.png" alt="Settings — English" />
+<figcaption aria-hidden="true">Settings — English</figcaption>
+</figure>
+<p>System-wide configuration editor for download directory, SFTP
+timeout, cron schedule, retry count, alert email, notification
+preferences, and data retention period.</p>
+<h3 id="email-senders">Email Senders</h3>
+<figure>
+<img src="../screenshots/en/email_senders.png"
+alt="Email Senders — English" />
+<figcaption aria-hidden="true">Email Senders — English</figcaption>
+</figure>
+<p>Manage approved email addresses for incoming statement files. Each
+sender is linked to a bank, can be toggled active/inactive, or deleted.
+A form allows adding new senders with email, name, and bank
+association.</p>
+<hr />
+<h2 id="user-interface-mobile">9. User Interface — Mobile</h2>
+<p>OctoBankX provides a fully responsive mobile interface at
+<code>/mobile/</code>, optimized for smartphones.</p>
+<h3 id="mobile-dashboard">Mobile Dashboard</h3>
+<figure>
+<img src="../screenshots/en/mobile_home.png"
+alt="Mobile Dashboard — English" />
+<figcaption aria-hidden="true">Mobile Dashboard — English</figcaption>
+</figure>
+<p>Compact summary counters and scrollable download card list.</p>
+<h3 id="mobile-banks">Mobile Banks</h3>
+<figure>
+<img src="../screenshots/en/mobile_banks.png"
+alt="Mobile Banks — English" />
+<figcaption aria-hidden="true">Mobile Banks — English</figcaption>
+</figure>
+<p>Bank cards with SFTP details and inline registration form.</p>
+<h3 id="mobile-jobs">Mobile Jobs</h3>
+<figure>
+<img src="../screenshots/en/mobile_jobs.png"
+alt="Mobile Jobs — English" />
+<figcaption aria-hidden="true">Mobile Jobs — English</figcaption>
+</figure>
+<p>Compact card-based job list with status and date filters.</p>
+<h3 id="mobile-log">Mobile Log</h3>
+<figure>
+<img src="../screenshots/en/mobile_log.png"
+alt="Mobile Log — English" />
+<figcaption aria-hidden="true">Mobile Log — English</figcaption>
+</figure>
+<p>Scrollable log with filter controls at the top.</p>
+<h3 id="mobile-settings">Mobile Settings</h3>
+<figure>
+<img src="../screenshots/en/mobile_settings.png"
+alt="Mobile Settings — English" />
+<figcaption aria-hidden="true">Mobile Settings — English</figcaption>
+</figure>
+<p>Mobile-optimized settings form with <strong>Switch to Desktop
+Version</strong> link.</p>
+<h3 id="mobile-email-senders">Mobile Email Senders</h3>
+<figure>
+<img src="../screenshots/en/mobile_email_senders.png"
+alt="Mobile Email Senders — English" />
+<figcaption aria-hidden="true">Mobile Email Senders —
+English</figcaption>
+</figure>
+<p>Card-based view of approved email senders with inline
+activate/deactivate and delete actions, plus an expandable form to add
+new senders.</p>
+<hr />
+<h2 id="rest-api">10. REST API</h2>
+<p>All API endpoints are under <code>/api/v1</code>. Responses are JSON
+(<code>Content-Type: application/json</code>).</p>
+<h3 id="downloads-1">Downloads</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 32%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/downloads</code></td>
+<td>List downloads (filterable by <code>status</code>,
+<code>bank_id</code>, <code>date</code>; supports
+<code>limit</code>/<code>offset</code>)</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/downloads/:id</code></td>
+<td>Get a single download record</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/downloads</code></td>
+<td>Enqueue a download for a specific bank and date</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/api/v1/downloads/:id/status</code></td>
+<td>Update download status (<code>running</code>, <code>success</code>,
+<code>failed</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="system-status">System Status</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 32%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/status</code></td>
+<td>System health snapshot: total counts, today’s counts, last
+success/failure info</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-response-get-apiv1downloads">Example Response — GET
+/api/v1/downloads</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">42</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;bank_id&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;bank_name&quot;</span><span class="fu">:</span> <span class="st">&quot;בנק לאומי&quot;</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;date&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-05-25&quot;</span><span class="fu">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;success&quot;</span><span class="fu">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;error_message&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;file_path&quot;</span><span class="fu">:</span> <span class="st">&quot;/downloads/leumi/leumi_20260525_main.csv&quot;</span><span class="fu">,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;started_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-05-25T06:00:01Z&quot;</span><span class="fu">,</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;completed_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-05-25T06:00:04Z&quot;</span><span class="fu">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;duration_s&quot;</span><span class="fu">:</span> <span class="fl">3.12</span><span class="fu">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;created_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-05-25T06:00:00Z&quot;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
+<hr />
+<h2 id="background-jobs-scheduling">11. Background Jobs &amp;
+Scheduling</h2>
+<h3 id="downloadjob">DownloadJob</h3>
+<p>The daily job has two phases:</p>
+<p><strong>Phase 1 — Enqueue:</strong> For every bank in the system,
+creates a <code>Download</code> record with
+<code>status: 'pending'</code> for the given date. Banks that already
+have a download record for that date are skipped (idempotent).</p>
+<p><strong>Phase 2 — Execute:</strong> Processes all
+<code>pending</code> records:</p>
+<ol type="1">
+<li>Sets <code>status = 'running'</code> and stamps
+<code>started_at</code></li>
+<li>Connects to the bank’s SFTP server via <code>SftpHelper</code></li>
+<li>Downloads the statement file</li>
+<li>On success: sets <code>status = 'success'</code>, stores
+<code>file_path</code>, stamps <code>completed_at</code></li>
+<li>On failure: sets <code>status = 'failed'</code>, stores
+<code>error_message</code>, stamps <code>completed_at</code></li>
+</ol>
+<h3 id="schedule">Schedule</h3>
+<p>The scheduler runs via <code>rufus-scheduler</code> in
+<code>config.ru</code>. The cron expression defaults to
+<code>0 6 * * *</code> (every day at 06:00), configurable via the
+<code>JOB_SCHEDULE</code> environment variable or the
+<code>job_schedule</code> setting.</p>
+<h3 id="emaillistenerjob">EmailListenerJob</h3>
+<p>The email listener job monitors a dedicated inbox for incoming
+statement files from approved senders:</p>
+<ol type="1">
+<li>Connects to the configured email server via IMAP or POP3</li>
+<li>Retrieves unread messages</li>
+<li>For each message, checks whether the sender’s address is in the
+<code>email_senders</code> table and is active</li>
+<li>If approved, extracts all CSV/Excel/ZIP attachments</li>
+<li>Saves attachments to the associated bank’s download directory</li>
+<li>Creates a <code>Download</code> record with
+<code>status: 'success'</code></li>
+<li>Marks the email as read (IMAP) or deletes it (POP3)</li>
+</ol>
+<p>The job runs at the interval specified by
+<code>email_check_interval</code> (default: 5 minutes).</p>
+<h3 id="manual-triggers">Manual Triggers</h3>
+<ul>
+<li><strong>Web UI:</strong> Click <strong>Run Downloads Now</strong> on
+the Dashboard or Jobs page</li>
+<li><strong>CLI:</strong> <code>bundle exec rake jobs:run</code></li>
+<li><strong>API:</strong> <code>POST /api/v1/downloads</code> to enqueue
+a single bank</li>
+</ul>
+<hr />
+<h2 id="internationalization">12. Internationalization</h2>
+<p>OctoBankX supports two languages:</p>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Locale</th>
+<th>Layout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>English</td>
+<td><code>en</code></td>
+<td>LTR (left-to-right)</td>
+</tr>
+<tr>
+<td>Hebrew (עברית)</td>
+<td><code>he</code></td>
+<td>RTL (right-to-left)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hebrew-interface-examples">Hebrew Interface Examples</h3>
+<figure>
+<img src="../screenshots/he/home.png" alt="Dashboard — Hebrew" />
+<figcaption aria-hidden="true">Dashboard — Hebrew</figcaption>
+</figure>
+<figure>
+<img src="../screenshots/he/banks.png" alt="Banks — Hebrew" />
+<figcaption aria-hidden="true">Banks — Hebrew</figcaption>
+</figure>
+<figure>
+<img src="../screenshots/he/jobs.png" alt="Jobs — Hebrew" />
+<figcaption aria-hidden="true">Jobs — Hebrew</figcaption>
+</figure>
+<p>All UI labels, navigation items, status badges, flash messages, and
+form fields are fully translated. The layout automatically switches to
+RTL when Hebrew is selected.</p>
+<hr />
+<h2 id="supported-banks">13. Supported Banks</h2>
+<p>OctoBankX comes pre-configured with 8 Israeli financial
+institutions:</p>
+<h3 id="banks-2">Banks</h3>
+<table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 29%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr>
+<th>Bank</th>
+<th>Parser</th>
+<th>File Pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>בנק לאומי (Bank Leumi)</td>
+<td><code>LeumiParser</code></td>
+<td><code>leumi_YYYYMMDD_main.csv</code></td>
+</tr>
+<tr>
+<td>בנק הפועלים (Bank Hapoalim)</td>
+<td><code>PoalimParser</code></td>
+<td><code>HP_YYYYMMDD_001.csv</code></td>
+</tr>
+<tr>
+<td>בנק מזרחי טפחות (Mizrahi Tefahot)</td>
+<td>—</td>
+<td><code>MZ_YYYYMMDD.csv</code></td>
+</tr>
+<tr>
+<td>בנק דיסקונט (Discount Bank)</td>
+<td><code>DiscountParser</code></td>
+<td><code>D_YYYYMMDD_DISC001.csv</code></td>
+</tr>
+<tr>
+<td>הבנק הבינלאומי הראשון (FIBI)</td>
+<td><code>FibiParser</code></td>
+<td><code>statement_YYYYMMDD.csv</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="broker-firms">Broker Firms</h3>
+<table>
+<thead>
+<tr>
+<th>Firm</th>
+<th>File Pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>פסגות חבר בורסה (Psagot)</td>
+<td><code>psagot_broker_YYYYMMDD.csv</code></td>
+</tr>
+<tr>
+<td>מיטב חבר בורסה (Meitav)</td>
+<td><code>meitav_YYYYMMDD.csv</code></td>
+</tr>
+<tr>
+<td>אקסלנס חבר בורסה (Excellence)</td>
+<td><code>exc_YYYYMMDD.csv</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="configuration">14. Configuration</h2>
+<h3 id="default-settings">Default Settings</h3>
+<table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 33%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>download_dir</code></td>
+<td><code>/tmp/octobankx/downloads</code></td>
+<td>Local directory for downloaded statements</td>
+</tr>
+<tr>
+<td><code>sftp_timeout</code></td>
+<td><code>30</code></td>
+<td>SFTP connection timeout in seconds</td>
+</tr>
+<tr>
+<td><code>job_schedule</code></td>
+<td><code>0 6 * * *</code></td>
+<td>Cron expression for daily job (6 AM)</td>
+</tr>
+<tr>
+<td><code>retention_days</code></td>
+<td><code>90</code></td>
+<td>Days to keep download history</td>
+</tr>
+<tr>
+<td><code>max_retries</code></td>
+<td><code>3</code></td>
+<td>Max retry attempts per bank per day</td>
+</tr>
+<tr>
+<td><code>alert_email</code></td>
+<td><code>ops@octobankx.local</code></td>
+<td>Email for failure alerts</td>
+</tr>
+<tr>
+<td><code>notify_on_fail</code></td>
+<td><code>true</code></td>
+<td>Send email on download failure</td>
+</tr>
+<tr>
+<td><code>email_protocol</code></td>
+<td><code>imap</code></td>
+<td>Email protocol (<code>imap</code> or <code>pop</code>)</td>
+</tr>
+<tr>
+<td><code>email_host</code></td>
+<td><code>imap.gmail.com</code></td>
+<td>IMAP/POP3 server hostname</td>
+</tr>
+<tr>
+<td><code>email_port</code></td>
+<td><code>993</code></td>
+<td>IMAP/POP3 server port</td>
+</tr>
+<tr>
+<td><code>email_username</code></td>
+<td><code>kassefet-server@gmail.com</code></td>
+<td>Email account username</td>
+</tr>
+<tr>
+<td><code>email_password</code></td>
+<td>(empty)</td>
+<td>Email account password or app-specific password</td>
+</tr>
+<tr>
+<td><code>email_ssl</code></td>
+<td><code>true</code></td>
+<td>Use SSL/TLS for email connection</td>
+</tr>
+<tr>
+<td><code>email_check_interval</code></td>
+<td><code>5</code></td>
+<td>Minutes between inbox checks</td>
+</tr>
+</tbody>
+</table>
+<h3 id="environment-variables">Environment Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PORT</code></td>
+<td>HTTP server port</td>
+<td><code>9292</code></td>
+</tr>
+<tr>
+<td><code>JOB_SCHEDULE</code></td>
+<td>Override cron schedule</td>
+<td>from settings</td>
+</tr>
+<tr>
+<td><code>RACK_ENV</code></td>
+<td>Application environment</td>
+<td><code>development</code></td>
+</tr>
+<tr>
+<td><code>SESSION_SECRET</code></td>
+<td>Session encryption key</td>
+<td>random</td>
+</tr>
+</tbody>
+</table>
+<h3 id="running-the-application">Running the Application</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install dependencies</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">bundle</span> install</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up database with seed data</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">bundle</span> exec rake db:setup</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Start the application</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="va">PORT</span><span class="op">=</span>9292 <span class="ex">bundle</span> exec puma config.ru <span class="at">-p</span> 9292</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Or use the provided script</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./start.sh</span></span></code></pre></div>
+<hr />
+<p><em>OctoBankX © 2026</em></p>
+</body>
+</html>

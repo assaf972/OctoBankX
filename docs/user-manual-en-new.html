@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OctoBankX — User Manual</title>
+  <style>
+    :root { --bg: #fff; --text: #222; --heading: #1a1a2e; --accent: #2563eb; --border: #e5e7eb; --code-bg: #f3f4f6; --card-bg: #f9fafb; --table-header: #f0f4ff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: var(--text); background: var(--bg); max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; color: var(--heading); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.5rem; color: var(--heading); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { font-size: 1.2rem; color: var(--heading); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    p { margin-bottom: 1rem; }
+    img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+    th { background: var(--table-header); text-align: left; padding: 0.6rem 0.8rem; border: 1px solid var(--border); font-weight: 600; }
+    td { padding: 0.5rem 0.8rem; border: 1px solid var(--border); }
+    tr:nth-child(even) { background: var(--card-bg); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    blockquote { border-left: 4px solid var(--accent); padding: 0.5rem 1rem; margin: 1rem 0; background: var(--card-bg); border-radius: 0 8px 8px 0; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; color: #999; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<h1 id="octobankx-user-manual">OctoBankX — User Manual</h1>
+<p><strong>כספת</strong> (Kasefet) — Automated Bank Statement Download
+Manager</p>
+<p>OctoBankX connects to your banks via SFTP, automatically downloads
+daily statement files for all configured banks, and provides a full
+audit trail of every download attempt. Both a desktop web interface and
+a mobile-optimized interface are included, with full support for English
+and Hebrew (RTL).</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-dashboard-home">Dashboard (Home)</a></li>
+<li><a href="#2-banks">Banks</a></li>
+<li><a href="#3-jobs">Jobs</a></li>
+<li><a href="#4-log">Log</a></li>
+<li><a href="#5-settings">Settings</a></li>
+<li><a href="#6-email-senders">Email Senders</a></li>
+<li><a href="#7-mobile-interface">Mobile Interface</a></li>
+<li><a href="#8-switching-languages">Switching Languages</a></li>
+<li><a href="#9-settings-reference">Settings Reference</a></li>
+</ol>
+<hr />
+<h2 id="dashboard-home">1. Dashboard (Home)</h2>
+<p>The Dashboard is the home page of OctoBankX. It gives you an
+at-a-glance overview of recent activity, key metrics, and system
+health.</p>
+<figure>
+<img src="../screenshots/en/home.png" alt="Dashboard — English" />
+<figcaption aria-hidden="true">Dashboard — English</figcaption>
+</figure>
+<h3 id="summary-cards">Summary Cards</h3>
+<p>At the top of the dashboard, four summary cards display today’s key
+metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total Downloads</strong></td>
+<td>Total number of download records in the system</td>
+</tr>
+<tr>
+<td><strong>Success Today</strong></td>
+<td>How many downloads completed successfully today</td>
+</tr>
+<tr>
+<td><strong>Failed Today</strong></td>
+<td>How many downloads failed today</td>
+</tr>
+</tbody>
+</table>
+<h3 id="charts">Charts</h3>
+<ul>
+<li><strong>Weekly Activity</strong> — a bar chart showing daily success
+(green) and failure (red) counts for the past 7 days</li>
+<li><strong>Status Breakdown</strong> — a doughnut chart showing the
+overall distribution of download statuses (success, failed, pending,
+running)</li>
+</ul>
+<h3 id="last-10-downloads">Last 10 Downloads</h3>
+<p>Below the charts, a table shows the 10 most recent download attempts
+across all banks:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Date</strong></td>
+<td>The statement date</td>
+</tr>
+<tr>
+<td><strong>Bank</strong></td>
+<td>The bank this download belongs to</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td><code>success</code>, <code>failed</code>, <code>running</code>, or
+<code>pending</code></td>
+</tr>
+<tr>
+<td><strong>Error</strong></td>
+<td>Error message if the download failed</td>
+</tr>
+<tr>
+<td><strong>File</strong></td>
+<td>Path to the downloaded file on success</td>
+</tr>
+<tr>
+<td><strong>Started</strong></td>
+<td>When the SFTP transfer began</td>
+</tr>
+<tr>
+<td><strong>Completed</strong></td>
+<td>When the transfer finished</td>
+</tr>
+</tbody>
+</table>
+<p>Status badges are colour-coded: <strong>green</strong> for success,
+<strong>red</strong> for failed, <strong>blue</strong> for running, and
+<strong>grey</strong> for pending.</p>
+<h3 id="run-downloads-now">Run Downloads Now</h3>
+<p>The <strong>Run Downloads Now</strong> button triggers an immediate
+download job for today across all banks, without waiting for the
+scheduled run.</p>
+<hr />
+<h2 id="banks">2. Banks</h2>
+<p>The Banks page manages SFTP connection details and file parsing
+configuration for each bank.</p>
+<figure>
+<img src="../screenshots/en/banks.png" alt="Banks — English" />
+<figcaption aria-hidden="true">Banks — English</figcaption>
+</figure>
+<h3 id="registered-banks">Registered Banks</h3>
+<p>The main panel lists all configured banks showing:</p>
+<table>
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>Display name of the bank</td>
+</tr>
+<tr>
+<td><strong>SFTP Host</strong></td>
+<td>Hostname of the bank’s SFTP server</td>
+</tr>
+<tr>
+<td><strong>Port</strong></td>
+<td>SFTP port (usually <code>22</code>)</td>
+</tr>
+<tr>
+<td><strong>Remote Path</strong></td>
+<td>Directory on the SFTP server where statements are deposited</td>
+</tr>
+<tr>
+<td><strong>Ruler</strong></td>
+<td>Column mapping rules for parsing statement files</td>
+</tr>
+<tr>
+<td><strong>Parser</strong></td>
+<td>The parser class assigned to process this bank’s files</td>
+</tr>
+<tr>
+<td><strong>Target Folder</strong></td>
+<td>Local folder where downloaded files are saved</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adding-a-new-bank">Adding a New Bank</h3>
+<p>Fill in the <strong>New Bank</strong> form:</p>
+<ol type="1">
+<li><strong>Name</strong> — a recognisable label for the bank
+(e.g. <code>בנק לאומי</code>)</li>
+<li><strong>SFTP Host</strong> — the server hostname
+(e.g. <code>sftp.leumi.co.il</code>)</li>
+<li><strong>SFTP Port</strong> — defaults to <code>22</code>; change if
+the bank uses a non-standard port</li>
+<li><strong>Remote Path</strong> — the directory path on the SFTP server
+(e.g. <code>/statements</code>)</li>
+<li><strong>Ruler</strong> — column mapping definition for statement
+parsing</li>
+<li><strong>Parser</strong> — select the appropriate parser
+(LeumiParser, PoalimParser, DiscountParser, FibiParser)</li>
+<li><strong>Target Folder</strong> — local destination folder path</li>
+</ol>
+<p>Click <strong>Add Bank</strong> to save. The new bank will appear
+immediately in the registered banks list.</p>
+<hr />
+<h2 id="jobs">3. Jobs</h2>
+<p>The Jobs page shows every download job that has been executed or is
+queued, with filtering options.</p>
+<figure>
+<img src="../screenshots/en/jobs.png" alt="Jobs — English" />
+<figcaption aria-hidden="true">Jobs — English</figcaption>
+</figure>
+<h3 id="filters">Filters</h3>
+<p>At the top of the page you can filter the job list by:</p>
+<ul>
+<li><strong>Status</strong> — All Statuses, Success, Failed, Running, or
+Pending</li>
+<li><strong>Date</strong> — narrow results to a specific date</li>
+</ul>
+<p>Click <strong>Filter</strong> to apply.</p>
+<h3 id="job-list">Job List</h3>
+<p>Each row represents a single download attempt for one bank on one
+date:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Date</strong></td>
+<td>Statement date</td>
+</tr>
+<tr>
+<td><strong>Bank</strong></td>
+<td>Bank name</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Outcome of the attempt</td>
+</tr>
+<tr>
+<td><strong>Error</strong></td>
+<td>Error detail if the job failed</td>
+</tr>
+<tr>
+<td><strong>File</strong></td>
+<td>Downloaded file path on success</td>
+</tr>
+<tr>
+<td><strong>Started</strong></td>
+<td>When the SFTP transfer began</td>
+</tr>
+<tr>
+<td><strong>Completed</strong></td>
+<td>When the transfer finished</td>
+</tr>
+</tbody>
+</table>
+<h3 id="running-a-job-manually">Running a Job Manually</h3>
+<p>Use the <strong>Run Now</strong> button to trigger an immediate
+download for all banks for today’s date.</p>
+<hr />
+<h2 id="log">4. Log</h2>
+<p>The Log page is the complete download history — a full audit trail of
+every statement download ever attempted.</p>
+<figure>
+<img src="../screenshots/en/log.png" alt="Log — English" />
+<figcaption aria-hidden="true">Log — English</figcaption>
+</figure>
+<h3 id="filters-1">Filters</h3>
+<p>The log supports multiple filters that can be combined:</p>
+<ul>
+<li><strong>Bank</strong> — filter by a specific bank (or “All
+banks”)</li>
+<li><strong>Status</strong> — All Statuses, Success, Failed, Running,
+Pending</li>
+<li><strong>From / To</strong> — date range selector</li>
+</ul>
+<p>Click <strong>Filter</strong> to apply.</p>
+<h3 id="log-entries">Log Entries</h3>
+<p>Each entry shows the same fields as the Jobs page. The log is ordered
+most-recent-first and retains records according to the
+<code>retention_days</code> setting (default: 90 days).</p>
+<blockquote>
+<p><strong>Tip:</strong> Use the Log page for auditing and
+troubleshooting — the Jobs page is focused on today’s activity, while
+the Log covers the full history.</p>
+</blockquote>
+<hr />
+<h2 id="settings">5. Settings</h2>
+<p>The Settings page controls system-wide behaviour of OctoBankX.</p>
+<figure>
+<img src="../screenshots/en/settings.png" alt="Settings — English" />
+<figcaption aria-hidden="true">Settings — English</figcaption>
+</figure>
+<h3 id="configuration-fields">Configuration Fields</h3>
+<table>
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 41%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>alert_email</strong></td>
+<td>Email address that receives failure alerts</td>
+<td><code>ops@octobankx.local</code></td>
+</tr>
+<tr>
+<td><strong>download_dir</strong></td>
+<td>Local directory where downloaded statements are stored</td>
+<td><code>/tmp/octobankx/downloads</code></td>
+</tr>
+<tr>
+<td><strong>job_schedule</strong></td>
+<td>Cron expression for the automatic daily download job</td>
+<td><code>0 6 * * *</code> (6 AM daily)</td>
+</tr>
+<tr>
+<td><strong>max_retries</strong></td>
+<td>Maximum SFTP retry attempts per bank per day</td>
+<td><code>3</code></td>
+</tr>
+<tr>
+<td><strong>notify_on_fail</strong></td>
+<td>Send an alert email when a download fails
+(<code>true</code>/<code>false</code>)</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><strong>retention_days</strong></td>
+<td>Number of days to keep download history in the database</td>
+<td><code>90</code></td>
+</tr>
+<tr>
+<td><strong>sftp_timeout</strong></td>
+<td>SFTP connection timeout in seconds</td>
+<td><code>30</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>Save Settings</strong> to apply changes. Changes to
+<code>job_schedule</code> take effect on the next scheduled run.</p>
+<blockquote>
+<p><strong>Note:</strong> The <code>download_dir</code> must be writable
+by the application process. Ensure the directory exists before
+saving.</p>
+</blockquote>
+<hr />
+<h2 id="email-senders">6. Email Senders</h2>
+<p>Some banks and broker firms deliver statement files via email rather
+than SFTP. OctoBankX includes a built-in email listener that monitors a
+dedicated inbox (e.g. <code>kassefet-server@gmail.com</code>) via IMAP
+or POP3, and automatically downloads attachments from approved
+senders.</p>
+<figure>
+<img src="../screenshots/en/email_senders.png"
+alt="Email Senders — English" />
+<figcaption aria-hidden="true">Email Senders — English</figcaption>
+</figure>
+<h3 id="approved-senders">Approved Senders</h3>
+<p>The Email Senders page displays all approved email addresses in a
+table:</p>
+<table>
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sender Name</strong></td>
+<td>A descriptive label (e.g. “Bank Leumi – Statements”)</td>
+</tr>
+<tr>
+<td><strong>Sender Email</strong></td>
+<td>The email address the system accepts files from</td>
+</tr>
+<tr>
+<td><strong>Bank</strong></td>
+<td>The bank this sender is associated with — attachments are filed
+under this bank</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td><code>Active</code> (green) or <code>Inactive</code> (grey)</td>
+</tr>
+</tbody>
+</table>
+<p>Only emails from <strong>active</strong> approved senders are
+processed. All other emails are ignored.</p>
+<h3 id="adding-a-new-sender">Adding a New Sender</h3>
+<p>Fill in the <strong>New Approved Sender</strong> form:</p>
+<ol type="1">
+<li><strong>Sender Name</strong> — a descriptive label for this
+sender</li>
+<li><strong>Sender Email</strong> — the exact email address the bank
+uses to send files</li>
+<li><strong>Associated Bank</strong> — select which bank this sender
+belongs to</li>
+</ol>
+<p>Click <strong>Add Sender</strong> to save.</p>
+<h3 id="managing-senders">Managing Senders</h3>
+<ul>
+<li><strong>Deactivate / Activate</strong> — toggle a sender on or off
+without deleting it</li>
+<li><strong>Delete</strong> — permanently remove a sender from the
+approved list</li>
+</ul>
+<h3 id="email-configuration">Email Configuration</h3>
+<p>Email connection settings are managed on the
+<strong>Settings</strong> page:</p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 59%" />
+</colgroup>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>email_protocol</code></td>
+<td><code>imap</code> or <code>pop</code></td>
+</tr>
+<tr>
+<td><code>email_host</code></td>
+<td>Mail server hostname (e.g. <code>imap.gmail.com</code>)</td>
+</tr>
+<tr>
+<td><code>email_port</code></td>
+<td>Server port (e.g. <code>993</code> for IMAP SSL)</td>
+</tr>
+<tr>
+<td><code>email_username</code></td>
+<td>Email account username</td>
+</tr>
+<tr>
+<td><code>email_password</code></td>
+<td>Email account password or app-specific password</td>
+</tr>
+<tr>
+<td><code>email_ssl</code></td>
+<td>Use SSL/TLS (<code>true</code> / <code>false</code>)</td>
+</tr>
+<tr>
+<td><code>email_check_interval</code></td>
+<td>How often to check for new emails (in minutes)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="how-it-works">How It Works</h3>
+<ol type="1">
+<li>The email listener job runs at the configured interval</li>
+<li>It connects to the inbox using the configured IMAP or POP3
+settings</li>
+<li>For each unread email, it checks whether the sender is in the
+approved list</li>
+<li>If approved, all CSV/Excel/ZIP attachments are saved to the bank’s
+download directory</li>
+<li>A download record is created with <code>success</code> status</li>
+<li>The email is marked as read (IMAP) or deleted (POP3)</li>
+</ol>
+<hr />
+<h2 id="mobile-interface">7. Mobile Interface</h2>
+<p>OctoBankX includes a fully optimised mobile web interface accessible
+at <code>/mobile/</code>. All pages are available through a bottom
+navigation bar.</p>
+<h3 id="mobile-dashboard">Mobile Dashboard</h3>
+<figure>
+<img src="../screenshots/en/mobile_home.png"
+alt="Mobile Dashboard — English" />
+<figcaption aria-hidden="true">Mobile Dashboard — English</figcaption>
+</figure>
+<p>The mobile dashboard shows summary counters at the top (success
+today, failed today, running) followed by a scrollable list of recent
+downloads — each displayed as a card with the bank name and status
+badge.</p>
+<h3 id="mobile-banks">Mobile Banks</h3>
+<figure>
+<img src="../screenshots/en/mobile_banks.png"
+alt="Mobile Banks — English" />
+<figcaption aria-hidden="true">Mobile Banks — English</figcaption>
+</figure>
+<p>Banks are displayed as cards, each showing the SFTP host, port,
+remote path, ruler, parser, and target folder. Tap <strong>New
+Bank</strong> at the top to expand the registration form.</p>
+<h3 id="mobile-jobs">Mobile Jobs</h3>
+<figure>
+<img src="../screenshots/en/mobile_jobs.png"
+alt="Mobile Jobs — English" />
+<figcaption aria-hidden="true">Mobile Jobs — English</figcaption>
+</figure>
+<p>The jobs list adapts to mobile with a compact card layout. Date
+filter and status filters appear at the top. Each card shows the bank,
+date, status, and any error message.</p>
+<h3 id="mobile-log">Mobile Log</h3>
+<figure>
+<img src="../screenshots/en/mobile_log.png"
+alt="Mobile Log — English" />
+<figcaption aria-hidden="true">Mobile Log — English</figcaption>
+</figure>
+<p>The log on mobile uses the same card layout as Jobs. Filter controls
+(bank, status, date range) are accessible at the top.</p>
+<h3 id="mobile-settings">Mobile Settings</h3>
+<figure>
+<img src="../screenshots/en/mobile_settings.png"
+alt="Mobile Settings — English" />
+<figcaption aria-hidden="true">Mobile Settings — English</figcaption>
+</figure>
+<p>Settings are rendered as a mobile-friendly form with all the same
+configuration options. A <strong>Switch to Desktop Version</strong> link
+at the bottom navigates to the full desktop interface.</p>
+<h3 id="mobile-email-senders">Mobile Email Senders</h3>
+<figure>
+<img src="../screenshots/en/mobile_email_senders.png"
+alt="Mobile Email Senders — English" />
+<figcaption aria-hidden="true">Mobile Email Senders —
+English</figcaption>
+</figure>
+<p>Email senders are displayed as cards, each showing the sender name,
+email address, associated bank, and status badge. Tap the buttons to
+activate/deactivate or delete a sender. An expandable form at the bottom
+allows adding new approved senders.</p>
+<hr />
+<h2 id="switching-languages">8. Switching Languages</h2>
+<p>OctoBankX supports <strong>English</strong> and
+<strong>Hebrew</strong> (עברית). The language switcher appears in the
+navigation bar on both desktop and mobile interfaces.</p>
+<ul>
+<li>Click <strong>English</strong> or <strong>עברית</strong> in the top
+navigation to switch languages</li>
+<li>The Hebrew interface automatically applies right-to-left (RTL)
+layout</li>
+<li>Your language preference is stored in the session and persists
+across page navigations</li>
+</ul>
+<hr />
+<h2 id="settings-reference">9. Settings Reference</h2>
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 21%" />
+<col style="width: 46%" />
+</colgroup>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alert_email</code></td>
+<td>string (email)</td>
+<td>Recipient for all system alert emails</td>
+</tr>
+<tr>
+<td><code>download_dir</code></td>
+<td>string (path)</td>
+<td>Absolute path to the local statements directory</td>
+</tr>
+<tr>
+<td><code>email_check_interval</code></td>
+<td>integer</td>
+<td>Minutes between inbox checks</td>
+</tr>
+<tr>
+<td><code>email_host</code></td>
+<td>string</td>
+<td>IMAP/POP3 server hostname</td>
+</tr>
+<tr>
+<td><code>email_password</code></td>
+<td>string</td>
+<td>Email account password or app-specific password</td>
+</tr>
+<tr>
+<td><code>email_port</code></td>
+<td>integer</td>
+<td>IMAP/POP3 server port</td>
+</tr>
+<tr>
+<td><code>email_protocol</code></td>
+<td>string</td>
+<td><code>imap</code> or <code>pop</code></td>
+</tr>
+<tr>
+<td><code>email_ssl</code></td>
+<td>boolean</td>
+<td>Use SSL/TLS for email connection</td>
+</tr>
+<tr>
+<td><code>email_username</code></td>
+<td>string (email)</td>
+<td>Email account username</td>
+</tr>
+<tr>
+<td><code>job_schedule</code></td>
+<td>string (cron)</td>
+<td>Standard 5-field cron expression controlling the automatic download
+schedule</td>
+</tr>
+<tr>
+<td><code>max_retries</code></td>
+<td>integer</td>
+<td>How many times the system retries a failed SFTP connection before
+marking the job as <code>failed</code></td>
+</tr>
+<tr>
+<td><code>notify_on_fail</code></td>
+<td>boolean</td>
+<td>When <code>true</code>, an email is sent to <code>alert_email</code>
+for each failed download</td>
+</tr>
+<tr>
+<td><code>retention_days</code></td>
+<td>integer</td>
+<td>Log records older than this many days are automatically purged</td>
+</tr>
+<tr>
+<td><code>sftp_timeout</code></td>
+<td>integer</td>
+<td>Seconds to wait before aborting an SFTP connection attempt</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>OctoBankX © 2026</em></p>
+</body>
+</html>

@@ -12,6 +12,9 @@ gem 'rufus-scheduler', '~> 3.9'
 gem 'puma', '~> 6.0'
 gem 'i18n',  '~> 1.14'
 gem 'rake',  '~> 13.0'
+gem 'net-imap', '~> 0.5'
+gem 'net-pop', '~> 0.1'
+gem 'mail', '~> 2.8'
 
 group :test do
   gem 'rspec', '~> 3.13'

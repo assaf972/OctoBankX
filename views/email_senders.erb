@@ -1,0 +1,67 @@
+<div class="page-header">
+  <h1><%= t('email_senders.title') %></h1>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <h2><%= t('email_senders.new_sender') %></h2>
+    <form action="/email_senders" method="post" class="form">
+      <label><%= t('email_senders.sender_name') %>
+        <input type="text" name="sender_name" placeholder="<%= t('email_senders.sender_name_placeholder') %>" required>
+      </label>
+      <label><%= t('email_senders.sender_email') %>
+        <input type="email" name="sender_email" placeholder="statements@bank.co.il" required>
+      </label>
+      <label><%= t('email_senders.bank') %>
+        <select name="bank_id">
+          <option value=""><%= t('email_senders.no_bank') %></option>
+          <% @banks.each do |b| %>
+            <option value="<%= b.id %>"><%= b.name %></option>
+          <% end %>
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary"><%= t('email_senders.add_sender') %></button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2><%= t('email_senders.approved_senders', count: @email_senders.size) %></h2>
+    <% if @email_senders.empty? %>
+      <p class="empty"><%= t('email_senders.no_senders') %></p>
+    <% else %>
+      <table>
+        <thead>
+          <tr>
+            <th><%= t('email_senders.sender_name') %></th>
+            <th><%= t('email_senders.sender_email') %></th>
+            <th><%= t('common.bank') %></th>
+            <th><%= t('common.status') %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @email_senders.each do |es| %>
+            <tr>
+              <td><%= es.sender_name %></td>
+              <td><%= es.sender_email %></td>
+              <td><%= es.bank&.name || '—' %></td>
+              <td>
+                <span class="badge badge-<%= es.active? ? 'success' : 'failed' %>">
+                  <%= es.active? ? t('email_senders.active') : t('email_senders.inactive') %>
+                </span>
+              </td>
+              <td>
+                <form action="/email_senders/<%= es.id %>/toggle" method="post" style="display:inline">
+                  <button type="submit" class="btn btn-small"><%= es.active? ? t('email_senders.deactivate') : t('email_senders.activate') %></button>
+                </form>
+                <form action="/email_senders/<%= es.id %>/delete" method="post" style="display:inline">
+                  <button type="submit" class="btn btn-small btn-danger"><%= t('email_senders.delete') %></button>
+                </form>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+</div>

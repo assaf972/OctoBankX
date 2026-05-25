@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OctoBankX — מסמך מוצר</title>
+  <style>
+    :root { --bg: #fff; --text: #222; --heading: #1a1a2e; --accent: #2563eb; --border: #e5e7eb; --code-bg: #f3f4f6; --card-bg: #f9fafb; --table-header: #f0f4ff; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: var(--text); background: var(--bg); max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; color: var(--heading); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    h2 { font-size: 1.5rem; color: var(--heading); margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { font-size: 1.2rem; color: var(--heading); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    p { margin-bottom: 1rem; }
+    img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+    th { background: var(--table-header); text-align: right; padding: 0.6rem 0.8rem; border: 1px solid var(--border); font-weight: 600; }
+    td { padding: 0.5rem 0.8rem; border: 1px solid var(--border); }
+    tr:nth-child(even) { background: var(--card-bg); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    blockquote { border-right: 4px solid var(--accent); border-left: none; padding: 0.5rem 1rem; margin: 1rem 0; background: var(--card-bg); border-radius: 8px 0 0 8px; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; color: #999; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<h1 id="octobankx-מסמך-מוצר">OctoBankX — מסמך מוצר</h1>
+<p><strong>כספת</strong> — פלטפורמה אוטומטית להורדה וניהול דפי חשבון
+בנקאיים</p>
+<hr />
+<blockquote>
+<p><strong>גרסה:</strong> 2.0<br />
+<strong>תאריך:</strong> מאי 2026<br />
+<strong>פלטפורמה:</strong> אפליקציית ווב Ruby / Sinatra</p>
+</blockquote>
+<hr />
+<h2 id="תוכן-עניינים">תוכן עניינים</h2>
+<ol type="1">
+<li><a href="#1-תקציר-מנהלים">תקציר מנהלים</a></li>
+<li><a href="#2-הצורך-העסקי">הצורך העסקי</a></li>
+<li><a href="#3-סקירת-הפתרון">סקירת הפתרון</a></li>
+<li><a href="#4-סיכום-תכונות">סיכום תכונות</a></li>
+<li><a href="#5-סטאק-טכנולוגי">סטאק טכנולוגי</a></li>
+<li><a href="#6-ארכיטקטורה">ארכיטקטורה</a></li>
+<li><a href="#7-מבנה-מסד-הנתונים">מבנה מסד הנתונים</a></li>
+<li><a href="#8-ממשק-משתמש--שולחן-עבודה">ממשק משתמש — שולחן
+עבודה</a></li>
+<li><a href="#9-ממשק-משתמש--נייד">ממשק משתמש — נייד</a></li>
+<li><a href="#10-ממשק-api">ממשק API</a></li>
+<li><a href="#11-משימות-רקע-ותזמון">משימות רקע ותזמון</a></li>
+<li><a href="#12-בינלאומיות">בינלאומיות</a></li>
+<li><a href="#13-בנקים-נתמכים">בנקים נתמכים</a></li>
+<li><a href="#14-תצורה">תצורה</a></li>
+</ol>
+<hr />
+<h2 id="תקציר-מנהלים">1. תקציר מנהלים</h2>
+<p>OctoBankX (כספת) היא פלטפורמת ווב מלאה המבצעת אוטומציה של הורדה יומית
+של קבצי דפי חשבון ממספר מוסדות פיננסיים ישראליים באמצעות SFTP מאובטח.
+היא מחליפה תהליכים ידניים מועדים לשגיאות בזרימת עבודה אמינה, ניתנת
+לביקורת ואוטומטית.</p>
+<p><strong>יכולות מרכזיות:</strong></p>
+<ul>
+<li>הורדות SFTP אוטומטיות יומיות עם לוגיקת ניסיון חוזר</li>
+<li>לוח בקרה לניטור בזמן אמת עם תרשימים ומדדים</li>
+<li>מסלול ביקורת מלא לכל ניסיון הורדה</li>
+<li>תצורת מפענח וכללי מיפוי עמודות לכל בנק</li>
+<li>ממשק ווב רספונסיבי לנייד</li>
+<li>ממשק API מבוסס REST JSON לאינטגרציה עם מערכות ERP/BI</li>
+<li>תמיכה מלאה בעברית ובאנגלית עם פריסת RTL</li>
+</ul>
+<hr />
+<h2 id="הצורך-העסקי">2. הצורך העסקי</h2>
+<p>ארגונים המנהלים חשבונות בנק מרובים אצל מספר בנקים ישראליים מתמודדים
+עם אתגרים תפעוליים יומיים:</p>
+<table>
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr>
+<th>אתגר</th>
+<th>השפעה</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>הורדות ידניות יומיות</strong></td>
+<td>אנשי כספים מבלים 45–90 דקות ביום בהתחברות לשרתי SFTP של בנקים והורדת
+קבצים</td>
+</tr>
+<tr>
+<td><strong>חוסר עקביות בטיפול בקבצים</strong></td>
+<td>שמות קבצים, מבנה תיקיות ונהלי שמירה משתנים בין עובדים</td>
+</tr>
+<tr>
+<td><strong>היעדר מסלול ביקורת</strong></td>
+<td>אין תיעוד מה הורד, מתי, או על ידי מי</td>
+</tr>
+<tr>
+<td><strong>כשלים שקטים</strong></td>
+<td>הורדה שנכשלה עלולה לא להתגלות עד שהנתונים חסרים בעיבוד החשבונאי</td>
+</tr>
+<tr>
+<td><strong>בעיות מדרגיות</strong></td>
+<td>הוספת בנק או חשבון חדש מחייבת נהלים חדשים והדרכת צוות</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="סקירת-הפתרון">3. סקירת הפתרון</h2>
+<p>OctoBankX מבצעת אוטומציה של כל זרימת העבודה:</p>
+<pre><code>                     ┌─────────────────────────────────┐
+                     │           OctoBankX              │
+   ╔═══════════╗     │  ┌──────────┐  ┌─────────────┐  │     ╔══════════════╗
+   ║  שרת SFTP ║────▶│  │ משימת   │  │   מעקב     │  │────▶║  ERP / BI /  ║
+   ║  של הבנק  ║     │  │ הורדה   │  │  סטטוס     │  │     ║  חשבונאות   ║
+   ╚═══════════╝     │  └──────────┘  └─────────────┘  │     ╚══════════════╝
+                     │  ┌──────────────────────────┐   │
+                     │  │   ממשק ווב + נייד + API  │   │
+                     │  └──────────────────────────┘   │
+                     └─────────────────────────────────┘</code></pre>
+<p><strong>ערך שנוצר:</strong></p>
+<table>
+<thead>
+<tr>
+<th>מדד</th>
+<th>לפני OctoBankX</th>
+<th>עם OctoBankX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>מאמץ הורדה יומי</td>
+<td>45–90 דקות/יום</td>
+<td>0 דקות (אוטומטי לחלוטין)</td>
+</tr>
+<tr>
+<td>זמן גילוי כשל</td>
+<td>שעות עד ימים</td>
+<td>מיידי (מייל + לוח בקרה)</td>
+</tr>
+<tr>
+<td>כיסוי ביקורת</td>
+<td>חלקי</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>הוספת בנק חדש</td>
+<td>נהלים חדשים + הדרכה</td>
+<td>מילוי טופס בממשק</td>
+</tr>
+<tr>
+<td>זמינות נתונים לעיבוד</td>
+<td>עיכוב של שעות</td>
+<td>אוטומטי — מוכן ב-06:00</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="סיכום-תכונות">4. סיכום תכונות</h2>
+<h3 id="תכונות-ליבה">תכונות ליבה</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>תכונה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ניהול בנקים</strong></td>
+<td>רישום בנקים עם פרטי חיבור SFTP, הקצאת מפענח, כלל מיפוי עמודות
+ותיקיית יעד</td>
+</tr>
+<tr>
+<td><strong>הורדות אוטומטיות</strong></td>
+<td>הורדת SFTP יומית מתוזמנת עבור כל הבנקים הרשומים</td>
+</tr>
+<tr>
+<td><strong>מאזין דוא״ל</strong></td>
+<td>ניטור תיבת דואר ייעודית (IMAP/POP3) לקבלת קבצי דפי חשבון משולחים
+מאושרים</td>
+</tr>
+<tr>
+<td><strong>ניהול שולחי דוא״ל</strong></td>
+<td>תחזוקת רשימת כתובות דוא״ל מאושרות עם שיוך לבנק וסטטוס פעיל/לא
+פעיל</td>
+</tr>
+<tr>
+<td><strong>מחזור חיי הורדה</strong></td>
+<td>מעקב סטטוס מלא: <code>ממתין → פעיל → הצלחה / כישלון</code></td>
+</tr>
+<tr>
+<td><strong>לוגיקת ניסיון חוזר</strong></td>
+<td>ניסיון חוזר אוטומטי הניתן להגדרה במקרה כישלון</td>
+</tr>
+<tr>
+<td><strong>פענוח קבצים</strong></td>
+<td>מפענחים ניתנים לחיבור (לאומי, פועלים, דיסקונט, בינלאומי) עם כללי
+עמודות הניתנים להגדרה</td>
+</tr>
+<tr>
+<td><strong>דיווח שגיאות</strong></td>
+<td>לכידת שגיאות מפורטת לכל הורדה עם התראות מייל</td>
+</tr>
+<tr>
+<td><strong>מסלול ביקורת</strong></td>
+<td>היסטוריה מלאה של כל ניסיון הורדה עם שמירה של 90 יום</td>
+</tr>
+</tbody>
+</table>
+<h3 id="תכונות-ממשק">תכונות ממשק</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>תכונה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>לוח בקרה</strong></td>
+<td>כרטיסי סיכום, תרשים פעילות שבועית, סופגניית התפלגות סטטוסים, טבלת
+הורדות אחרונות</td>
+</tr>
+<tr>
+<td><strong>דף הורדות</strong></td>
+<td>סטטוס הורדות בזמן אמת עם מסנני תאריך וסטטוס</td>
+</tr>
+<tr>
+<td><strong>דף לוג</strong></td>
+<td>היסטוריה מלאה עם מסננים מרובי קריטריונים (בנק, סטטוס, טווח
+תאריכים)</td>
+</tr>
+<tr>
+<td><strong>דף הגדרות</strong></td>
+<td>עורך תצורה מערכתית</td>
+</tr>
+<tr>
+<td><strong>דף שולחי דוא״ל</strong></td>
+<td>ניהול שולחי דוא״ל מאושרים עם שיוך לבנק ומתגי פעיל/לא פעיל</td>
+</tr>
+<tr>
+<td><strong>ממשק נייד</strong></td>
+<td>פריסת נייד רספונסיבית מלאה ב-<code>/mobile/</code></td>
+</tr>
+<tr>
+<td><strong>ממשק דו-לשוני</strong></td>
+<td>אנגלית ועברית עם תמיכת RTL מלאה</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="סטאק-טכנולוגי">5. סטאק טכנולוגי</h2>
+<table>
+<thead>
+<tr>
+<th>רכיב</th>
+<th>טכנולוגיה</th>
+<th>גרסה</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>שפת תכנות</strong></td>
+<td>Ruby</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td><strong>מסגרת ווב</strong></td>
+<td>Sinatra</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td><strong>שרת HTTP</strong></td>
+<td>Puma</td>
+<td>6.x</td>
+</tr>
+<tr>
+<td><strong>ORM</strong></td>
+<td>Sequel</td>
+<td>5.87</td>
+</tr>
+<tr>
+<td><strong>מסד נתונים</strong></td>
+<td>SQLite3</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td><strong>SFTP</strong></td>
+<td>Net::SFTP + Net::SSH</td>
+<td>4.0 / 7.x</td>
+</tr>
+<tr>
+<td><strong>דוא״ל</strong></td>
+<td>Net::IMAP + Net::POP + Mail</td>
+<td>0.5 / 0.1 / 2.8</td>
+</tr>
+<tr>
+<td><strong>מתזמן</strong></td>
+<td>Rufus-Scheduler</td>
+<td>3.9</td>
+</tr>
+<tr>
+<td><strong>בינלאומיות</strong></td>
+<td>i18n</td>
+<td>1.14</td>
+</tr>
+<tr>
+<td><strong>בדיקות</strong></td>
+<td>RSpec + Rack::Test + FactoryBot</td>
+<td>3.13</td>
+</tr>
+<tr>
+<td><strong>תרשימים</strong></td>
+<td>Chart.js</td>
+<td>4.x</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ארכיטקטורה">6. ארכיטקטורה</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        שכבת לקוח                                │
+│   ┌──────────────────┐    ┌──────────────────┐                  │
+│   │ דפדפן שולחן עבודה│    │  דפדפן נייד      │                  │
+│   └────────┬─────────┘    └────────┬──────────┘                 │
+│            └──────────┬────────────┘                            │
+└───────────────────────┼────────────────────────────────────────┘
+                        │ HTTP
+┌───────────────────────┼────────────────────────────────────────┐
+│             שכבת אפליקציה (Sinatra + Puma)                     │
+│   ┌────────────┐  ┌─────────────┐  ┌─────────────────┐        │
+│   │ נתיבי ווב  │  │ נתיבי API   │  │ נתיבי נייד      │        │
+│   │ /          │  │ /api/v1/*   │  │ /mobile/*       │        │
+│   └─────┬──────┘  └──────┬──────┘  └────────┬────────┘        │
+│         └────────────────┼──────────────────┘                  │
+│   ┌──────────────────────▼───────────────────────┐             │
+│   │            לוגיקה עסקית                       │             │
+│   │  DownloadJob (הכנסה לתור + ביצוע)             │             │
+│   │  EmailListenerJob (ניטור תיבת דואר IMAP/POP3)  │             │
+│   │  SftpHelper (עטיפת Net::SFTP)                 │             │
+│   │  מפענחים (לאומי, פועלים, דיסקונט, בינלאומי)    │             │
+│   └──────────────────────┬───────────────────────┘             │
+│   ┌──────────────────────▼───────────────────────┐             │
+│   │        מודלים Sequel ORM                      │             │
+│   │  Bank · Download · Setting · EmailSender      │             │
+│   └──────────────────────────────────────────────┘             │
+│   ┌──────────────────┐                                         │
+│   │ Rufus Scheduler  │  (הפעלת משימה יומית cron)              │
+│   └──────────────────┘                                         │
+└────────────────────────────────────────────────────────────────┘
+                        │
+┌───────────────────────┼────────────────────────────────────────┐
+│              שכבת נתונים ותשתית                                │
+│   ┌────────────────────┐  ┌───────────────────────┐            │
+│   │   מסד נתונים SQLite │  │  מערכת קבצים          │            │
+│   │  (octobankx.db)    │  │  /downloads/{bank}/   │            │
+│   └────────────────────┘  └───────────────────────┘            │
+│   ┌─────────────────────────────────────────────────┐          │
+│   │          שרתי SFTP של הבנקים                     │          │
+│   │  sftp.leumi.co.il · sftp.bankhapoalim.co.il    │          │
+│   │  sftp.discountbank.co.il · sftp.fibi.co.il     │          │
+│   └─────────────────────────────────────────────────┘          │
+│   ┌─────────────────────────────────────────────────┐          │
+│   │          תיבת דואר (IMAP/POP3)                 │          │
+│   │  kassefet-server@gmail.com                      │          │
+│   └─────────────────────────────────────────────────┘          │
+└────────────────────────────────────────────────────────────────┘</code></pre>
+<hr />
+<h2 id="מבנה-מסד-הנתונים">7. מבנה מסד הנתונים</h2>
+<h3 id="banks-בנקים"><code>banks</code> — בנקים</h3>
+<p>שומר פרטי חיבור SFTP ותצורת פענוח לכל מוסד פיננסי.</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>סוג</th>
+<th>הערות</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>מפתח ראשי</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>ייחודי, נדרש</td>
+</tr>
+<tr>
+<td><code>sftp_host</code></td>
+<td>string</td>
+<td>נדרש</td>
+</tr>
+<tr>
+<td><code>sftp_port</code></td>
+<td>integer</td>
+<td>ברירת מחדל: 22</td>
+</tr>
+<tr>
+<td><code>sftp_remote_path</code></td>
+<td>string</td>
+<td>ברירת מחדל: <code>/</code></td>
+</tr>
+<tr>
+<td><code>sftp_username</code></td>
+<td>string</td>
+<td>שם משתמש SFTP</td>
+</tr>
+<tr>
+<td><code>sftp_password</code></td>
+<td>string</td>
+<td>סיסמת SFTP</td>
+</tr>
+<tr>
+<td><code>ruler</code></td>
+<td>text</td>
+<td>כללי מיפוי עמודות לפענוח קבצים</td>
+</tr>
+<tr>
+<td><code>parser</code></td>
+<td>string</td>
+<td>שם כיתת מפענח (למשל <code>LeumiParser</code>)</td>
+</tr>
+<tr>
+<td><code>target_folder</code></td>
+<td>string</td>
+<td>תיקיית יעד מקומית</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="downloads-הורדות"><code>downloads</code> — הורדות</h3>
+<p>רשומה אחת לכל בנק ליום; עוקבת אחר מחזור החיים המלא של כל הורדת דף
+חשבון.</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>סוג</th>
+<th>הערות</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>מפתח ראשי</td>
+</tr>
+<tr>
+<td><code>bank_id</code></td>
+<td>integer</td>
+<td>מפתח זר → <code>banks.id</code>, נדרש</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>date</td>
+<td>תאריך דף חשבון, נדרש</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>string</td>
+<td><code>pending</code> / <code>running</code> / <code>success</code> /
+<code>failed</code></td>
+</tr>
+<tr>
+<td><code>error_message</code></td>
+<td>string</td>
+<td>מתמלא בכישלון</td>
+</tr>
+<tr>
+<td><code>file_path</code></td>
+<td>string</td>
+<td>נתיב מקומי לקובץ שהורד בהצלחה</td>
+</tr>
+<tr>
+<td><code>started_at</code></td>
+<td>datetime</td>
+<td>מתי החלה העברת ה-SFTP</td>
+</tr>
+<tr>
+<td><code>completed_at</code></td>
+<td>datetime</td>
+<td>מתי ההעברה הסתיימה</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>מחזור חיי הורדה:</strong></p>
+<pre><code>[נוצר] → ממתין → פעיל → הצלחה
+                      ↘ כישלון</code></pre>
+<h3 id="settings-הגדרות"><code>settings</code> — הגדרות</h3>
+<p>מאגר מפתח-ערך לתצורה מערכתית.</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>סוג</th>
+<th>הערות</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>מפתח ראשי</td>
+</tr>
+<tr>
+<td><code>key</code></td>
+<td>string</td>
+<td>ייחודי, נדרש</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>רמז קריא</td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="email_senders-שולחי-דואל"><code>email_senders</code> — שולחי
+דוא״ל</h3>
+<p>מחזיקה את רשימת כתובות הדוא״ל המאושרות שמהן המערכת מקבלת קבצי דפי
+חשבון.</p>
+<table>
+<thead>
+<tr>
+<th>עמודה</th>
+<th>סוג</th>
+<th>הערות</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>integer</td>
+<td>מפתח ראשי</td>
+</tr>
+<tr>
+<td><code>sender_name</code></td>
+<td>string</td>
+<td>תווית תיאורית, נדרש</td>
+</tr>
+<tr>
+<td><code>sender_email</code></td>
+<td>string</td>
+<td>כתובת דוא״ל ייחודית, נדרש</td>
+</tr>
+<tr>
+<td><code>bank_id</code></td>
+<td>integer</td>
+<td>מפתח זר → <code>banks.id</code> (מחיקה מדורגת)</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>boolean</td>
+<td>ברירת מחדל: <code>true</code></td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>datetime</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ממשק-משתמש-שולחן-עבודה">8. ממשק משתמש — שולחן עבודה</h2>
+<h3 id="לוח-בקרה">לוח בקרה</h3>
+<figure>
+<img src="../screenshots/he/home.png" alt="לוח בקרה — עברית" />
+<figcaption aria-hidden="true">לוח בקרה — עברית</figcaption>
+</figure>
+<p>לוח הבקרה מספק בריאות מערכת במבט: כרטיסי מדדי סיכום, תרשים עמודות
+פעילות 7 ימים, תרשים סופגניית התפלגות סטטוסים, וטבלה של 10 ההורדות
+האחרונות. כפתור <strong>הרץ הורדות עכשיו</strong> מאפשר הפעלה ידנית.</p>
+<h3 id="בנקים">בנקים</h3>
+<figure>
+<img src="../screenshots/he/banks.png" alt="בנקים — עברית" />
+<figcaption aria-hidden="true">בנקים — עברית</figcaption>
+</figure>
+<p>דף הבנקים מציג את כל הבנקים הרשומים בטבלה עם פרטי SFTP, תצורת רולר,
+הקצאת מפענח ותיקיית יעד. טופס <strong>בנק חדש</strong> מאפשר הוספת בנקים
+עם תצורה מלאה.</p>
+<h3 id="הורדות">הורדות</h3>
+<figure>
+<img src="../screenshots/he/jobs.png" alt="הורדות — עברית" />
+<figcaption aria-hidden="true">הורדות — עברית</figcaption>
+</figure>
+<p>תצוגה בזמן אמת של משימות הורדה עם מסנני סטטוס ותאריך. כל שורה מציגה
+את הבנק, התאריך, תג סטטוס, הודעת שגיאה (אם נכשל), נתיב קובץ (אם הצליח),
+ומידע תזמון.</p>
+<h3 id="לוג">לוג</h3>
+<figure>
+<img src="../screenshots/he/log.png" alt="לוג — עברית" />
+<figcaption aria-hidden="true">לוג — עברית</figcaption>
+</figure>
+<p>מסלול ביקורת הורדות מלא עם סינון מרובה קריטריונים: בנק, סטטוס וטווח
+תאריכים. תומך בעד 500 רשומות לתצוגה, מסודר מהחדש לישן.</p>
+<h3 id="הגדרות">הגדרות</h3>
+<figure>
+<img src="../screenshots/he/settings.png" alt="הגדרות — עברית" />
+<figcaption aria-hidden="true">הגדרות — עברית</figcaption>
+</figure>
+<p>עורך תצורה מערכתית לתיקיית הורדות, זמן קצוב SFTP, לוח זמנים cron,
+ספירת ניסיונות חוזרים, מייל התראה, העדפות התראות ותקופת שמירת
+נתונים.</p>
+<h3 id="שולחי-דואל">שולחי דוא״ל</h3>
+<figure>
+<img src="../screenshots/he/email_senders.png"
+alt="שולחי דוא״ל — עברית" />
+<figcaption aria-hidden="true">שולחי דוא״ל — עברית</figcaption>
+</figure>
+<p>ניהול כתובות דוא״ל מאושרות לקבלת קבצי דפי חשבון. כל שולח משויך לבנק,
+ניתן להפעיל/להשבית אותו, או למחוק. טופס מאפשר הוספת שולחים חדשים עם
+דוא״ל, שם ושיוך לבנק.</p>
+<hr />
+<h2 id="ממשק-משתמש-נייד">9. ממשק משתמש — נייד</h2>
+<p>OctoBankX מספקת ממשק נייד רספונסיבי מלא ב-<code>/mobile/</code>,
+מותאם לסמארטפונים.</p>
+<h3 id="לוח-בקרה-נייד">לוח בקרה נייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_home.png"
+alt="לוח בקרה נייד — עברית" />
+<figcaption aria-hidden="true">לוח בקרה נייד — עברית</figcaption>
+</figure>
+<p>מונים סיכום קומפקטיים ורשימת כרטיסי הורדות גלילה.</p>
+<h3 id="בנקים-בנייד">בנקים בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_banks.png"
+alt="בנקים בנייד — עברית" />
+<figcaption aria-hidden="true">בנקים בנייד — עברית</figcaption>
+</figure>
+<p>כרטיסי בנק עם פרטי SFTP וטופס רישום מובנה.</p>
+<h3 id="הורדות-בנייד">הורדות בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_jobs.png"
+alt="הורדות בנייד — עברית" />
+<figcaption aria-hidden="true">הורדות בנייד — עברית</figcaption>
+</figure>
+<p>רשימת משימות מבוססת כרטיסים קומפקטית עם מסנני סטטוס ותאריך.</p>
+<h3 id="לוג-בנייד">לוג בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_log.png" alt="לוג בנייד — עברית" />
+<figcaption aria-hidden="true">לוג בנייד — עברית</figcaption>
+</figure>
+<p>לוג גלילה עם פקדי סינון בראש.</p>
+<h3 id="הגדרות-בנייד">הגדרות בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_settings.png"
+alt="הגדרות בנייד — עברית" />
+<figcaption aria-hidden="true">הגדרות בנייד — עברית</figcaption>
+</figure>
+<p>טופס הגדרות מותאם לנייד עם קישור <strong>עבור לגרסת
+מחשב</strong>.</p>
+<h3 id="שולחי-דואל-בנייד">שולחי דוא״ל בנייד</h3>
+<figure>
+<img src="../screenshots/he/mobile_email_senders.png"
+alt="שולחי דוא״ל בנייד — עברית" />
+<figcaption aria-hidden="true">שולחי דוא״ל בנייד — עברית</figcaption>
+</figure>
+<p>תצוגת כרטיסים של שולחי דוא״ל מאושרים עם פעולות הפעלה/השבתה ומחיקה
+מובנות, בתוספת טופס להוספת שולחים חדשים.</p>
+<hr />
+<h2 id="ממשק-api">10. ממשק API</h2>
+<p>כל נקודות הקצה של ה-API נמצאות תחת <code>/api/v1</code>. תגובות
+ב-JSON (<code>Content-Type: application/json</code>).</p>
+<h3 id="הורדות-1">הורדות</h3>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>שיטה</th>
+<th>נקודת קצה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/downloads</code></td>
+<td>רשימת הורדות (ניתן לסנן לפי <code>status</code>,
+<code>bank_id</code>, <code>date</code>; תומך
+ב-<code>limit</code>/<code>offset</code>)</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/downloads/:id</code></td>
+<td>קבלת רשומת הורדה בודדת</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/api/v1/downloads</code></td>
+<td>הכנסת הורדה לתור עבור בנק ותאריך ספציפיים</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/api/v1/downloads/:id/status</code></td>
+<td>עדכון סטטוס הורדה (<code>running</code>, <code>success</code>,
+<code>failed</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="סטטוס-מערכת">סטטוס מערכת</h3>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>שיטה</th>
+<th>נקודת קצה</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/api/v1/status</code></td>
+<td>תמונת מצב בריאות מערכת: סך כל הספירות, ספירות היום, מידע
+הצלחה/כישלון אחרון</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="משימות-רקע-ותזמון">11. משימות רקע ותזמון</h2>
+<h3 id="downloadjob">DownloadJob</h3>
+<p>למשימה היומית שני שלבים:</p>
+<p><strong>שלב 1 — הכנסה לתור:</strong> לכל בנק במערכת, יוצרת רשומת
+<code>Download</code> עם <code>status: 'pending'</code> עבור התאריך
+הנתון. בנקים שכבר יש להם רשומת הורדה לאותו תאריך מדולגים
+(אידמפוטנטי).</p>
+<p><strong>שלב 2 — ביצוע:</strong> מעבד את כל הרשומות
+<code>pending</code>:</p>
+<ol type="1">
+<li>מגדיר <code>status = 'running'</code> ומחתים
+<code>started_at</code></li>
+<li>מתחבר לשרת ה-SFTP של הבנק באמצעות <code>SftpHelper</code></li>
+<li>מוריד את קובץ דף החשבון</li>
+<li>בהצלחה: מגדיר <code>status = 'success'</code>, שומר
+<code>file_path</code>, מחתים <code>completed_at</code></li>
+<li>בכישלון: מגדיר <code>status = 'failed'</code>, שומר
+<code>error_message</code>, מחתים <code>completed_at</code></li>
+</ol>
+<h3 id="לוח-זמנים">לוח זמנים</h3>
+<p>המתזמן פועל באמצעות <code>rufus-scheduler</code>
+ב-<code>config.ru</code>. ביטוי ה-cron מוגדר כברירת מחדל
+ל-<code>0 6 * * *</code> (כל יום ב-06:00), ניתן להגדרה באמצעות משתנה
+הסביבה <code>JOB_SCHEDULE</code> או הגדרת <code>job_schedule</code>.</p>
+<h3 id="emaillistenerjob">EmailListenerJob</h3>
+<p>משימת מאזין הדוא״ל מנטרת תיבת דואר ייעודית לקבלת קבצי דפי חשבון
+משולחים מאושרים:</p>
+<ol type="1">
+<li>מתחברת לשרת הדוא״ל המוגדר באמצעות IMAP או POP3</li>
+<li>מאחזרת הודעות שלא נקראו</li>
+<li>לכל הודעה, בודקת האם כתובת השולח נמצאת בטבלת
+<code>email_senders</code> ופעילה</li>
+<li>אם מאושרת, מחלצת את כל הקבצים המצורפים מסוג CSV/Excel/ZIP</li>
+<li>שומרת קבצים מצורפים בתיקיית ההורדות של הבנק המשויך</li>
+<li>יוצרת רשומת <code>Download</code> עם
+<code>status: 'success'</code></li>
+<li>מסמנת את המייל כנקרא (IMAP) או מוחקת אותו (POP3)</li>
+</ol>
+<p>המשימה רצה בתדירות המוגדרת על ידי <code>email_check_interval</code>
+(ברירת מחדל: 5 דקות).</p>
+<h3 id="הפעלות-ידניות">הפעלות ידניות</h3>
+<ul>
+<li><strong>ממשק ווב:</strong> לחץ על <strong>הרץ הורדות עכשיו</strong>
+בלוח הבקרה או בדף ההורדות</li>
+<li><strong>שורת פקודה:</strong>
+<code>bundle exec rake jobs:run</code></li>
+<li><strong>API:</strong> <code>POST /api/v1/downloads</code> להכנסת בנק
+בודד לתור</li>
+</ul>
+<hr />
+<h2 id="בינלאומיות">12. בינלאומיות</h2>
+<p>OctoBankX תומכת בשתי שפות:</p>
+<table>
+<thead>
+<tr>
+<th>שפה</th>
+<th>Locale</th>
+<th>פריסה</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>אנגלית</td>
+<td><code>en</code></td>
+<td>LTR (שמאל לימין)</td>
+</tr>
+<tr>
+<td>עברית</td>
+<td><code>he</code></td>
+<td>RTL (ימין לשמאל)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="דוגמאות-ממשק-אנגלי">דוגמאות ממשק אנגלי</h3>
+<figure>
+<img src="../screenshots/en/home.png" alt="לוח בקרה — אנגלית" />
+<figcaption aria-hidden="true">לוח בקרה — אנגלית</figcaption>
+</figure>
+<figure>
+<img src="../screenshots/en/banks.png" alt="בנקים — אנגלית" />
+<figcaption aria-hidden="true">בנקים — אנגלית</figcaption>
+</figure>
+<figure>
+<img src="../screenshots/en/jobs.png" alt="הורדות — אנגלית" />
+<figcaption aria-hidden="true">הורדות — אנגלית</figcaption>
+</figure>
+<p>כל תוויות הממשק, פריטי ניווט, תגי סטטוס, הודעות flash ושדות טפסים
+מתורגמים במלואם. הפריסה עוברת אוטומטית ל-RTL כאשר עברית נבחרת.</p>
+<hr />
+<h2 id="בנקים-נתמכים">13. בנקים נתמכים</h2>
+<p>OctoBankX מגיעה עם תצורה מוכנה ל-8 מוסדות פיננסיים ישראליים:</p>
+<h3 id="בנקים-1">בנקים</h3>
+<table>
+<thead>
+<tr>
+<th>בנק</th>
+<th>מפענח</th>
+<th>תבנית קובץ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>בנק לאומי</td>
+<td><code>LeumiParser</code></td>
+<td><code>leumi_YYYYMMDD_main.csv</code></td>
+</tr>
+<tr>
+<td>בנק הפועלים</td>
+<td><code>PoalimParser</code></td>
+<td><code>HP_YYYYMMDD_001.csv</code></td>
+</tr>
+<tr>
+<td>בנק מזרחי טפחות</td>
+<td>—</td>
+<td><code>MZ_YYYYMMDD.csv</code></td>
+</tr>
+<tr>
+<td>בנק דיסקונט</td>
+<td><code>DiscountParser</code></td>
+<td><code>D_YYYYMMDD_DISC001.csv</code></td>
+</tr>
+<tr>
+<td>הבנק הבינלאומי הראשון</td>
+<td><code>FibiParser</code></td>
+<td><code>statement_YYYYMMDD.csv</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="חברי-בורסה">חברי בורסה</h3>
+<table>
+<thead>
+<tr>
+<th>חברה</th>
+<th>תבנית קובץ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>פסגות חבר בורסה</td>
+<td><code>psagot_broker_YYYYMMDD.csv</code></td>
+</tr>
+<tr>
+<td>מיטב חבר בורסה</td>
+<td><code>meitav_YYYYMMDD.csv</code></td>
+</tr>
+<tr>
+<td>אקסלנס חבר בורסה</td>
+<td><code>exc_YYYYMMDD.csv</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="תצורה">14. תצורה</h2>
+<h3 id="הגדרות-ברירת-מחדל">הגדרות ברירת מחדל</h3>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 46%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>מפתח</th>
+<th>ברירת מחדל</th>
+<th>תיאור</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>download_dir</code></td>
+<td><code>/tmp/octobankx/downloads</code></td>
+<td>תיקייה מקומית לדפי חשבון שהורדו</td>
+</tr>
+<tr>
+<td><code>sftp_timeout</code></td>
+<td><code>30</code></td>
+<td>זמן קצוב חיבור SFTP בשניות</td>
+</tr>
+<tr>
+<td><code>job_schedule</code></td>
+<td><code>0 6 * * *</code></td>
+<td>ביטוי cron למשימה יומית (06:00)</td>
+</tr>
+<tr>
+<td><code>retention_days</code></td>
+<td><code>90</code></td>
+<td>ימים לשמירת היסטוריית הורדות</td>
+</tr>
+<tr>
+<td><code>max_retries</code></td>
+<td><code>3</code></td>
+<td>מקסימום ניסיונות חוזרים לבנק ליום</td>
+</tr>
+<tr>
+<td><code>alert_email</code></td>
+<td><code>ops@octobankx.local</code></td>
+<td>מייל להתראות כישלון</td>
+</tr>
+<tr>
+<td><code>notify_on_fail</code></td>
+<td><code>true</code></td>
+<td>שליחת מייל בכישלון הורדה</td>
+</tr>
+<tr>
+<td><code>email_protocol</code></td>
+<td><code>imap</code></td>
+<td>פרוטוקול דוא״ל (<code>imap</code> או <code>pop</code>)</td>
+</tr>
+<tr>
+<td><code>email_host</code></td>
+<td><code>imap.gmail.com</code></td>
+<td>שם מארח שרת IMAP/POP3</td>
+</tr>
+<tr>
+<td><code>email_port</code></td>
+<td><code>993</code></td>
+<td>פורט שרת IMAP/POP3</td>
+</tr>
+<tr>
+<td><code>email_username</code></td>
+<td><code>kassefet-server@gmail.com</code></td>
+<td>שם משתמש חשבון דוא״ל</td>
+</tr>
+<tr>
+<td><code>email_password</code></td>
+<td>(ריק)</td>
+<td>סיסמת חשבון דוא״ל או סיסמה ייעודית לאפליקציה</td>
+</tr>
+<tr>
+<td><code>email_ssl</code></td>
+<td><code>true</code></td>
+<td>שימוש ב-SSL/TLS לחיבור דוא״ל</td>
+</tr>
+<tr>
+<td><code>email_check_interval</code></td>
+<td><code>5</code></td>
+<td>דקות בין בדיקות תיבת דואר</td>
+</tr>
+</tbody>
+</table>
+<h3 id="משתני-סביבה">משתני סביבה</h3>
+<table>
+<thead>
+<tr>
+<th>משתנה</th>
+<th>תיאור</th>
+<th>ברירת מחדל</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PORT</code></td>
+<td>פורט שרת HTTP</td>
+<td><code>9292</code></td>
+</tr>
+<tr>
+<td><code>JOB_SCHEDULE</code></td>
+<td>דריסת לוח זמנים cron</td>
+<td>מההגדרות</td>
+</tr>
+<tr>
+<td><code>RACK_ENV</code></td>
+<td>סביבת אפליקציה</td>
+<td><code>development</code></td>
+</tr>
+<tr>
+<td><code>SESSION_SECRET</code></td>
+<td>מפתח הצפנת סשן</td>
+<td>אקראי</td>
+</tr>
+</tbody>
+</table>
+<h3 id="הפעלת-האפליקציה">הפעלת האפליקציה</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># התקנת תלויות</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">bundle</span> install</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># הקמת מסד נתונים עם נתוני דוגמה</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">bundle</span> exec rake db:setup</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># הפעלת האפליקציה</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="va">PORT</span><span class="op">=</span>9292 <span class="ex">bundle</span> exec puma config.ru <span class="at">-p</span> 9292</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># או שימוש בסקריפט המסופק</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./start.sh</span></span></code></pre></div>
+<hr />
+<p><em>OctoBankX © 2026</em></p>
+</body>
+</html>

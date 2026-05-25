@@ -12,10 +12,9 @@ require_relative '../db/database'
 OctoBankX.migrate!
 
 require_relative '../models/bank'
-require_relative '../models/account'
 require_relative '../models/download'
 require_relative '../models/setting'
-require_relative '../models/api_call'
+require_relative '../models/email_sender'
 require_relative '../app'
 
 Dir[File.join(__dir__, 'factories/**/*.rb')].each { |f| require f }

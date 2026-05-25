@@ -1,0 +1,71 @@
+<!-- Header -->
+<div class="m-sh" style="margin-top:0">
+  <h2><%= t('email_senders.title') %></h2>
+</div>
+
+<!-- Email senders list -->
+<% if @email_senders.empty? %>
+  <div class="m-empty">
+    <i class="fas fa-envelope fa-2x" style="opacity:.25;display:block;margin-bottom:.5rem"></i>
+    <%= t('email_senders.no_senders') %>
+  </div>
+<% else %>
+  <% @email_senders.each do |es| %>
+    <div class="m-card">
+      <div class="row">
+        <div style="min-width:0">
+          <div class="title"><%= es.sender_name %></div>
+          <div class="sub"><%= es.sender_email %></div>
+        </div>
+        <span class="m-tag <%= es.active? ? 'get' : 'delete' %>"><%= es.active? ? t('email_senders.active') : t('email_senders.inactive') %></span>
+      </div>
+      <div class="detail">
+        <span><i class="fas fa-university" style="opacity:.4"></i> <%= es.bank&.name || '—' %></span>
+      </div>
+      <div class="detail" style="margin-top:6px;display:flex;gap:8px">
+        <form action="/mobile/email_senders/<%= es.id %>/toggle" method="post" style="display:inline">
+          <button type="submit" class="button is-small is-light"><%= es.active? ? t('email_senders.deactivate') : t('email_senders.activate') %></button>
+        </form>
+        <form action="/mobile/email_senders/<%= es.id %>/delete" method="post" style="display:inline">
+          <button type="submit" class="button is-small is-danger is-light"><%= t('email_senders.delete') %></button>
+        </form>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<!-- Add Sender (collapsible) -->
+<div class="m-sh"><h2>&nbsp;</h2></div>
+
+<details class="m-form">
+  <summary>
+    <span><i class="fas fa-plus" style="margin-inline-end:.4rem;font-size:.8rem;opacity:.6"></i><%= t('email_senders.new_sender') %></span>
+    <span class="chev"><i class="fas fa-chevron-down"></i></span>
+  </summary>
+  <form action="/mobile/email_senders" method="post">
+    <div class="field">
+      <label class="label"><%= t('email_senders.sender_name') %></label>
+      <div class="control"><input class="input" type="text" name="sender_name" required></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('email_senders.sender_email') %></label>
+      <div class="control"><input class="input" type="email" name="sender_email" placeholder="statements@bank.co.il" required></div>
+    </div>
+    <div class="field">
+      <label class="label"><%= t('email_senders.bank') %></label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select name="bank_id">
+            <option value=""><%= t('email_senders.no_bank') %></option>
+            <% @banks.each do |b| %>
+              <option value="<%= b.id %>"><%= b.name %></option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="control">
+      <button type="submit" class="button is-primary is-fullwidth"><%= t('email_senders.add_sender') %></button>
+    </div>
+  </form>
+</details>

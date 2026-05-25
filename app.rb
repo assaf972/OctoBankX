@@ -4,10 +4,8 @@ require 'i18n'
 
 require_relative 'db/database'
 require_relative 'models/bank'
-require_relative 'models/account'
 require_relative 'models/download'
 require_relative 'models/setting'
-require_relative 'models/api_call'
 require_relative 'jobs/download_job'
 require_relative 'parsers/base_parser'
 require_relative 'parsers/leumi_parser'
@@ -79,13 +77,11 @@ class OctoBankXApp < Sinatra::Base
   # Home
   # ------------------------------------------------------------------
   get '/' do
-    @recent_downloads = Download.recent(10).eager(:account, :bank).all
-    @accounts         = Account.eager(:bank).all
+    @recent_downloads = Download.recent(10).eager(:bank).all
     @banks            = Bank.all
 
     # Dashboard stats
     today = Date.today
-    @total_accounts  = @accounts.size
     @total_banks     = @banks.size
     @today_success   = Download.where(status: 'success', date: today).count
     @today_failed    = Download.where(status: 'failed',  date: today).count
@@ -107,32 +103,6 @@ class OctoBankXApp < Sinatra::Base
     }
 
     erb :home
-  end
-
-  # ------------------------------------------------------------------
-  # Accounts
-  # ------------------------------------------------------------------
-  post '/accounts' do
-    account = Account.new(
-      name:           params[:name],
-      account_no:     params[:account_no],
-      bank_id:        params[:bank_id].to_i,
-      branch:         params[:branch],
-      currency:       params[:currency] || 'USD',
-      balance:        params[:balance].to_f,
-      balance_date:   params[:balance_date].empty? ? nil : Date.parse(params[:balance_date]),
-      sftp_username:  params[:sftp_username],
-      sftp_password:  params[:sftp_password],
-      created_at:     Time.now,
-      updated_at:     Time.now
-    )
-
-    if account.valid? && account.save
-      flash :success, t('flash.account_created', name: account.name)
-    else
-      flash :error, t('flash.account_error', errors: account.errors.full_messages.join(', '))
-    end
-    redirect '/'
   end
 
   # ------------------------------------------------------------------
@@ -167,7 +137,7 @@ class OctoBankXApp < Sinatra::Base
   # Jobs
   # ------------------------------------------------------------------
   get '/jobs' do
-    scope = Download.eager(:account, :bank)
+    scope = Download.eager(:bank)
     scope = scope.where(status: params[:status]) unless params[:status].to_s.empty?
     scope = scope.where(date: Date.parse(params[:date])) unless params[:date].to_s.empty?
     @filter_date = params[:date] || Date.today.to_s
@@ -185,18 +155,18 @@ class OctoBankXApp < Sinatra::Base
   # Log
   # ------------------------------------------------------------------
   get '/log' do
-    scope = Download.eager(:account, :bank)
-    scope = scope.where(account_id: params[:account_id].to_i) unless params[:account_id].to_s.empty?
+    scope = Download.eager(:bank)
+    scope = scope.where(bank_id: params[:bank_id].to_i)       unless params[:bank_id].to_s.empty?
     scope = scope.where(status: params[:status])              unless params[:status].to_s.empty?
     scope = scope.where { date >= Date.parse(params[:from]) } unless params[:from].to_s.empty?
     scope = scope.where { date <= Date.parse(params[:to]) }   unless params[:to].to_s.empty?
 
-    @filter_account_id = params[:account_id]
-    @filter_status     = params[:status]
-    @filter_from       = params[:from]
-    @filter_to         = params[:to]
-    @accounts          = Account.all
-    @downloads         = scope.order(Sequel.desc(:created_at)).limit(500).all
+    @filter_bank_id = params[:bank_id]
+    @filter_status  = params[:status]
+    @filter_from    = params[:from]
+    @filter_to      = params[:to]
+    @banks          = Bank.all
+    @downloads      = scope.order(Sequel.desc(:created_at)).limit(500).all
     erb :log
   end
 
@@ -216,27 +186,6 @@ class OctoBankXApp < Sinatra::Base
     redirect '/settings'
   end
 
-  # ------------------------------------------------------------------
-  # API Calls log
-  # ------------------------------------------------------------------
-  get '/api-calls' do
-    scope = ApiCall.order(Sequel.desc(:created_at))
-    scope = scope.where(status:   params[:status])   unless params[:status].to_s.empty?
-    scope = scope.where(http_method: params[:method]) unless params[:method].to_s.empty?
-    scope = scope.where(endpoint: params[:endpoint]) unless params[:endpoint].to_s.empty?
-    scope = scope.where { created_at >= Time.parse(params[:from]) } unless params[:from].to_s.empty?
-    scope = scope.where { created_at <= Time.parse(params[:to]) + 86_399 } unless params[:to].to_s.empty?
-
-    @filter_status   = params[:status]
-    @filter_method   = params[:method]
-    @filter_endpoint = params[:endpoint]
-    @filter_from     = params[:from]
-    @filter_to       = params[:to]
-    @endpoints       = ApiCall.distinct_endpoints
-    @api_calls       = scope.limit(500).all
-    erb :api_calls
-  end
-
   # ==================================================================
   # Mobile  — /mobile
   # ==================================================================
@@ -246,8 +195,7 @@ class OctoBankXApp < Sinatra::Base
 
   get '/mobile/' do
     today             = Date.today
-    @recent_downloads = Download.recent(10).eager(:account, :bank).all
-    @accounts         = Account.eager(:bank).all
+    @recent_downloads = Download.recent(10).eager(:bank).all
     @banks            = Bank.all
     @today_success    = Download.where(status: 'success', date: today).count
     @today_failed     = Download.where(status: 'failed',  date: today).count
@@ -255,30 +203,8 @@ class OctoBankXApp < Sinatra::Base
     erb :'mobile/home', layout: :'mobile/layout'
   end
 
-  post '/mobile/accounts' do
-    account = Account.new(
-      name:           params[:name],
-      account_no:     params[:account_no],
-      bank_id:        params[:bank_id].to_i,
-      branch:         params[:branch],
-      currency:       params[:currency] || 'USD',
-      balance:        params[:balance].to_f,
-      balance_date:   params[:balance_date].to_s.empty? ? nil : Date.parse(params[:balance_date]),
-      sftp_username:  params[:sftp_username],
-      sftp_password:  params[:sftp_password],
-      created_at:     Time.now,
-      updated_at:     Time.now
-    )
-    if account.valid? && account.save
-      flash :success, t('flash.account_created', name: account.name)
-    else
-      flash :error, t('flash.account_error', errors: account.errors.full_messages.join(', '))
-    end
-    redirect '/mobile/'
-  end
-
   get '/mobile/jobs' do
-    scope = Download.eager(:account, :bank)
+    scope = Download.eager(:bank)
     scope = scope.where(status: params[:status]) unless params[:status].to_s.empty?
     scope = scope.where(date: Date.parse(params[:date])) unless params[:date].to_s.empty?
     @filter_date   = params[:date] || Date.today.to_s
@@ -294,17 +220,17 @@ class OctoBankXApp < Sinatra::Base
   end
 
   get '/mobile/log' do
-    scope = Download.eager(:account, :bank)
-    scope = scope.where(account_id: params[:account_id].to_i) unless params[:account_id].to_s.empty?
+    scope = Download.eager(:bank)
+    scope = scope.where(bank_id: params[:bank_id].to_i)       unless params[:bank_id].to_s.empty?
     scope = scope.where(status: params[:status])              unless params[:status].to_s.empty?
     scope = scope.where { date >= Date.parse(params[:from]) } unless params[:from].to_s.empty?
     scope = scope.where { date <= Date.parse(params[:to]) }   unless params[:to].to_s.empty?
-    @filter_account_id = params[:account_id]
-    @filter_status     = params[:status]
-    @filter_from       = params[:from]
-    @filter_to         = params[:to]
-    @accounts          = Account.all
-    @downloads         = scope.order(Sequel.desc(:created_at)).limit(200).all
+    @filter_bank_id = params[:bank_id]
+    @filter_status  = params[:status]
+    @filter_from    = params[:from]
+    @filter_to      = params[:to]
+    @banks          = Bank.all
+    @downloads      = scope.order(Sequel.desc(:created_at)).limit(200).all
     erb :'mobile/log', layout: :'mobile/layout'
   end
 
@@ -319,6 +245,8 @@ class OctoBankXApp < Sinatra::Base
       sftp_host:        params[:sftp_host],
       sftp_port:        params[:sftp_port].to_i,
       sftp_remote_path: params[:sftp_remote_path] || '/',
+      sftp_username:    params[:sftp_username],
+      sftp_password:    params[:sftp_password],
       ruler:            params[:ruler],
       parser:           params[:parser],
       created_at:       Time.now,
@@ -330,19 +258,6 @@ class OctoBankXApp < Sinatra::Base
       flash :error, t('flash.bank_error', errors: bank.errors.full_messages.join(', '))
     end
     redirect '/mobile/banks'
-  end
-
-  get '/mobile/api-calls' do
-    scope = ApiCall.order(Sequel.desc(:created_at))
-    scope = scope.where(status:      params[:status])   unless params[:status].to_s.empty?
-    scope = scope.where(http_method: params[:method])   unless params[:method].to_s.empty?
-    scope = scope.where(endpoint:    params[:endpoint]) unless params[:endpoint].to_s.empty?
-    @filter_status   = params[:status]
-    @filter_method   = params[:method]
-    @filter_endpoint = params[:endpoint]
-    @endpoints       = ApiCall.distinct_endpoints
-    @api_calls       = scope.limit(200).all
-    erb :'mobile/api_calls', layout: :'mobile/layout'
   end
 
   get '/mobile/settings' do
@@ -364,45 +279,11 @@ class OctoBankXApp < Sinatra::Base
   before '/api/*' do
     content_type :json
     @api_start_time  = Time.now
-    @api_account_id  = nil
     if request.content_type&.include?('application/json')
       body = request.body.read
       @json_params = body.empty? ? {} : JSON.parse(body, symbolize_names: true)
     else
       @json_params = {}
-    end
-  end
-
-  after '/api/*' do
-    next unless @api_start_time
-
-    begin
-      duration_ms = ((Time.now - @api_start_time) * 1000).round
-      http_st     = response.status.to_i
-      call_status = http_st < 400 ? 'success' : 'failed'
-
-      error_msg = nil
-      if http_st >= 400
-        begin
-          raw = response.body.respond_to?(:join) ? response.body.join : response.body.to_s
-          error_msg = JSON.parse(raw)['error']
-        rescue
-        end
-      end
-
-      ApiCall.create(
-        http_method:   request.request_method,
-        endpoint:      request.path_info,
-        host:          request.ip,
-        account_id:    @api_account_id,
-        status:        call_status,
-        http_status:   http_st,
-        duration_ms:   duration_ms,
-        error_message: error_msg,
-        created_at:    Time.now
-      )
-    rescue => e
-      warn "ApiCall logging error: #{e.message}"
     end
   end
 
@@ -424,56 +305,13 @@ class OctoBankXApp < Sinatra::Base
   end
 
   # ------------------------------------------------------------------
-  # GET /api/v1/accounts
-  # ------------------------------------------------------------------
-  get '/api/v1/accounts' do
-    accounts = Account.eager(:bank).order(:name).all
-    accounts.map { |a|
-      {
-        id:           a.id,
-        name:         a.name,
-        account_no:   a.account_no,
-        bank_id:      a.bank_id,
-        bank_name:    a.bank&.name,
-        branch:       a.branch,
-        currency:     a.currency,
-        balance:      a.balance,
-        balance_date: a.balance_date&.to_s
-      }
-    }.to_json
-  end
-
-  # ------------------------------------------------------------------
-  # GET /api/v1/accounts/:id
-  # ------------------------------------------------------------------
-  get '/api/v1/accounts/:id' do
-    @api_account_id = params[:id].to_i
-    a = Account.eager(:bank).first(id: @api_account_id)
-    api_error(404, 'Account not found') unless a
-    {
-      id:           a.id,
-      name:         a.name,
-      account_no:   a.account_no,
-      bank_id:      a.bank_id,
-      bank_name:    a.bank&.name,
-      branch:       a.branch,
-      currency:     a.currency,
-      balance:      a.balance,
-      balance_date: a.balance_date&.to_s,
-      created_at:   a.created_at&.iso8601,
-      updated_at:   a.updated_at&.iso8601
-    }.to_json
-  end
-
-  # ------------------------------------------------------------------
   # GET /api/v1/downloads
   # ------------------------------------------------------------------
   get '/api/v1/downloads' do
-    @api_account_id = params[:account_id].to_i unless params[:account_id].to_s.empty?
-    scope = Download.eager(:account, :bank).order(Sequel.desc(:created_at))
-    scope = scope.where(status:     params[:status])            unless params[:status].to_s.empty?
-    scope = scope.where(account_id: params[:account_id].to_i)  unless params[:account_id].to_s.empty?
-    scope = scope.where(date:       Date.parse(params[:date]))  unless params[:date].to_s.empty?
+    scope = Download.eager(:bank).order(Sequel.desc(:created_at))
+    scope = scope.where(status:  params[:status])            unless params[:status].to_s.empty?
+    scope = scope.where(bank_id: params[:bank_id].to_i)      unless params[:bank_id].to_s.empty?
+    scope = scope.where(date:    Date.parse(params[:date]))  unless params[:date].to_s.empty?
 
     paginate(scope).all.map { |dl| serialize_download(dl) }.to_json
   end
@@ -482,34 +320,31 @@ class OctoBankXApp < Sinatra::Base
   # GET /api/v1/downloads/:id
   # ------------------------------------------------------------------
   get '/api/v1/downloads/:id' do
-    dl = Download.eager(:account, :bank).first(id: params[:id].to_i)
+    dl = Download.eager(:bank).first(id: params[:id].to_i)
     api_error(404, 'Download not found') unless dl
-    @api_account_id = dl.account_id
     serialize_download(dl).to_json
   end
 
   # ------------------------------------------------------------------
-  # POST /api/v1/downloads  — enqueue a download for an account
+  # POST /api/v1/downloads  — enqueue a download for a bank
   # ------------------------------------------------------------------
   post '/api/v1/downloads' do
     p = json_body
-    account_id = (p[:account_id] || params[:account_id]).to_i
-    date_str   = p[:date] || params[:date]
-    date       = date_str ? Date.parse(date_str.to_s) : Date.today
+    bank_id  = (p[:bank_id] || params[:bank_id]).to_i
+    date_str = p[:date] || params[:date]
+    date     = date_str ? Date.parse(date_str.to_s) : Date.today
 
-    @api_account_id = account_id unless account_id.zero?
-    api_error(422, 'account_id is required') if account_id.zero?
+    api_error(422, 'bank_id is required') if bank_id.zero?
 
-    account = Account.first(id: account_id)
-    api_error(404, 'Account not found') unless account
+    bank = Bank.first(id: bank_id)
+    api_error(404, 'Bank not found') unless bank
 
-    if Download.where(account_id: account.id, date: date).count > 0
-      api_error(409, "Download already exists for account #{account_id} on #{date}")
+    if Download.where(bank_id: bank.id, date: date).count > 0
+      api_error(409, "Download already exists for bank #{bank_id} on #{date}")
     end
 
     dl = Download.create(
-      account_id: account.id,
-      bank_id:    account.bank_id,
+      bank_id:    bank.id,
       date:       date,
       status:     'pending',
       created_at: Time.now
@@ -525,7 +360,6 @@ class OctoBankXApp < Sinatra::Base
   patch '/api/v1/downloads/:id/status' do
     dl = Download.first(id: params[:id].to_i)
     api_error(404, 'Download not found') unless dl
-    @api_account_id = dl.account_id
 
     p          = json_body
     new_status = (p[:status] || params[:status]).to_s
@@ -564,17 +398,16 @@ class OctoBankXApp < Sinatra::Base
       timestamp:       Time.now.iso8601,
       totals:          counts,
       today:           { date: today.to_s, **today_counts },
-      accounts_count:  Account.count,
       banks_count:     Bank.count,
       last_success: last_success ? {
         id:           last_success.id,
-        account_id:   last_success.account_id,
+        bank_id:      last_success.bank_id,
         date:         last_success.date.to_s,
         completed_at: last_success.completed_at&.iso8601
       } : nil,
       last_failure: last_failure ? {
         id:            last_failure.id,
-        account_id:    last_failure.account_id,
+        bank_id:       last_failure.bank_id,
         date:          last_failure.date.to_s,
         error_message: last_failure.error_message,
         completed_at:  last_failure.completed_at&.iso8601
@@ -590,9 +423,6 @@ class OctoBankXApp < Sinatra::Base
   def serialize_download(dl)
     {
       id:            dl.id,
-      account_id:    dl.account_id,
-      account_name:  dl.account&.name,
-      account_no:    dl.account&.account_no,
       bank_id:       dl.bank_id,
       bank_name:     dl.bank&.name,
       date:          dl.date.to_s,

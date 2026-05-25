@@ -29,14 +29,13 @@
     <table>
       <thead>
         <tr>
-          <th><%= t('common.id')       %></th>
-          <th><%= t('common.date')     %></th>
-          <th><%= t('common.account')  %></th>
-          <th><%= t('common.bank')     %></th>
-          <th><%= t('common.status')   %></th>
+          <th><%= t('common.id') %></th>
+          <th><%= t('common.date') %></th>
+          <th><%= t('common.bank') %></th>
+          <th><%= t('common.status') %></th>
           <th><%= t('common.duration') %></th>
-          <th><%= t('common.error')    %></th>
-          <th><%= t('common.file')     %></th>
+          <th><%= t('common.error') %></th>
+          <th><%= t('common.file') %></th>
         </tr>
       </thead>
       <tbody>
@@ -44,7 +43,6 @@
           <tr>
             <td><%= dl.id %></td>
             <td><%= dl.date %></td>
-            <td><%= dl.account&.name %></td>
             <td><%= dl.bank&.name %></td>
             <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
             <td><%= dl.duration ? "#{dl.duration.round(1)}s" : '—' %></td>

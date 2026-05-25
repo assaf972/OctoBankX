@@ -4,12 +4,12 @@
 
 <div class="filter-bar">
   <form method="get" action="/log">
-    <label><%= t('common.account') %>
-      <select name="account_id" onchange="this.form.submit()">
-        <option value=""><%= t('log.all_accounts') %></option>
-        <% @accounts.each do |a| %>
-          <option value="<%= a.id %>" <%= @filter_account_id == a.id.to_s ? 'selected' : '' %>>
-            <%= a.name %> (<%= a.account_no %>)
+    <label><%= t('common.bank') %>
+      <select name="bank_id" onchange="this.form.submit()">
+        <option value=""><%= t('log.all_banks') %></option>
+        <% @banks.each do |b| %>
+          <option value="<%= b.id %>" <%= @filter_bank_id == b.id.to_s ? 'selected' : '' %>>
+            <%= b.name %>
           </option>
         <% end %>
       </select>
@@ -40,16 +40,15 @@
     <table>
       <thead>
         <tr>
-          <th><%= t('common.id')        %></th>
-          <th><%= t('common.date')      %></th>
-          <th><%= t('common.created')   %></th>
-          <th><%= t('common.account')   %></th>
-          <th><%= t('common.bank')      %></th>
-          <th><%= t('common.status')    %></th>
-          <th><%= t('common.started')   %></th>
+          <th><%= t('common.id') %></th>
+          <th><%= t('common.date') %></th>
+          <th><%= t('common.created') %></th>
+          <th><%= t('common.bank') %></th>
+          <th><%= t('common.status') %></th>
+          <th><%= t('common.started') %></th>
           <th><%= t('common.completed') %></th>
-          <th><%= t('common.duration')  %></th>
-          <th><%= t('common.error')     %></th>
+          <th><%= t('common.duration') %></th>
+          <th><%= t('common.error') %></th>
         </tr>
       </thead>
       <tbody>
@@ -58,7 +57,6 @@
             <td><%= dl.id %></td>
             <td><%= dl.date %></td>
             <td><%= dl.created_at&.strftime('%Y-%m-%d %H:%M') %></td>
-            <td><%= dl.account&.name %></td>
             <td><%= dl.bank&.name %></td>
             <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
             <td><%= dl.started_at&.strftime('%H:%M:%S') %></td>

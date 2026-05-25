@@ -4,7 +4,6 @@ en:
     jobs: "Jobs"
     log: "Log"
     banks: "Banks"
-    api_calls: "API Calls"
     settings: "Settings"
 
   lang:
@@ -18,10 +17,7 @@ en:
     account: "Account"
     account_no: "Account No"
     bank: "Bank"
-    branch: "Branch"
-    currency: "Currency"
-    balance: "Balance"
-    balance_date: "Balance Date"
+    banks: "Banks"
     status: "Status"
     error: "Error"
     file: "File"
@@ -33,7 +29,7 @@ en:
     run_now: "Run Now"
     filter: "Filter"
     all: "All"
-    accounts: "Accounts"
+    downloads: "Downloads"
     port: "Port"
     remote_path: "Remote Path"
 
@@ -49,13 +45,6 @@ en:
     run_downloads: "Run Downloads Now"
     last_downloads: "Last 10 Downloads"
     no_downloads: "No downloads yet."
-    new_account: "New Account"
-    select_bank: "— select bank —"
-    sftp_username: "SFTP Username"
-    sftp_password: "SFTP Password"
-    create_account: "Create Account"
-    accounts_title: "Accounts (%{count})"
-    no_accounts: "No accounts yet. Add one above."
 
   dashboard:
     total_downloads: "Total Downloads"
@@ -71,7 +60,7 @@ en:
 
   log:
     title: "Download History"
-    all_accounts: "All accounts"
+    all_banks: "All banks"
     from: "From"
     to: "To"
     showing: "Showing %{count} record(s)"
@@ -93,24 +82,11 @@ en:
     title: "Settings"
     save: "Save Settings"
 
-  api_calls:
-    title: "API Calls"
-    method: "Method"
-    endpoint: "Endpoint"
-    host: "Host"
-    http: "HTTP"
-    duration_ms: "Duration (ms)"
-    all_endpoints: "All Endpoints"
-    showing: "Showing %{count} call(s)"
-    no_records: "No API calls recorded yet."
-
   mobile:
     today: "Today"
     desktop: "Switch to Desktop Version"
 
   flash:
-    account_created: "Account '%{name}' created."
-    account_error: "Failed to create account: %{errors}"
     bank_added: "Bank '%{name}' added."
     bank_error: "Failed to add bank: %{errors}"
     job_triggered: "Download job triggered. Check the Jobs page for status updates."

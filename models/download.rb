@@ -1,7 +1,6 @@
 require_relative '../db/database'
 
 class Download < Sequel::Model(OctoBankX.db)
-  many_to_one :account
   many_to_one :bank
 
   STATUSES = %w[pending running success failed].freeze
@@ -10,7 +9,7 @@ class Download < Sequel::Model(OctoBankX.db)
 
   def validate
     super
-    validates_presence [:account_id, :bank_id, :date]
+    validates_presence [:bank_id, :date]
     validates_includes STATUSES, :status
   end
 

@@ -1,7 +1,6 @@
 require_relative '../db/database'
 
 class Bank < Sequel::Model(OctoBankX.db)
-  one_to_many :accounts
   one_to_many :downloads
 
   plugin :timestamps, update_on_create: true

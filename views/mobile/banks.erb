@@ -17,7 +17,7 @@
           <div class="title"><%= b.name %></div>
           <div class="sub"><%= b.sftp_host %>:<%= b.sftp_port %></div>
         </div>
-        <span class="m-tag get"><%= b.accounts_dataset.count %> <%= t('common.accounts') %></span>
+        <span class="m-tag get"><%= b.downloads_dataset.count %> <%= t('common.downloads') %></span>
       </div>
       <div class="detail">
         <span><i class="fas fa-folder" style="opacity:.4"></i> <%= b.sftp_remote_path %></span>

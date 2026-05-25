@@ -2,7 +2,6 @@ Sequel.migration do
   change do
     create_table(:downloads) do
       primary_key :id
-      foreign_key :account_id, :accounts, null: false
       foreign_key :bank_id, :banks, null: false
       Date :date, null: false
       String :status, default: 'pending'  # pending, running, success, failed

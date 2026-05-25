@@ -1,4 +1,3 @@
-require_relative '../models/account'
 require_relative '../models/bank'
 require_relative '../models/download'
 require_relative '../models/setting'
@@ -8,18 +7,17 @@ require 'logger'
 class DownloadJob
   LOG = Logger.new($stdout)
 
-  # Enqueues one Download record per account for the given date (default today).
-  # Skips accounts that already have a download record for that date.
+  # Enqueues one Download record per bank for the given date (default today).
+  # Skips banks that already have a download record for that date.
   def self.enqueue(date: Date.today)
-    accounts = Account.all
-    LOG.info("DownloadJob: enqueuing #{accounts.size} account(s) for #{date}")
+    banks = Bank.all
+    LOG.info("DownloadJob: enqueuing #{banks.size} bank(s) for #{date}")
 
-    accounts.each do |account|
-      next if Download.where(account_id: account.id, date: date).count > 0
+    banks.each do |bank|
+      next if Download.where(bank_id: bank.id, date: date).count > 0
 
       Download.create(
-        account_id: account.id,
-        bank_id:    account.bank_id,
+        bank_id:    bank.id,
         date:       date,
         status:     'pending',
         created_at: Time.now
@@ -41,14 +39,12 @@ class DownloadJob
   end
 
   def self.process(download, download_dir:, timeout:)
-    account = download.account
-    bank    = download.bank
+    bank = download.bank
 
-    LOG.info("DownloadJob: starting download id=#{download.id} account=#{account.account_no}")
+    LOG.info("DownloadJob: starting download id=#{download.id} bank=#{bank.name}")
     download.mark_running!
 
     file_path = SftpHelper.download(
-      account:      account,
       bank:         bank,
       date:         download.date,
       download_dir: download_dir,

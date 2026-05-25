@@ -6,6 +6,8 @@ Sequel.migration do
       String :sftp_host, null: false
       Integer :sftp_port, default: 22
       String :sftp_remote_path, default: '/'
+      String :sftp_username
+      String :sftp_password
       DateTime :created_at
       DateTime :updated_at
     end

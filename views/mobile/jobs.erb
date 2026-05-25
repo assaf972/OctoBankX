@@ -35,8 +35,8 @@
     <div class="m-card">
       <div class="row">
         <div style="min-width:0">
-          <div class="title"><%= dl.account&.name || "##{dl.account_id}" %></div>
-          <div class="sub"><%= dl.bank&.name %> &middot; <%= dl.date %></div>
+          <div class="title"><%= dl.bank&.name %></div>
+          <div class="sub"><%= dl.date %></div>
         </div>
         <span class="m-tag <%= dl.status %>"><%= t("status.#{dl.status}") %></span>
       </div>

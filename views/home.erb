@@ -31,8 +31,8 @@
   <div class="stat-card">
     <div class="stat-card-icon" style="background:#e0e7ff;color:#4f46e5"><i class="fas fa-university"></i></div>
     <div class="stat-card-info">
-      <div class="stat-card-value"><%= @total_accounts %></div>
-      <div class="stat-card-label"><%= t('common.accounts') %></div>
+      <div class="stat-card-value"><%= @total_banks %></div>
+      <div class="stat-card-label"><%= t('common.banks') %></div>
     </div>
   </div>
 </div>
@@ -52,108 +52,28 @@
   </section>
 </div>
 
-<!-- Recent Downloads + New Account -->
-<div class="grid-2">
-  <!-- Recent Downloads -->
-  <section class="card">
-    <h2><%= t('home.last_downloads') %></h2>
-    <% if @recent_downloads.empty? %>
-      <p class="empty"><%= t('home.no_downloads') %></p>
-    <% else %>
-      <table>
-        <thead>
-          <tr>
-            <th><%= t('common.date') %></th>
-            <th><%= t('common.account') %></th>
-            <th><%= t('common.bank') %></th>
-            <th><%= t('common.status') %></th>
-            <th><%= t('common.error') %></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @recent_downloads.each do |dl| %>
-            <tr>
-              <td><%= dl.date %></td>
-              <td><%= dl.account&.name %> (<%= dl.account&.account_no %>)</td>
-              <td><%= dl.bank&.name %></td>
-              <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
-              <td class="error-msg"><%= dl.error_message %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% end %>
-  </section>
-
-  <!-- New Account Form -->
-  <section class="card">
-    <h2><%= t('home.new_account') %></h2>
-    <form action="/accounts" method="post" class="form">
-      <label><%= t('common.name') %>
-        <input type="text" name="name" required>
-      </label>
-      <label><%= t('common.account_no') %>
-        <input type="text" name="account_no" required>
-      </label>
-      <label><%= t('common.bank') %>
-        <select name="bank_id" required>
-          <option value=""><%= t('home.select_bank') %></option>
-          <% @banks.each do |b| %>
-            <option value="<%= b.id %>"><%= b.name %></option>
-          <% end %>
-        </select>
-      </label>
-      <label><%= t('common.branch') %>
-        <input type="text" name="branch">
-      </label>
-      <label><%= t('common.currency') %>
-        <input type="text" name="currency" value="USD" maxlength="3">
-      </label>
-      <label><%= t('common.balance') %>
-        <input type="number" name="balance" value="0" step="0.01">
-      </label>
-      <label><%= t('common.balance_date') %>
-        <input type="date" name="balance_date">
-      </label>
-      <label><%= t('home.sftp_username') %>
-        <input type="text" name="sftp_username">
-      </label>
-      <label><%= t('home.sftp_password') %>
-        <input type="password" name="sftp_password">
-      </label>
-      <button type="submit" class="btn btn-primary"><%= t('home.create_account') %></button>
-    </form>
-  </section>
-</div>
-
-<!-- Accounts Table -->
+<!-- Recent Downloads -->
 <section class="card">
-  <h2><%= t('home.accounts_title', count: @accounts.size) %></h2>
-  <% if @accounts.empty? %>
-    <p class="empty"><%= t('home.no_accounts') %></p>
+  <h2><%= t('home.last_downloads') %></h2>
+  <% if @recent_downloads.empty? %>
+    <p class="empty"><%= t('home.no_downloads') %></p>
   <% else %>
     <table>
       <thead>
         <tr>
-          <th><%= t('common.name') %></th>
-          <th><%= t('common.account_no') %></th>
+          <th><%= t('common.date') %></th>
           <th><%= t('common.bank') %></th>
-          <th><%= t('common.branch') %></th>
-          <th><%= t('common.currency') %></th>
-          <th><%= t('common.balance') %></th>
-          <th><%= t('common.balance_date') %></th>
+          <th><%= t('common.status') %></th>
+          <th><%= t('common.error') %></th>
         </tr>
       </thead>
       <tbody>
-        <% @accounts.each do |a| %>
+        <% @recent_downloads.each do |dl| %>
           <tr>
-            <td><%= a.name %></td>
-            <td><%= a.account_no %></td>
-            <td><%= a.bank&.name %></td>
-            <td><%= a.branch %></td>
-            <td><%= a.currency %></td>
-            <td><%= a.balance %></td>
-            <td><%= a.balance_date %></td>
+            <td><%= dl.date %></td>
+            <td><%= dl.bank&.name %></td>
+            <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>
+            <td class="error-msg"><%= dl.error_message %></td>
           </tr>
         <% end %>
       </tbody>
@@ -202,14 +122,17 @@
         '<%= t("status.running") %>'
       ],
       datasets: [{
-        data: [<%= @status_counts[:success] %>, <%= @status_counts[:failed] %>, <%= @status_counts[:pending] %>, <%= @status_counts[:running] %>],
-        backgroundColor: ['#16a34a', '#dc2626', '#d97706', '#2563eb'],
-        borderWidth: 0
+        data: [
+          <%= @status_counts[:success] %>,
+          <%= @status_counts[:failed] %>,
+          <%= @status_counts[:pending] %>,
+          <%= @status_counts[:running] %>
+        ],
+        backgroundColor: ['#16a34a', '#dc2626', '#f59e0b', '#2563eb']
       }]
     },
     options: {
       responsive: true,
-      cutout: '60%',
       plugins: { legend: { position: 'bottom' } }
     }
   });

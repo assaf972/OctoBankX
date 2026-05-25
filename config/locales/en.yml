@@ -75,6 +75,7 @@ en:
     ruler: "Ruler"
     parser: "Parser"
     select_parser: "Select Parser"
+    target_folder: "Target Folder"
     registered: "Registered Banks (%{count})"
     no_banks: "No banks registered yet."
 

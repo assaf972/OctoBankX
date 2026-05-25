@@ -18,17 +18,8 @@
       <label><%= t('common.remote_path') %>
         <input type="text" name="sftp_remote_path" value="/statements">
       </label>
-      <label><%= t('banks.ruler') %>
-        <textarea name="ruler" rows="4" style="width:100%;resize:vertical"></textarea>
-      </label>
-      <label><%= t('banks.parser') %>
-        <select name="parser">
-          <option value="">-- <%= t('banks.select_parser') %> --</option>
-          <option value="LeumiParser">LeumiParser</option>
-          <option value="PoalimParser">PoalimParser</option>
-          <option value="DiscountParser">DiscountParser</option>
-          <option value="FibiParser">FibiParser</option>
-        </select>
+      <label><%= t('banks.target_folder') %>
+        <input type="text" name="target_folder" placeholder="D:\DANEL\BANK">
       </label>
       <button type="submit" class="btn btn-primary"><%= t('banks.add_bank') %></button>
     </form>
@@ -46,8 +37,7 @@
             <th><%= t('banks.sftp_host') %></th>
             <th><%= t('common.port') %></th>
             <th><%= t('common.remote_path') %></th>
-            <th><%= t('banks.ruler') %></th>
-            <th><%= t('banks.parser') %></th>
+            <th><%= t('banks.target_folder') %></th>
           </tr>
         </thead>
         <tbody>
@@ -57,8 +47,7 @@
               <td><%= b.sftp_host %></td>
               <td><%= b.sftp_port %></td>
               <td><%= b.sftp_remote_path %></td>
-              <td class="error-msg"><%= b.ruler %></td>
-              <td><%= b.parser %></td>
+              <td><%= b.target_folder %></td>
             </tr>
           <% end %>
         </tbody>

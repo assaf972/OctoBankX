@@ -1,8 +1,8 @@
 he:
   nav:
     home: "בית"
-    jobs: "משימות"
-    log: "יומן"
+    jobs: "הורדות"
+    log: "לוג"
     banks: "בנקים"
     settings: "הגדרות"
 
@@ -54,12 +54,12 @@ he:
     status_breakdown: "התפלגות סטטוסים"
 
   jobs:
-    title: "משימות הורדה"
-    jobs_count: "משימות (%{count})"
-    no_jobs: "לא נמצאו משימות התואמות את הסינון."
+    title: "הורדות"
+    jobs_count: "הורדות (%{count})"
+    no_jobs: "לא נמצאו הורדות התואמות את הסינון."
 
   log:
-    title: "היסטוריית הורדות"
+    title: "לוג"
     all_banks: "כל הבנקים"
     from: "מתאריך"
     to: "עד תאריך"
@@ -75,6 +75,7 @@ he:
     ruler: "רולר"
     parser: "מפענח"
     select_parser: "בחר מפענח"
+    target_folder: "תיקיית יעד"
     registered: "בנקים רשומים (%{count})"
     no_banks: "אין בנקים רשומים עדיין."
 
@@ -89,5 +90,5 @@ he:
   flash:
     bank_added: "בנק '%{name}' נוסף בהצלחה."
     bank_error: "הוספת בנק נכשלה: %{errors}"
-    job_triggered: "משימת ההורדה הופעלה. בדוק את עמוד המשימות לעדכוני סטטוס."
+    job_triggered: "ההורדה הופעלה. בדוק את עמוד ההורדות לעדכוני סטטוס."
     settings_saved: "ההגדרות נשמרו בהצלחה."

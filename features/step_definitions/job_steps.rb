@@ -91,6 +91,18 @@ Then('the download for bank {string} should have error message {string}') do |na
   expect(dl.error_message).to eq msg
 end
 
+Then('the download for bank {string} should have a recorded backtrace') do |name|
+  bank = Bank.find(name: name)
+  dl   = Download.where(bank_id: bank.id).order(Sequel.desc(:id)).first
+  expect(dl.backtrace.to_s).not_to be_empty
+end
+
+Then('the download for bank {string} should have a recorded log') do |name|
+  bank = Bank.find(name: name)
+  dl   = Download.where(bank_id: bank.id).order(Sequel.desc(:id)).first
+  expect(dl.log.to_s).not_to be_empty
+end
+
 Then('the download for bank {string} on {string} should have status {string}') do |name, date, status|
   bank = Bank.find(name: name)
   dl   = Download.where(bank_id: bank.id, date: to_date(date)).first

@@ -10,77 +10,77 @@ class EmailListenerJob
     protocol = Setting['email_protocol'] || 'imap'
     host     = Setting['email_host']
     port     = (Setting['email_port'] || (protocol == 'imap' ? '993' : '995')).to_i
-    username = Setting['email_username']
-    password = Setting['email_password']
+    # Credentials are stored under EMAIL_USER / EMAIL_PWD (legacy keys still honoured).
+    username = Setting['EMAIL_USER'] || Setting['email_username']
+    password = Setting['EMAIL_PWD']  || Setting['email_password']
     use_ssl  = Setting['email_ssl'] != 'false'
 
     return unless host && username && password
 
     approved_senders = EmailSender.where(active: true).all
+    # Safety: never touch the inbox until at least one approved sender exists,
+    # otherwise every message would be treated as unapproved and deleted.
     return if approved_senders.empty?
 
-    approved_emails = approved_senders.map(&:sender_email).map(&:downcase)
+    # Map of approved sender email (downcased) => bank_id.
     sender_bank_map = approved_senders.each_with_object({}) do |s, h|
       h[s.sender_email.downcase] = s.bank_id
     end
 
     case protocol.downcase
-    when 'imap' then fetch_imap(host, port, username, password, use_ssl, approved_emails, sender_bank_map)
-    when 'pop'  then fetch_pop(host, port, username, password, use_ssl, approved_emails, sender_bank_map)
+    when 'imap' then fetch_imap(host, port, username, password, use_ssl, sender_bank_map)
+    when 'pop'  then fetch_pop(host, port, username, password, use_ssl, sender_bank_map)
     end
   end
 
   private
 
-  def self.fetch_imap(host, port, username, password, use_ssl, approved_emails, sender_bank_map)
+  def self.fetch_imap(host, port, username, password, use_ssl, sender_bank_map)
     download_dir = Setting['download_dir'] || '/var/octobankx/downloads'
 
     imap = Net::IMAP.new(host, port: port, ssl: use_ssl)
     imap.login(username, password)
     imap.select('INBOX')
 
-    # Search for unseen messages
-    message_ids = imap.search(['UNSEEN'])
-
-    message_ids.each do |msg_id|
-      envelope = imap.fetch(msg_id, 'ENVELOPE').first.attr['ENVELOPE']
+    imap.search(['ALL']).each do |msg_id|
+      envelope  = imap.fetch(msg_id, 'ENVELOPE').first.attr['ENVELOPE']
       from_addr = envelope.from&.first
-      next unless from_addr
+      sender    = from_addr && "#{from_addr.mailbox}@#{from_addr.host}".downcase
+      bank_id   = sender && sender_bank_map[sender]
 
-      sender = "#{from_addr.mailbox}@#{from_addr.host}".downcase
-      next unless approved_emails.include?(sender)
-
-      bank_id = sender_bank_map[sender]
-      next unless bank_id
-
-      # Fetch the full message for attachment processing
-      body = imap.fetch(msg_id, 'RFC822').first.attr['RFC822']
-      mail = Mail.new(body)
-
-      process_attachments(mail, bank_id, download_dir)
-
-      # Mark as seen
-      imap.store(msg_id, '+FLAGS', [:Seen])
+      if bank_id
+        # Approved sender: download attachments and mark the message as read.
+        body = imap.fetch(msg_id, 'RFC822').first.attr['RFC822']
+        process_attachments(Mail.new(body), bank_id, download_dir)
+        imap.store(msg_id, '+FLAGS', [:Seen])
+      else
+        # Not from an approved sender: delete the message.
+        imap.store(msg_id, '+FLAGS', [:Deleted])
+      end
     end
+
+    imap.expunge
   ensure
     imap&.logout
     imap&.disconnect
   end
 
-  def self.fetch_pop(host, port, username, password, use_ssl, approved_emails, sender_bank_map)
+  def self.fetch_pop(host, port, username, password, use_ssl, sender_bank_map)
     download_dir = Setting['download_dir'] || '/var/octobankx/downloads'
 
     Net::POP3.enable_ssl if use_ssl
     Net::POP3.start(host, port, username, password) do |pop|
       pop.each_mail do |m|
-        mail = Mail.new(m.pop)
-        sender = mail.from&.first&.downcase
-        next unless sender && approved_emails.include?(sender)
+        mail    = Mail.new(m.pop)
+        sender  = mail.from&.first&.downcase
+        bank_id = sender && sender_bank_map[sender]
 
-        bank_id = sender_bank_map[sender]
-        next unless bank_id
+        if bank_id
+          # Approved sender: download attachments, then remove the message.
+          process_attachments(mail, bank_id, download_dir)
+        end
 
-        process_attachments(mail, bank_id, download_dir)
+        # Whether approved (processed) or not, the message is removed from the box.
         m.delete
       end
     end
@@ -97,8 +97,11 @@ class EmailListenerJob
 
       target_dir = File.join(download_dir, bank_slug)
       FileUtils.mkdir_p(target_dir)
-
       file_path = File.join(target_dir, attachment.filename)
+
+      # Never download/process the same file twice.
+      next if Download.where(file_path: file_path).count.positive?
+
       File.open(file_path, 'wb') { |f| f.write(attachment.decoded) }
 
       Download.create(

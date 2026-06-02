@@ -12,8 +12,8 @@ def configure_email_listener(protocol, port)
   Setting.set('email_protocol', protocol)
   Setting.set('email_host',     'imap.bank.test')
   Setting.set('email_port',     port)
-  Setting.set('email_username', 'bot@bank.test')
-  Setting.set('email_password', 'secret')
+  Setting.set('EMAIL_USER',     'bot@bank.test')
+  Setting.set('EMAIL_PWD',      'secret')
   Setting.set('email_ssl',      'true')
   Setting.set('download_dir',   @download_dir)
 end
@@ -55,9 +55,9 @@ Given('an IMAP inbox with a message from {string} attaching {string}') do |from,
   setup_imap_inbox([{ id: 1, from: from, filename: filename }])
 end
 
-Given('an IMAP inbox with two messages from {string} attaching {string}') do |from, filename|
-  setup_imap_inbox([{ id: 1, from: from, filename: filename },
-                    { id: 2, from: from, filename: filename }])
+Given('an IMAP inbox with two messages from {string} attaching distinct files') do |from|
+  setup_imap_inbox([{ id: 1, from: from, filename: 'statement_1.csv' },
+                    { id: 2, from: from, filename: 'statement_2.csv' }])
 end
 
 Given('the IMAP search will raise an error') do
@@ -76,6 +76,10 @@ When('the email listener runs') do
   rescue StandardError => e
     @error = e
   end
+end
+
+When('the email listener runs again') do
+  EmailListenerJob.run
 end
 
 When('I process an email from {string} with attachments {string} for bank {string}') do |from, files, bank_name|
@@ -100,12 +104,16 @@ Then('it selects the {string} mailbox') do |mbox|
   expect(@imap_mailbox).to eq mbox
 end
 
-Then('it searches for unseen messages') do
-  expect(@imap_search).to eq ['UNSEEN']
+Then('it scans all messages') do
+  expect(@imap_search).to eq ['ALL']
 end
 
 Then('message {int} is marked as seen') do |id|
   expect(@imap_stored).to include([id, '+FLAGS', [:Seen]])
+end
+
+Then('message {int} is deleted from the server') do |id|
+  expect(@imap_stored).to include([id, '+FLAGS', [:Deleted]])
 end
 
 Then('it logs out and disconnects') do

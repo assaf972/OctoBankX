@@ -2,6 +2,7 @@ require_relative '../db/database'
 
 class Download < Sequel::Model(OctoBankX.db)
   many_to_one :bank
+  one_to_many :log_events
 
   STATUSES = %w[pending running success failed].freeze
 

@@ -7,6 +7,7 @@ require_relative 'models/bank'
 require_relative 'models/download'
 require_relative 'models/setting'
 require_relative 'models/email_sender'
+require_relative 'models/log_event'
 require_relative 'jobs/download_job'
 require_relative 'jobs/email_listener_job'
 require_relative 'parsers/base_parser'
@@ -29,6 +30,11 @@ class OctoBankXApp < Sinatra::Base
     set :public_folder, File.join(File.dirname(__FILE__), 'public')
     enable :sessions
     set :session_secret, ENV.fetch('SESSION_SECRET', SecureRandom.hex(32))
+
+    # Route uncaught exceptions through our `error` handler in every
+    # environment so each one is recorded as a LogEvent.
+    set :raise_errors,    false
+    set :show_exceptions, false
 
     I18n.load_path      += Dir[File.join(File.dirname(__FILE__), 'config', 'locales', '*.yml')]
     I18n.available_locales = %i[en he]
@@ -64,6 +70,22 @@ class OctoBankXApp < Sinatra::Base
       session[:locale] = params[:lang]
     end
     I18n.locale = (session[:locale] || :en).to_sym
+  end
+
+  # ------------------------------------------------------------------
+  # Global error handler — record every uncaught exception as a LogEvent
+  # ------------------------------------------------------------------
+  error do
+    err = env['sinatra.error']
+    if err
+      begin
+        LogEvent.exception(err, message: "Unhandled error during #{request.request_method} #{request.path}")
+      rescue StandardError
+        # Never let logging an error raise another error.
+      end
+    end
+    status 500
+    'Internal Server Error'
   end
 
   # ------------------------------------------------------------------

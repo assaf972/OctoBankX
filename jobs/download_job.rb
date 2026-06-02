@@ -1,6 +1,7 @@
 require_relative '../models/bank'
 require_relative '../models/download'
 require_relative '../models/setting'
+require_relative '../models/log_event'
 require_relative '../helpers/sftp_helper'
 require 'logger'
 require 'time'
@@ -74,6 +75,8 @@ class DownloadJob
       completed_at:  Time.now,
       log:           log.join("\n")
     )
+    LogEvent.exception(e, download: download,
+                       message: "Download failed for #{bank&.name} on #{download.date}")
     LOG.error("DownloadJob: failed id=#{download.id} error=#{e.message}")
   end
 

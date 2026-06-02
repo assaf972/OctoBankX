@@ -24,12 +24,10 @@ RSpec.describe 'Status API' do
       expect { Time.parse(body['timestamp']) }.not_to raise_error
     end
 
-    it 'returns accounts_count and banks_count' do
-      bank    = create(:bank)
-      _acct   = create(:account, bank: bank)
+    it 'returns banks_count' do
+      create(:bank)
       get '/api/v1/status'
       body = JSON.parse(last_response.body)
-      expect(body['accounts_count']).to eq 1
       expect(body['banks_count']).to eq 1
     end
 
@@ -40,11 +38,10 @@ RSpec.describe 'Status API' do
     end
 
     it 'counts total downloads correctly by status' do
-      bank    = create(:bank)
-      account = create(:account, bank: bank)
-      create(:download, account: account, bank: bank, status: 'success')
-      create(:download, account: account, bank: bank, status: 'success')
-      create(:download, account: account, bank: bank, status: 'failed')
+      bank = create(:bank)
+      create(:download, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'failed')
       get '/api/v1/status'
       body = JSON.parse(last_response.body)
       expect(body['totals']['success']).to eq 2
@@ -53,10 +50,9 @@ RSpec.describe 'Status API' do
     end
 
     it 'includes today counts scoped to current date' do
-      bank    = create(:bank)
-      account = create(:account, bank: bank)
-      create(:download, account: account, bank: bank, status: 'success', date: Date.today)
-      create(:download, account: account, bank: bank, status: 'success', date: Date.today - 1)
+      bank = create(:bank)
+      create(:download, bank: bank, status: 'success', date: Date.today)
+      create(:download, bank: bank, status: 'success', date: Date.today - 1)
       get '/api/v1/status'
       body = JSON.parse(last_response.body)
       expect(body['today']['success']).to eq 1
@@ -76,10 +72,8 @@ RSpec.describe 'Status API' do
     end
 
     it 'populates last_success with the most recent successful download' do
-      bank    = create(:bank)
-      account = create(:account, bank: bank)
-      dl = create(:download, account: account, bank: bank, status: 'success',
-                  completed_at: Time.now)
+      bank = create(:bank)
+      dl = create(:download, bank: bank, status: 'success', completed_at: Time.now)
       get '/api/v1/status'
       body = JSON.parse(last_response.body)
       expect(body['last_success']['id']).to eq dl.id
@@ -87,9 +81,8 @@ RSpec.describe 'Status API' do
     end
 
     it 'populates last_failure with error_message' do
-      bank    = create(:bank)
-      account = create(:account, bank: bank)
-      dl = create(:download, account: account, bank: bank, status: 'failed',
+      bank = create(:bank)
+      dl = create(:download, bank: bank, status: 'failed',
                   error_message: 'Host unreachable', completed_at: Time.now)
       get '/api/v1/status'
       body = JSON.parse(last_response.body)

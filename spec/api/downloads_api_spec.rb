@@ -1,8 +1,7 @@
 require_relative '../spec_helper'
 
 RSpec.describe 'Downloads API' do
-  let(:bank)    { create(:bank) }
-  let(:account) { create(:account, bank: bank) }
+  let(:bank) { create(:bank) }
 
   # ----------------------------------------------------------------
   # GET /api/v1/downloads
@@ -20,27 +19,26 @@ RSpec.describe 'Downloads API' do
     end
 
     it 'returns all downloads' do
-      create(:download, account: account, bank: bank, status: 'success')
-      create(:download, account: account, bank: bank, status: 'failed')
+      create(:download, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'failed')
       get '/api/v1/downloads'
       expect(JSON.parse(last_response.body).size).to eq 2
     end
 
     it 'includes expected fields in each record' do
-      create(:download, account: account, bank: bank)
+      create(:download, bank: bank)
       get '/api/v1/downloads'
       item = JSON.parse(last_response.body).first
       expect(item.keys).to include(
-        'id', 'account_id', 'account_name', 'account_no',
-        'bank_id', 'bank_name', 'date', 'status',
+        'id', 'bank_id', 'bank_name', 'date', 'status',
         'error_message', 'file_path', 'started_at',
         'completed_at', 'duration_s', 'created_at'
       )
     end
 
     it 'filters by status=pending' do
-      create(:download, account: account, bank: bank, status: 'pending')
-      create(:download, account: account, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'pending')
+      create(:download, bank: bank, status: 'success')
       get '/api/v1/downloads', status: 'pending'
       body = JSON.parse(last_response.body)
       expect(body).to all(include('status' => 'pending'))
@@ -48,40 +46,40 @@ RSpec.describe 'Downloads API' do
     end
 
     it 'filters by status=running' do
-      create(:download, account: account, bank: bank, status: 'running')
-      create(:download, account: account, bank: bank, status: 'failed')
+      create(:download, bank: bank, status: 'running')
+      create(:download, bank: bank, status: 'failed')
       get '/api/v1/downloads', status: 'running'
       expect(JSON.parse(last_response.body)).to all(include('status' => 'running'))
     end
 
     it 'filters by status=success' do
-      create(:download, account: account, bank: bank, status: 'success')
-      create(:download, account: account, bank: bank, status: 'failed')
+      create(:download, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'failed')
       get '/api/v1/downloads', status: 'success'
       expect(JSON.parse(last_response.body)).to all(include('status' => 'success'))
     end
 
     it 'filters by status=failed' do
-      create(:download, account: account, bank: bank, status: 'failed')
-      create(:download, account: account, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'failed')
+      create(:download, bank: bank, status: 'success')
       get '/api/v1/downloads', status: 'failed'
       body = JSON.parse(last_response.body)
       expect(body).to all(include('status' => 'failed'))
       expect(body.size).to eq 1
     end
 
-    it 'filters by account_id' do
-      other_account = create(:account, bank: bank)
-      create(:download, account: account,       bank: bank, status: 'success')
-      create(:download, account: other_account, bank: bank, status: 'success')
-      get '/api/v1/downloads', account_id: account.id.to_s
+    it 'filters by bank_id' do
+      other_bank = create(:bank)
+      create(:download, bank: bank,       status: 'success')
+      create(:download, bank: other_bank, status: 'success')
+      get '/api/v1/downloads', bank_id: bank.id.to_s
       body = JSON.parse(last_response.body)
-      expect(body).to all(include('account_id' => account.id))
+      expect(body).to all(include('bank_id' => bank.id))
     end
 
     it 'filters by date' do
-      create(:download, account: account, bank: bank, date: Date.today)
-      create(:download, account: account, bank: bank, date: Date.today - 5)
+      create(:download, bank: bank, date: Date.today)
+      create(:download, bank: bank, date: Date.today - 5)
       get '/api/v1/downloads', date: Date.today.to_s
       body = JSON.parse(last_response.body)
       expect(body).to all(include('date' => Date.today.to_s))
@@ -94,7 +92,7 @@ RSpec.describe 'Downloads API' do
   # ----------------------------------------------------------------
   describe 'GET /api/v1/downloads/:id' do
     it 'returns 200 with download data' do
-      dl = create(:download, account: account, bank: bank)
+      dl = create(:download, bank: bank)
       get "/api/v1/downloads/#{dl.id}"
       expect(last_response.status).to eq 200
       body = JSON.parse(last_response.body)
@@ -111,7 +109,7 @@ RSpec.describe 'Downloads API' do
   # POST /api/v1/downloads
   # ----------------------------------------------------------------
   describe 'POST /api/v1/downloads' do
-    let(:payload) { { account_id: account.id, date: Date.today.to_s } }
+    let(:payload) { { bank_id: bank.id, date: Date.today.to_s } }
 
     it 'creates a download and returns 201' do
       post_json '/api/v1/downloads', payload
@@ -121,7 +119,7 @@ RSpec.describe 'Downloads API' do
     it 'returns the new download record' do
       post_json '/api/v1/downloads', payload
       body = JSON.parse(last_response.body)
-      expect(body['account_id']).to eq account.id
+      expect(body['bank_id']).to eq bank.id
       expect(body['status']).to eq 'pending'
       expect(body['date']).to eq Date.today.to_s
     end
@@ -133,24 +131,24 @@ RSpec.describe 'Downloads API' do
     end
 
     it 'defaults date to today when not provided' do
-      post_json '/api/v1/downloads', { account_id: account.id }
+      post_json '/api/v1/downloads', { bank_id: bank.id }
       body = JSON.parse(last_response.body)
       expect(body['date']).to eq Date.today.to_s
     end
 
-    it 'returns 422 when account_id is missing' do
+    it 'returns 422 when bank_id is missing' do
       post_json '/api/v1/downloads', {}
       expect(last_response.status).to eq 422
-      expect(JSON.parse(last_response.body)['error']).to include('account_id')
+      expect(JSON.parse(last_response.body)['error']).to include('bank_id')
     end
 
-    it 'returns 404 when account does not exist' do
-      post_json '/api/v1/downloads', { account_id: 999_999 }
+    it 'returns 404 when bank does not exist' do
+      post_json '/api/v1/downloads', { bank_id: 999_999 }
       expect(last_response.status).to eq 404
     end
 
-    it 'returns 409 when a download already exists for the same account+date' do
-      create(:download, account: account, bank: bank, date: Date.today)
+    it 'returns 409 when a download already exists for the same bank+date' do
+      create(:download, bank: bank, date: Date.today)
       post_json '/api/v1/downloads', payload
       expect(last_response.status).to eq 409
     end
@@ -160,7 +158,7 @@ RSpec.describe 'Downloads API' do
   # PATCH /api/v1/downloads/:id/status
   # ----------------------------------------------------------------
   describe 'PATCH /api/v1/downloads/:id/status' do
-    let!(:dl) { create(:download, account: account, bank: bank, status: 'pending') }
+    let!(:dl) { create(:download, bank: bank, status: 'pending') }
 
     it 'transitions to running' do
       patch_json "/api/v1/downloads/#{dl.id}/status", { status: 'running' }

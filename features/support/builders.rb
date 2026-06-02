@@ -2,6 +2,7 @@
 # Cucumber World so step definitions can call them directly.
 
 require 'mail'
+require 'zip'
 
 module OctoBankXBuilders
   def find_or_create_bank(name, attrs = {})
@@ -81,6 +82,32 @@ module OctoBankXBuilders
     allow(@imap).to receive(:logout)
     allow(@imap).to receive(:disconnect)
     @imap
+  end
+
+  # Write a real ZIP archive at `path`. `entries` is a { name => content } hash.
+  def write_zip(path, entries)
+    FileUtils.mkdir_p(File.dirname(path))
+    FileUtils.rm_f(path)
+    Zip::File.open(path, create: true) do |zip|
+      entries.each { |name, content| zip.get_output_stream(name) { |io| io.write(content) } }
+    end
+  end
+
+  # Stub Net::SFTP so that download! writes a provisioned file (set via
+  # @provision) to the local path, and remove! is recorded in @removed.
+  def setup_sftp_provision
+    @removed = []
+    sftp = double('Net::SFTP::Session')
+    allow(sftp).to receive(:download!) do |remote, local|
+      @downloaded_remote = remote
+      FileUtils.mkdir_p(File.dirname(local))
+      @provision.call(local)
+    end
+    allow(sftp).to receive(:remove!) { |remote| @removed << remote }
+    allow(Net::SFTP).to receive(:start) do |host, user, opts, &blk|
+      @sftp_args = { host: host, user: user, opts: opts }
+      blk.call(sftp)
+    end
   end
 
   # Stub Net::POP3 with a fake inbox.

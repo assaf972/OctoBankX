@@ -194,8 +194,8 @@ puts "\n→ Settings"
   { key: 'email_protocol',  value: 'imap',                       description: 'Email protocol for incoming files (imap or pop)' },
   { key: 'email_host',      value: 'imap.gmail.com',              description: 'IMAP/POP server hostname' },
   { key: 'email_port',      value: '993',                         description: 'IMAP/POP server port' },
-  { key: 'email_username',  value: 'kassefet-server@gmail.com',   description: 'Email account username' },
-  { key: 'email_password',  value: '',                            description: 'Email account password or app-specific password' },
+  { key: 'EMAIL_USER',      value: 'kassefet-server@gmail.com',   description: 'Email account username (mailbox scanned for statements)' },
+  { key: 'EMAIL_PWD',       value: '',                            description: 'Email account password or app-specific password' },
   { key: 'email_ssl',       value: 'true',                        description: 'Use SSL/TLS for email connection' },
   { key: 'email_check_interval', value: '5',                      description: 'Email check interval in minutes' },
 ].each do |s|

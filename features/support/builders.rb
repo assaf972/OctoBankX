@@ -79,6 +79,7 @@ module OctoBankXBuilders
 
     @imap_stored = []
     allow(@imap).to receive(:store) { |id, flag, val| @imap_stored << [id, flag, val] }
+    allow(@imap).to receive(:expunge)
     allow(@imap).to receive(:logout)
     allow(@imap).to receive(:disconnect)
     @imap

@@ -26,17 +26,26 @@ Feature: Email listener job
     Then it connects to the IMAP server "imap.bank.test" on port 993
     And it logs in as "bot@bank.test"
     And it selects the "INBOX" mailbox
-    And it searches for unseen messages
+    And it scans all messages
     And a successful download is recorded for bank "Leumi"
     And a file named "statement_20260525.csv" should be saved
     And message 1 is marked as seen
 
-  Scenario: Skips messages from unknown senders (IMAP)
+  Scenario: Deletes an email from an unapproved sender (IMAP)
     Given the email listener is configured for IMAP
     And an approved sender "statements@leumi.co.il" for bank "Leumi"
     And an IMAP inbox with a message from "hacker@evil.com" attaching "evil.csv"
     When the email listener runs
     Then no download is recorded
+    And message 1 is deleted from the server
+
+  Scenario: Does not download the same file twice (IMAP)
+    Given the email listener is configured for IMAP
+    And an approved sender "statements@leumi.co.il" for bank "Leumi"
+    And an IMAP inbox with a message from "statements@leumi.co.il" attaching "statement_20260525.csv"
+    When the email listener runs
+    And the email listener runs again
+    Then 1 download should be recorded
 
   Scenario: Accepts an xlsx attachment (IMAP)
     Given the email listener is configured for IMAP
@@ -55,7 +64,7 @@ Feature: Email listener job
   Scenario: Processes multiple messages (IMAP)
     Given the email listener is configured for IMAP
     And an approved sender "statements@leumi.co.il" for bank "Leumi"
-    And an IMAP inbox with two messages from "statements@leumi.co.il" attaching "stmt.csv"
+    And an IMAP inbox with two messages from "statements@leumi.co.il" attaching distinct files
     When the email listener runs
     Then 2 downloads should be recorded
 
@@ -77,12 +86,13 @@ Feature: Email listener job
     And a successful download is recorded for bank "Poalim"
     And the message is deleted after processing
 
-  Scenario: Skips unapproved POP3 senders
+  Scenario: Deletes unapproved POP3 senders without downloading
     Given the email listener is configured for POP3
     And an approved sender "reports@poalim.co.il" for bank "Poalim"
     And a POP3 inbox with a message from "unknown@evil.com" attaching "malware.csv"
     When the email listener runs
     Then no download is recorded
+    And the message is deleted after processing
 
   Scenario: process_attachments saves documents and skips images
     Given the email listener is configured for IMAP

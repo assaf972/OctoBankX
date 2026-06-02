@@ -9,8 +9,8 @@ RSpec.describe EmailListenerJob do
     Setting.set('email_protocol', 'imap')
     Setting.set('email_host',     'imap.bank.test')
     Setting.set('email_port',     '993')
-    Setting.set('email_username', 'bot@bank.test')
-    Setting.set('email_password', 'secret')
+    Setting.set('EMAIL_USER',     'bot@bank.test')
+    Setting.set('EMAIL_PWD',      'secret')
     Setting.set('email_ssl',      'true')
     Setting.set('download_dir',   Dir.mktmpdir('email_test'))
   end
@@ -26,17 +26,17 @@ RSpec.describe EmailListenerJob do
       expect(EmailListenerJob.run).to be_nil
     end
 
-    it 'returns nil when email_username is missing' do
-      Setting.set('email_username', nil)
+    it 'returns nil when the username is missing' do
+      Setting.where(key: 'EMAIL_USER').delete
       expect(EmailListenerJob.run).to be_nil
     end
 
-    it 'returns nil when email_password is missing' do
-      Setting.set('email_password', nil)
+    it 'returns nil when the password is missing' do
+      Setting.where(key: 'EMAIL_PWD').delete
       expect(EmailListenerJob.run).to be_nil
     end
 
-    it 'returns nil when there are no active email senders' do
+    it 'does not touch the inbox when there are no active senders' do
       create(:email_sender, bank: bank, active: false)
       expect(Net::IMAP).not_to receive(:new)
       EmailListenerJob.run
@@ -56,8 +56,8 @@ RSpec.describe EmailListenerJob do
       )
     end
 
-    let(:mock_imap)     { instance_double(Net::IMAP) }
-    let(:csv_content)   { "date,amount\n2026-05-25,1000\n" }
+    let(:mock_imap)   { instance_double(Net::IMAP) }
+    let(:csv_content) { "date,amount\n2026-05-25,1000\n" }
 
     let(:envelope) do
       from_addr = double('Address', mailbox: 'statements', host: 'leumi.co.il')
@@ -90,13 +90,30 @@ RSpec.describe EmailListenerJob do
       allow(mock_imap).to receive(:fetch).with(1, 'ENVELOPE').and_return(fetch_envelope_result)
       allow(mock_imap).to receive(:fetch).with(1, 'RFC822').and_return(fetch_body_result)
       allow(mock_imap).to receive(:store)
+      allow(mock_imap).to receive(:expunge)
       allow(mock_imap).to receive(:logout)
       allow(mock_imap).to receive(:disconnect)
     end
 
-    it 'connects to the IMAP server with configured credentials' do
+    it 'connects to the IMAP server with the configured credentials' do
       expect(Net::IMAP).to receive(:new).with('imap.bank.test', port: 993, ssl: true)
       expect(mock_imap).to receive(:login).with('bot@bank.test', 'secret')
+      EmailListenerJob.run
+    end
+
+    it 'uses EMAIL_USER and EMAIL_PWD when both legacy and new keys exist' do
+      Setting.set('email_username', 'legacy@bank.test')
+      Setting.set('email_password', 'legacy-pwd')
+      expect(mock_imap).to receive(:login).with('bot@bank.test', 'secret')
+      EmailListenerJob.run
+    end
+
+    it 'falls back to legacy email_username / email_password' do
+      Setting.where(key: 'EMAIL_USER').delete
+      Setting.where(key: 'EMAIL_PWD').delete
+      Setting.set('email_username', 'legacy@bank.test')
+      Setting.set('email_password', 'legacy-pwd')
+      expect(mock_imap).to receive(:login).with('legacy@bank.test', 'legacy-pwd')
       EmailListenerJob.run
     end
 
@@ -105,8 +122,8 @@ RSpec.describe EmailListenerJob do
       EmailListenerJob.run
     end
 
-    it 'searches for UNSEEN messages' do
-      expect(mock_imap).to receive(:search).with(['UNSEEN'])
+    it 'scans all messages' do
+      expect(mock_imap).to receive(:search).with(['ALL']).and_return([])
       EmailListenerJob.run
     end
 
@@ -133,32 +150,18 @@ RSpec.describe EmailListenerJob do
       EmailListenerJob.run
     end
 
-    it 'skips messages from unknown senders' do
-      unknown_from = double('Address', mailbox: 'hacker', host: 'evil.com')
-      unknown_env  = double('Envelope', from: [unknown_from])
+    it 'deletes messages from unapproved senders' do
+      unknown = double('Envelope', from: [double('Address', mailbox: 'hacker', host: 'evil.com')])
       allow(mock_imap).to receive(:fetch).with(1, 'ENVELOPE')
-        .and_return([double('FetchData', attr: { 'ENVELOPE' => unknown_env })])
+        .and_return([double('FetchData', attr: { 'ENVELOPE' => unknown })])
 
+      expect(mock_imap).to receive(:store).with(1, '+FLAGS', [:Deleted])
+      expect(mock_imap).to receive(:expunge)
       expect { EmailListenerJob.run }.not_to change(Download, :count)
     end
 
-    it 'skips messages from inactive senders' do
-      sender.update(active: false)
-      expect(Net::IMAP).not_to receive(:new)
+    it 'does not download the same file twice' do
       EmailListenerJob.run
-    end
-
-    it 'ignores non-document attachments' do
-      mail_img = Mail.new do
-        from    'statements@leumi.co.il'
-        to      'bot@bank.test'
-        subject 'Photo'
-      end
-      mail_img.attachments['photo.jpg'] = "\xFF\xD8\xFF"
-
-      allow(mock_imap).to receive(:fetch).with(1, 'RFC822')
-        .and_return([double('FetchData', attr: { 'RFC822' => mail_img.to_s })])
-
       expect { EmailListenerJob.run }.not_to change(Download, :count)
     end
 
@@ -176,11 +179,32 @@ RSpec.describe EmailListenerJob do
       expect { EmailListenerJob.run }.to change(Download, :count).by(1)
     end
 
-    it 'processes multiple messages' do
+    it 'ignores non-document attachments' do
+      mail_img = Mail.new do
+        from    'statements@leumi.co.il'
+        to      'bot@bank.test'
+        subject 'Photo'
+      end
+      mail_img.attachments['photo.jpg'] = "\xFF\xD8\xFF"
+
+      allow(mock_imap).to receive(:fetch).with(1, 'RFC822')
+        .and_return([double('FetchData', attr: { 'RFC822' => mail_img.to_s })])
+
+      expect { EmailListenerJob.run }.not_to change(Download, :count)
+    end
+
+    it 'processes multiple messages with distinct files' do
       allow(mock_imap).to receive(:search).and_return([1, 2])
       allow(mock_imap).to receive(:fetch).with(2, 'ENVELOPE').and_return(fetch_envelope_result)
-      allow(mock_imap).to receive(:fetch).with(2, 'RFC822').and_return(fetch_body_result)
-      allow(mock_imap).to receive(:store).with(2, '+FLAGS', [:Seen])
+
+      second_mail = Mail.new do
+        from    'statements@leumi.co.il'
+        to      'bot@bank.test'
+        subject 'Second statement'
+      end
+      second_mail.attachments['statement_20260526.csv'] = csv_content
+      allow(mock_imap).to receive(:fetch).with(2, 'RFC822')
+        .and_return([double('FetchData', attr: { 'RFC822' => second_mail.to_s })])
 
       expect { EmailListenerJob.run }.to change(Download, :count).by(2)
     end
@@ -224,15 +248,10 @@ RSpec.describe EmailListenerJob do
     before do
       Setting.set('email_protocol', 'pop')
       Setting.set('email_port', '995')
-
       allow(Net::POP3).to receive(:enable_ssl)
-      allow(Net::POP3).to receive(:start).and_yield(
-        double('POP3', each_mail: [mock_pop_mail].each { |m| })
-      )
     end
 
     it 'uses POP3 when protocol is set to pop' do
-      # Re-stub to actually yield each mail
       pop_session = double('POP3')
       allow(pop_session).to receive(:each_mail).and_yield(mock_pop_mail)
       allow(Net::POP3).to receive(:start).and_yield(pop_session)
@@ -262,7 +281,7 @@ RSpec.describe EmailListenerJob do
       EmailListenerJob.run
     end
 
-    it 'skips unapproved senders in POP3' do
+    it 'deletes messages from unapproved senders without downloading' do
       bad_mail = Mail.new do
         from    'unknown@evil.com'
         to      'bot@bank.test'
@@ -270,11 +289,12 @@ RSpec.describe EmailListenerJob do
       end
       bad_mail.attachments['malware.csv'] = 'bad'
 
-      bad_pop = double('POPMail', pop: bad_mail.to_s, delete: true)
+      bad_pop     = double('POPMail', pop: bad_mail.to_s)
       pop_session = double('POP3')
       allow(pop_session).to receive(:each_mail).and_yield(bad_pop)
       allow(Net::POP3).to receive(:start).and_yield(pop_session)
 
+      expect(bad_pop).to receive(:delete)
       expect { EmailListenerJob.run }.not_to change(Download, :count)
     end
   end
@@ -326,6 +346,16 @@ RSpec.describe EmailListenerJob do
         EmailListenerJob.send(:process_attachments, mail, bank.id, download_dir)
       }.to change(Download, :count).by(2)
     end
+
+    it 'does not save the same file twice' do
+      mail = Mail.new
+      mail.attachments['dupe.csv'] = 'a,b'
+
+      EmailListenerJob.send(:process_attachments, mail, bank.id, download_dir)
+      expect {
+        EmailListenerJob.send(:process_attachments, mail, bank.id, download_dir)
+      }.not_to change(Download, :count)
+    end
   end
 
   # ----------------------------------------------------------------
@@ -341,26 +371,11 @@ RSpec.describe EmailListenerJob do
       allow(mock_imap).to receive(:login)
       allow(mock_imap).to receive(:select)
       allow(mock_imap).to receive(:search).and_return([])
+      allow(mock_imap).to receive(:expunge)
       allow(mock_imap).to receive(:logout)
       allow(mock_imap).to receive(:disconnect)
 
       expect(Net::IMAP).to receive(:new)
-      EmailListenerJob.run
-    end
-
-    it 'defaults to port 993 for IMAP when port is not set' do
-      Setting.where(key: 'email_port').delete
-      create(:email_sender, bank: bank, active: true)
-
-      mock_imap = instance_double(Net::IMAP)
-      allow(Net::IMAP).to receive(:new).and_return(mock_imap)
-      allow(mock_imap).to receive(:login)
-      allow(mock_imap).to receive(:select)
-      allow(mock_imap).to receive(:search).and_return([])
-      allow(mock_imap).to receive(:logout)
-      allow(mock_imap).to receive(:disconnect)
-
-      expect(Net::IMAP).to receive(:new).with('imap.bank.test', port: 993, ssl: true)
       EmailListenerJob.run
     end
 

@@ -1,0 +1,70 @@
+<div class="page-header">
+  <h1><%= t('jobs.detail_title') %> #<%= @download.id %></h1>
+  <a href="/jobs" class="btn btn-small">&larr; <%= t('jobs.title') %></a>
+</div>
+
+<section class="card">
+  <dl class="job-meta">
+    <dt><%= t('jobs.name') %></dt>
+    <dd><%= @download.display_name %></dd>
+
+    <dt><%= t('common.status') %></dt>
+    <dd><span class="badge badge-<%= @download.status %>"><%= t("status.#{@download.status}") %></span></dd>
+
+    <dt><%= t('common.started') %></dt>
+    <dd><%= @download.started_at || '—' %></dd>
+
+    <dt><%= t('common.completed') %></dt>
+    <dd><%= @download.completed_at || '—' %></dd>
+
+    <dt><%= t('common.duration') %></dt>
+    <dd><%= @download.duration ? "#{@download.duration.round(1)}s" : '—' %></dd>
+
+    <dt><%= t('common.file') %></dt>
+    <dd><%= @download.file_path || '—' %></dd>
+  </dl>
+
+  <div class="job-actions">
+    <% if @download.rerunnable? %>
+      <form action="/jobs/<%= @download.id %>/rerun" method="post" style="display:inline">
+        <button type="submit" class="btn btn-primary"><%= t('jobs.rerun') %></button>
+      </form>
+    <% end %>
+    <% if @download.killable? %>
+      <form action="/jobs/<%= @download.id %>/kill" method="post" style="display:inline">
+        <button type="submit" class="btn btn-warning"><%= t('jobs.kill') %></button>
+      </form>
+    <% end %>
+    <form action="/jobs/<%= @download.id %>/delete" method="post" style="display:inline"
+          onsubmit="return confirm('<%= t('jobs.confirm_delete') %>')">
+      <button type="submit" class="btn btn-danger"><%= t('jobs.delete') %></button>
+    </form>
+  </div>
+</section>
+
+<section class="card">
+  <h2><%= t('common.error') %></h2>
+  <% if @download.error_message && !@download.error_message.empty? %>
+    <pre class="code-block code-error"><code><%= Rack::Utils.escape_html(@download.error_message) %></code></pre>
+  <% else %>
+    <p class="empty"><%= t('jobs.no_error') %></p>
+  <% end %>
+</section>
+
+<section class="card">
+  <h2><%= t('jobs.log') %></h2>
+  <% if @download.log && !@download.log.empty? %>
+    <pre class="code-block"><code><%= Rack::Utils.escape_html(@download.log) %></code></pre>
+  <% else %>
+    <p class="empty"><%= t('jobs.no_log') %></p>
+  <% end %>
+</section>
+
+<section class="card">
+  <h2><%= t('jobs.backtrace') %></h2>
+  <% if @download.backtrace && !@download.backtrace.empty? %>
+    <pre class="code-block code-error"><code><%= Rack::Utils.escape_html(@download.backtrace) %></code></pre>
+  <% else %>
+    <p class="empty"><%= t('jobs.no_backtrace') %></p>
+  <% end %>
+</section>

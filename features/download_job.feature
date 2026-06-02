@@ -27,13 +27,16 @@ Feature: Download job
     When I process the pending download for bank "Bank A"
     Then the download for bank "Bank A" should have status "success"
     And the download for bank "Bank A" should have started and completed timestamps
+    And the download for bank "Bank A" should have a recorded log
 
-  Scenario: A failing download is marked failed and does not raise
+  Scenario: A failing download records status, error, backtrace and log on the job
     Given the SFTP helper raises "Connection timed out"
     And I enqueue downloads for "today"
     When I process the pending download for bank "Bank A"
     Then the download for bank "Bank A" should have status "failed"
     And the download for bank "Bank A" should have error message "Connection timed out"
+    And the download for bank "Bank A" should have a recorded backtrace
+    And the download for bank "Bank A" should have a recorded log
 
   Scenario: Running the job processes all banks
     Given the SFTP helper succeeds for every bank

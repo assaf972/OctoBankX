@@ -51,6 +51,7 @@ RSpec.describe SftpHelper do
         # Stub Net::SFTP.start to yield our mock session
         allow(Net::SFTP).to receive(:start).and_yield(mock_sftp)
         allow(mock_sftp).to receive(:download!)
+        allow(mock_sftp).to receive(:remove!)
       end
 
       it 'returns the local file path' do
@@ -176,6 +177,7 @@ RSpec.describe SftpHelper do
       it 'passes the custom port to Net::SFTP.start' do
         mock = instance_double('Net::SFTP::Session')
         allow(mock).to receive(:download!)
+        allow(mock).to receive(:remove!)
 
         expect(Net::SFTP).to receive(:start).with(
           'sftp.custom.co.il', 'user',

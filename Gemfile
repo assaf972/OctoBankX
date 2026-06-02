@@ -21,4 +21,6 @@ group :test do
   gem 'rack-test', '~> 2.1'
   gem 'database_cleaner-sequel', '~> 2.0'
   gem 'factory_bot', '~> 6.5'
+  gem 'cucumber', '~> 9.2'
+  gem 'capybara', '~> 3.40'
 end

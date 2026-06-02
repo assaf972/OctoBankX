@@ -72,28 +72,15 @@ RSpec.describe Bank do
   # Associations
   # ----------------------------------------------------------------
   describe 'associations' do
-    it 'has many accounts' do
-      bank    = create(:bank)
-      account = create(:account, bank: bank)
-      expect(bank.accounts).to include(account)
-    end
-
     it 'has many downloads' do
       bank     = create(:bank)
-      account  = create(:account, bank: bank)
-      download = create(:download, bank: bank, account: account)
+      download = create(:download, bank: bank)
       expect(bank.downloads).to include(download)
     end
 
-    it 'counts zero accounts for a new bank' do
+    it 'counts zero downloads for a new bank' do
       bank = create(:bank)
-      expect(bank.accounts_dataset.count).to eq 0
-    end
-
-    it 'counts multiple accounts correctly' do
-      bank = create(:bank)
-      3.times { create(:account, bank: bank) }
-      expect(bank.accounts_dataset.count).to eq 3
+      expect(bank.downloads_dataset.count).to eq 0
     end
   end
 

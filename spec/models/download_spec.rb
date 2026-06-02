@@ -5,27 +5,24 @@ RSpec.describe Download do
   # Validations
   # ----------------------------------------------------------------
   describe 'validations' do
-    it 'requires account_id, bank_id, and date' do
+    it 'requires bank_id and date' do
       d = Download.new(status: 'pending')
       expect(d.valid?).to be false
-      expect(d.errors[:account_id]).not_to be_empty
       expect(d.errors[:bank_id]).not_to be_empty
       expect(d.errors[:date]).not_to be_empty
     end
 
     it 'rejects an invalid status' do
-      account = create(:account)
-      d = Download.new(account_id: account.id, bank_id: account.bank_id,
-                       date: Date.today, status: 'bogus')
+      bank = create(:bank)
+      d = Download.new(bank_id: bank.id, date: Date.today, status: 'bogus')
       expect(d.valid?).to be false
       expect(d.errors[:status]).not_to be_empty
     end
 
     it 'accepts all valid statuses' do
-      account = create(:account)
+      bank = create(:bank)
       %w[pending running success failed].each do |st|
-        d = Download.new(account_id: account.id, bank_id: account.bank_id,
-                         date: Date.today, status: st)
+        d = Download.new(bank_id: bank.id, date: Date.today, status: st)
         expect(d.valid?).to(be(true)) { "expected status '#{st}' to be valid" }
       end
     end
@@ -35,7 +32,7 @@ RSpec.describe Download do
   # Status predicates — tested without DB (no PK needed)
   # ----------------------------------------------------------------
   describe 'status predicates' do
-    def dl(status) = Download.new(status: status, account_id: 1, bank_id: 1, date: Date.today)
+    def dl(status) = Download.new(status: status, bank_id: 1, date: Date.today)
 
     it '#pending? is true only for pending' do
       expect(dl('pending').pending?).to be true
@@ -70,13 +67,13 @@ RSpec.describe Download do
   # Status-based filtering
   # ----------------------------------------------------------------
   describe 'filtering by status' do
-    let(:account) { create(:account) }
+    let(:bank) { create(:bank) }
 
     before do
-      create(:download, account: account, bank: account.bank, status: 'pending')
-      create(:download, account: account, bank: account.bank, status: 'running')
-      create(:download, account: account, bank: account.bank, status: 'success')
-      create(:download, account: account, bank: account.bank, status: 'failed')
+      create(:download, bank: bank, status: 'pending')
+      create(:download, bank: bank, status: 'running')
+      create(:download, bank: bank, status: 'success')
+      create(:download, bank: bank, status: 'failed')
     end
 
     it 'filters pending downloads' do
@@ -154,12 +151,12 @@ RSpec.describe Download do
   # ----------------------------------------------------------------
   describe '#duration' do
     it 'returns nil when not yet started' do
-      d = Download.new(status: 'pending', account_id: 1, bank_id: 1, date: Date.today)
+      d = Download.new(status: 'pending', bank_id: 1, date: Date.today)
       expect(d.duration).to be_nil
     end
 
     it 'returns nil when started but not completed' do
-      d = Download.new(status: 'running', account_id: 1, bank_id: 1, date: Date.today,
+      d = Download.new(status: 'running', bank_id: 1, date: Date.today,
                        started_at: Time.now)
       expect(d.duration).to be_nil
     end
@@ -167,7 +164,7 @@ RSpec.describe Download do
     it 'returns elapsed seconds when completed' do
       started   = Time.now - 7
       completed = Time.now
-      d = Download.new(status: 'success', account_id: 1, bank_id: 1, date: Date.today,
+      d = Download.new(status: 'success', bank_id: 1, date: Date.today,
                        started_at: started, completed_at: completed)
       expect(d.duration).to be_within(0.5).of(7)
     end
@@ -177,11 +174,11 @@ RSpec.describe Download do
   # .for_date
   # ----------------------------------------------------------------
   describe '.for_date' do
-    let(:account) { create(:account) }
+    let(:bank) { create(:bank) }
 
     it 'returns only downloads matching the given date' do
-      today_dl = create(:download, account: account, bank: account.bank, date: Date.today)
-      _other   = create(:download, account: account, bank: account.bank, date: Date.today - 1)
+      today_dl = create(:download, bank: bank, date: Date.today)
+      _other   = create(:download, bank: bank, date: Date.today - 1)
       expect(Download.for_date(Date.today).all).to contain_exactly(today_dl)
     end
 
@@ -194,23 +191,21 @@ RSpec.describe Download do
   # .recent
   # ----------------------------------------------------------------
   describe '.recent' do
-    let(:account) { create(:account) }
+    let(:bank) { create(:bank) }
 
     it 'returns at most N downloads' do
-      12.times { create(:download, account: account, bank: account.bank) }
+      12.times { create(:download, bank: bank) }
       expect(Download.recent(10).all.size).to eq 10
     end
 
     it 'returns all downloads when fewer than N exist' do
-      3.times { create(:download, account: account, bank: account.bank) }
+      3.times { create(:download, bank: bank) }
       expect(Download.recent(10).all.size).to eq 3
     end
 
     it 'returns the most recently created first' do
-      older = create(:download, account: account, bank: account.bank,
-                     created_at: Time.now - 3600)
-      newer = create(:download, account: account, bank: account.bank,
-                     created_at: Time.now)
+      _older = create(:download, bank: bank, created_at: Time.now - 3600)
+      newer  = create(:download, bank: bank, created_at: Time.now)
       expect(Download.recent(2).all.first.id).to eq newer.id
     end
   end
@@ -219,8 +214,7 @@ RSpec.describe Download do
   # UI routes
   # ----------------------------------------------------------------
   describe 'UI routes' do
-    let!(:account) { create(:account) }
-    let!(:bank)    { account.bank }
+    let!(:bank) { create(:bank) }
 
     describe 'GET /jobs' do
       it 'returns 200' do
@@ -229,47 +223,47 @@ RSpec.describe Download do
       end
 
       it 'shows all downloads by default' do
-        create(:download, account: account, bank: bank, status: 'success')
-        create(:download, account: account, bank: bank, status: 'failed')
+        create(:download, bank: bank, status: 'success')
+        create(:download, bank: bank, status: 'failed')
         get '/jobs'
         expect(last_response.body).to include('success', 'failed')
       end
 
       it 'filters by status=pending' do
-        create(:download, account: account, bank: bank, status: 'pending')
-        create(:download, account: account, bank: bank, status: 'success')
+        create(:download, bank: bank, status: 'pending')
+        create(:download, bank: bank, status: 'success')
         get '/jobs', status: 'pending'
         expect(last_response.body).to     include('badge-pending')
         expect(last_response.body).not_to include('badge-success')
       end
 
       it 'filters by status=running' do
-        create(:download, account: account, bank: bank, status: 'running')
-        create(:download, account: account, bank: bank, status: 'failed')
+        create(:download, bank: bank, status: 'running')
+        create(:download, bank: bank, status: 'failed')
         get '/jobs', status: 'running'
         expect(last_response.body).to     include('badge-running')
         expect(last_response.body).not_to include('badge-failed')
       end
 
       it 'filters by status=success' do
-        create(:download, account: account, bank: bank, status: 'success')
-        create(:download, account: account, bank: bank, status: 'failed')
+        create(:download, bank: bank, status: 'success')
+        create(:download, bank: bank, status: 'failed')
         get '/jobs', status: 'success'
         expect(last_response.body).to     include('badge-success')
         expect(last_response.body).not_to include('badge-failed')
       end
 
       it 'filters by status=failed' do
-        create(:download, account: account, bank: bank, status: 'failed', error_message: 'timeout')
-        create(:download, account: account, bank: bank, status: 'success')
+        create(:download, bank: bank, status: 'failed', error_message: 'timeout')
+        create(:download, bank: bank, status: 'success')
         get '/jobs', status: 'failed'
         expect(last_response.body).to     include('badge-failed')
         expect(last_response.body).not_to include('badge-success')
       end
 
       it 'filters by date' do
-        today_dl = create(:download, account: account, bank: bank, date: Date.today)
-        _old     = create(:download, account: account, bank: bank, date: Date.today - 10)
+        today_dl = create(:download, bank: bank, date: Date.today)
+        _old     = create(:download, bank: bank, date: Date.today - 10)
         get '/jobs', date: Date.today.to_s
         expect(last_response.body).to include(today_dl.id.to_s)
       end
@@ -282,24 +276,24 @@ RSpec.describe Download do
       end
 
       it 'shows download history' do
-        create(:download, account: account, bank: bank, status: 'success')
+        create(:download, bank: bank, status: 'success')
         get '/log'
         expect(last_response.body).to include('success')
       end
 
       it 'filters by status=failed' do
-        create(:download, account: account, bank: bank, status: 'failed', error_message: 'timeout')
-        create(:download, account: account, bank: bank, status: 'success')
+        create(:download, bank: bank, status: 'failed', error_message: 'timeout')
+        create(:download, bank: bank, status: 'success')
         get '/log', status: 'failed'
         expect(last_response.body).to     include('timeout')
         expect(last_response.body).not_to include('badge-success')
       end
 
-      it 'filters by account_id' do
-        other_account = create(:account, bank: bank)
-        create(:download, account: account,       bank: bank, status: 'success')
-        create(:download, account: other_account, bank: bank, status: 'failed')
-        get '/log', account_id: other_account.id.to_s
+      it 'filters by bank_id' do
+        other_bank = create(:bank)
+        create(:download, bank: bank,       status: 'success')
+        create(:download, bank: other_bank, status: 'failed')
+        get '/log', bank_id: other_bank.id.to_s
         expect(last_response.body).to     include('failed')
         expect(last_response.body).not_to include('badge-success')
       end

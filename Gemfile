@@ -15,6 +15,7 @@ gem 'rake',  '~> 13.0'
 gem 'net-imap', '~> 0.5'
 gem 'net-pop', '~> 0.1'
 gem 'mail', '~> 2.8'
+gem 'rubyzip', '~> 2.3'
 
 group :test do
   gem 'rspec', '~> 3.13'

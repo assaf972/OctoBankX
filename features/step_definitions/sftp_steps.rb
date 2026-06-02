@@ -27,6 +27,7 @@ Given('the SFTP server accepts the connection') do
   @download_calls = []
   sftp = double('Net::SFTP::Session')
   allow(sftp).to receive(:download!) { |remote, local| @download_calls << [remote, local] }
+  allow(sftp).to receive(:remove!)
   allow(Net::SFTP).to receive(:start) do |host, user, opts, &blk|
     @sftp_args = { host: host, user: user, opts: opts }
     blk.call(sftp)

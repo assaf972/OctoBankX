@@ -471,3 +471,32 @@ tr:hover td {
 }
 
 /* keep copyright LTR */
+/* --- Job detail page --- */
+.btn-small { padding: .3rem .75rem; font-size: .8rem; }
+.btn-danger { background: #c0392b; color: #fff; }
+.btn-danger:hover { background: #a93226; }
+.btn-warning { background: #e67e22; color: #fff; }
+.btn-warning:hover { background: #ca6f1e; }
+
+.clickable-row { cursor: pointer; }
+.clickable-row:hover { background: rgba(0,0,0,.04); }
+
+.job-meta { display: grid; grid-template-columns: max-content 1fr; gap: .4rem 1.5rem; margin: 0 0 1rem; }
+.job-meta dt { font-weight: 600; color: #555; }
+.job-meta dd { margin: 0; }
+
+.job-actions { display: flex; gap: .5rem; margin-top: 1rem; }
+
+.code-block {
+  background: #1e1e2e;
+  color: #e4e4ef;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.code-block.code-error { background: #2d1b1b; color: #ffb4b4; }

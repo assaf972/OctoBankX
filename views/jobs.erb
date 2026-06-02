@@ -40,8 +40,8 @@
       </thead>
       <tbody>
         <% @downloads.each do |dl| %>
-          <tr>
-            <td><%= dl.id %></td>
+          <tr class="clickable-row" onclick="window.location='/jobs/<%= dl.id %>'">
+            <td><a href="/jobs/<%= dl.id %>">#<%= dl.id %></a></td>
             <td><%= dl.date %></td>
             <td><%= dl.bank&.name %></td>
             <td><span class="badge badge-<%= dl.status %>"><%= t("status.#{dl.status}") %></span></td>

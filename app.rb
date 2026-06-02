@@ -154,6 +154,41 @@ class OctoBankXApp < Sinatra::Base
   end
 
   # ------------------------------------------------------------------
+  # Job detail
+  # ------------------------------------------------------------------
+  get '/jobs/:id' do
+    @download = Download.eager(:bank).first(id: params[:id].to_i)
+    halt 404, 'Job not found' unless @download
+    erb :job
+  end
+
+  post '/jobs/:id/rerun' do
+    dl = Download.first(id: params[:id].to_i)
+    if dl
+      DownloadJob.rerun(dl)
+      flash :success, t('flash.job_rerun')
+    end
+    redirect "/jobs/#{params[:id]}"
+  end
+
+  post '/jobs/:id/kill' do
+    dl = Download.first(id: params[:id].to_i)
+    if dl && dl.killable?
+      dl.mark_failed!('Killed by user')
+      dl.update(log: [dl.log, "[#{Time.now.iso8601}] Killed by user"].compact.join("\n"))
+      flash :success, t('flash.job_killed')
+    end
+    redirect "/jobs/#{params[:id]}"
+  end
+
+  post '/jobs/:id/delete' do
+    dl = Download.first(id: params[:id].to_i)
+    dl&.destroy
+    flash :success, t('flash.job_deleted')
+    redirect '/jobs'
+  end
+
+  # ------------------------------------------------------------------
   # Log
   # ------------------------------------------------------------------
   get '/log' do
